@@ -1,0 +1,14 @@
+{
+    "name": "voice-dev-app",
+    "version": "1.0.0",
+    "description": "Voice controlled web development tool",
+    "main": "app.js",
+    "scripts": {
+        "start": "electron ."
+    },
+    "author": "Simon Jarvis",
+    "license": "ISC",
+    "dependencies": {
+        "electron": "^4.0.4"
+    }
+}
