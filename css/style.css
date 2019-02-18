@@ -1,0 +1,15 @@
+/*
+    App Styles (for no-frame)
+*/
+
+.app-bar {
+    background: #444;
+    color: #fff;
+    height: 40px;
+    -webkit-app-region: drag;
+    padding: 0;
+    margin: 0;
+}
+
+
+
