@@ -1,8 +1,9 @@
+@import url("reset.css"); /* import css reset */
 /*
     App Styles (for no-frame)
 */
 
-.app-bar {
+.app-toolbar {
     background: #444;
     color: #fff;
     height: 40px;
@@ -11,5 +12,10 @@
     margin: 0;
 }
 
+.app-toolbar div {
+    display: inline-block;
+}
 
-
+.app-toolbar__icon img {
+    max-width: 20px;
+}
