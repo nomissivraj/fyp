@@ -4,12 +4,19 @@
     "description": "Voice controlled web development tool",
     "main": "app.js",
     "scripts": {
-        "start": "electron ."
+        "start": "electron .",
+        "pack": "build --dir"
+    },
+    "build": {
+        "appId": "vocal-developer-app",
+        "productName": "Vocal Developer"
     },
     "author": "Simon Jarvis",
     "license": "ISC",
     "dependencies": {
-        "electron": "^4.0.4",
         "jquery": "^3.3.1"
+    },
+    "devDependencies": {
+        "electron": "^4.0.4"
     }
 }
