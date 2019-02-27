@@ -1,5 +1,5 @@
 // Set up dependencies
-const {app, BrowserWindow} = require('electron');
+const {app, BrowserWindow, Menu} = require('electron');
 const path = require('path');
 const url = require('url');
 
@@ -11,11 +11,11 @@ function createWindow() {
     window = new BrowserWindow({
         width: 800,
         height: 600,
-        minWidth: 800,
-        minHeight: 600,
+        minWidth: 400,
+        minHeight: 300,
         nodeIntegration: true,
         backgroundColor: '#f5f5f5',
-        //frame: false,
+        frame: false,
         icon: path.join(__dirname, 'img/app-icon-64x64.png')
     });
     
@@ -26,12 +26,28 @@ function createWindow() {
         slashes: true
     }));
 
-    // Enable devtools
-    window.webContents.openDevTools();
+    // Enable devtools if not production
+    if (process.env.NODE_ENV !== "production") {
+        window.webContents.openDevTools();
+    }
+    
 
     window.on('closed', () => {
         win = null
     });
+
+    /* var menu = Menu.buildFromTemplate([
+        {
+            label: 'Meny',
+            submenu: [
+                {label: 'First'},
+                {label: 'Second'},
+                {label: 'Third'}
+            ]
+        }
+    ]);
+
+    Menu.setApplicationMenu(menu); */
 }
 
 /*
@@ -109,6 +125,13 @@ function autoSave() {
 
 // On ready call window function
 app.on('ready', createWindow);
+
+
+// ROUTES
+
+/* app.get('/new', (req, res) => {
+    res.
+}); */
 
 // Kill program if all windows closed
 app.on('window-all-closed', () => {
