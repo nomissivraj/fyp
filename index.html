@@ -39,15 +39,16 @@
 
         <main>
             <div class="project-select">
-                <div class="project-select__option project-select__option--new">
+
+                <div class="project-select__option project-select__option--new" onclick="toggle()">
                     <span class="project-select__icon">
                         <img src="img/app-newproject.svg" alt="close window icon">
                     </span>
                     <span class="project-select__text">
                         Create New Project
                     </span>
-                    
                 </div>
+
                 <div class="project-select__option project-select__option--load">
                     <span class="project-select__icon">
                         <img src="img/app-loadproject.svg" alt="close window icon">
@@ -57,10 +58,31 @@
                     </span>
                 </div>
             </div>
+
+            <!-- New Project -->
+            <div id="newproject-form">
+                <form>
+                    <label for="projectname">Project Title:</label>
+                    <input type="text" id="projectname" name="projectname" required><br><br>
+                    <label for="projectlayout">Layout:<br>
+                        <input type="radio" name="projectlayout" value="layout1">layout 1<br>
+                        <input type="radio" name="projectlayout" value="layout2">layout 2<br>
+                    </label><br>
+                    <button>Cancel</button>
+                    <button>OK</button>
+                </form>
+            </div>
+
+            <!-- Load Existing Project -->
         </main>
         
     </body>
     <script>
         require('./scripts/renderer.js');
+
+        function toggle(el) {
+            console.log("test");
+        }
+
     </script>
 </html>
