@@ -14,6 +14,7 @@
     "author": "Simon Jarvis",
     "license": "ISC",
     "dependencies": {
+        "file-system": "^2.2.2",
         "jquery": "^3.3.1"
     },
     "devDependencies": {
