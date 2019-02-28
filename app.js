@@ -2,6 +2,7 @@
 const {app, BrowserWindow, Menu} = require('electron');
 const path = require('path');
 const url = require('url');
+const fs = require('file-system');
 
 // Init window so that it isn't destroyed in cleanup
 let window;
@@ -27,9 +28,9 @@ function createWindow() {
     }));
 
     // Enable devtools if not production
-    if (process.env.NODE_ENV !== "production") {
+   /*  if (process.env.NODE_ENV !== "production") {
         window.webContents.openDevTools();
-    }
+    } */
     
 
     window.on('closed', () => {
@@ -65,7 +66,7 @@ Copy/delete/paste block functions based on layout position - might need to be cl
 
 
 // Function to create new project including folder structure and files
-function newProject() {
+function newProject(projectName, layout) {
 
 }
 
