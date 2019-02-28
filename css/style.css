@@ -21,6 +21,7 @@ img {
 }
 
 main {
+    position: relative;
     padding: 50px 20px 20px 20px;
     margin-top: 40px;
     height: calc(100% - 39px); 
@@ -146,10 +147,26 @@ main {
     padding: 20px;
 }
 
+.project-select__option {
+    cursor: pointer;
+}
+
 .project-select__option span {
     display: block;
 }
 
 .project-select__option:last-child {
     border-right: 0;
+}
+
+#newproject-form {
+    position: fixed;
+    top:calc(50% + 20px);
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    width: 80%;
+    height: calc(90% - 40px);
+    background: rgba(54, 85, 105, 0.9);
+    border-radius: 5px;
+    padding: 20px;
 }
