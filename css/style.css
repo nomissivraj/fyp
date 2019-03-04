@@ -159,7 +159,7 @@ main {
     border-right: 0;
 }
 
-#newproject-form {
+.dialogue {
     position: fixed;
     top:calc(50% + 20px);
     left: 50%;
