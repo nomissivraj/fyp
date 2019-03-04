@@ -8,3 +8,11 @@ function toggleDisplay(el) {
         el.style.display = 'none';
     }
 }
+
+function resetForms(el) {
+    let forms = document.querySelectorAll('form');
+    for (let i = 0; i < forms.length; i++) {
+        forms[i].reset();
+    }
+    toggleDisplay(el);
+}
