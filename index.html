@@ -7,6 +7,7 @@
         <title>Vocal Developer</title>
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <script src="node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="scripts/funcs.js"></script>
     </head>
     <body>
         <header class="app-header">
@@ -40,7 +41,7 @@
         <main>
             <div class="project-select">
 
-                <div class="project-select__option project-select__option--new" onclick="toggle()">
+                <div class="project-select__option project-select__option--new" onclick="toggleDisplay('newproject-form')">
                     <span class="project-select__icon">
                         <img src="img/app-newproject.svg" alt="close window icon">
                     </span>
@@ -60,28 +61,60 @@
             </div>
 
             <!-- New Project -->
-            <div id="newproject-form">
+            <div id="newproject-form" style="display: none">
                 <form>
                     <label for="projectname">Project Title:</label>
-                    <input type="text" id="projectname" name="projectname" required><br><br>
+                    <input type="text" id="projectname" name="projectname" autofocus required><br><br>
+                    <label for="modeselect">Mode:</label>
+                    <select id="modeselect" name="modeselect" required>
+                        <option selected disabled>Please Select</option>
+                        <option value="text">Text Editor<br>
+                        <option value="gui">GUI Editor<br>
+                    </select>
+                    <br><br>
                     <label for="projectlayout">Layout:<br>
-                        <input type="radio" name="projectlayout" value="layout1">layout 1<br>
+                        <input type="radio" name="projectlayout" value="layout1" required>layout 1<br>
                         <input type="radio" name="projectlayout" value="layout2">layout 2<br>
                     </label><br>
-                    <button>Cancel</button>
-                    <button>OK</button>
+                    <button type="button" class="negative" onclick="toggleDisplay('newproject-form')">Cancel</button>
+                    <button type="submit" class="positive">OK</button>
+                    <button type="button" class="close-btn" onclick="toggleDisplay('newproject-form')">Close</button>
                 </form>
             </div>
 
             <!-- Load Existing Project -->
+            <div id="loadproject">
+                <form>
+                    <label></label>
+                </form>
+            </div>
         </main>
         
     </body>
     <script>
         require('./scripts/renderer.js');
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+        
+        const form = document.querySelector('form');
+        form.addEventListener('submit', submitForm);
 
-        function toggle(el) {
-            console.log("test");
+        function submitForm(e) {
+            e.preventDefault();
+            const projectname = document.querySelector('#projectname').value;
+            const projectmode = document.querySelector('#modeselect').value;
+            const projectlayout = document.querySelector('input[name="projectlayout"]:checked').value || 'n/a';
+
+            const projectDetails = {
+                'name': projectname,
+                'mode': projectmode,
+                'layout': projectlayout
+            }
+
+            //READ PROJECTS.JSON TO CHECK PROJECTNAME DOESN'T ALREADY EXIST BEFORE SUBMITTING FORM
+            ipcRenderer.send('create:project', projectDetails);
+            //FORM SHOULD ONLY SUBMIT IF PROJECT DOESN'T ALREADY EXIST
+            
         }
 
     </script>
