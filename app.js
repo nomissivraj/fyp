@@ -1,8 +1,11 @@
 // Set up dependencies
-const {app, BrowserWindow, Menu} = require('electron');
+const {app, BrowserWindow, Menu, ipcMain} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('file-system');
+
+// Set ENV
+process.env.NODE_ENV = 'production'
 
 // Init window so that it isn't destroyed in cleanup
 let window;
@@ -28,9 +31,9 @@ function createWindow() {
     }));
 
     // Enable devtools if not production
-   /*  if (process.env.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production") {
         window.webContents.openDevTools();
-    } */
+    }
     
 
     window.on('closed', () => {
@@ -51,6 +54,11 @@ function createWindow() {
     Menu.setApplicationMenu(menu); */
 }
 
+// Catch item:add
+ipcMain.on('create:project', (e, data) => {
+    newProject(data)
+});
+
 /*
 // Psuedo code:
 
@@ -64,10 +72,55 @@ Copy/delete/paste block functions based on layout position - might need to be cl
 
 */
 
+/* function makeDirectory(dirName){
+
+    return new Promise((resolve, reject) => {
+        fs.mkdirSync(path.join(__dirname+'/saves', dirName), 0777);
+        
+    });
+    //MAYBE TRY MKDIR
+}  */
 
 // Function to create new project including folder structure and files
-function newProject(projectName, layout) {
+function newProject(projectDetails) {
+    console.log("project details", projectDetails.name);
+    
+    //make directory using 'name' (MAY NEED TO BE A PROMISE THEN - IN PROCESS OF DOING THIS)
+    fs.mkdir(__dirname+'/saves/'+projectDetails.name+'/', (err)=> {
+        if (err) {
+            console.log('Failed to create directory', err);
+        } else {
 
+            let testHTML = '<head><link rel="stylesheet" type="text/css" href="style.css"></head><div><h1>Test HTML</h1><p>Delete this later</p></div>'//DELETE THIS LINE LATER AND CORRESPONDING VARIABLE IN WRITEFILE BELOW
+            let testCSS = 'h1 {color:red}'//DELETE THIS LINE LATER AND CORRESPONDING VARIABLE IN WRITEFILE BELOW
+
+            fs.writeFile(__dirname+'/saves/'+projectDetails.name+'/index.html', testHTML, function(err) {
+                if(err) {
+                    return console.log(err);
+                }
+                console.log("The index file was saved!");
+            }); 
+
+            fs.writeFile(__dirname+'/saves/'+projectDetails.name+'/style.css', testCSS, function(err) {
+                if(err) {
+                    return console.log(err);
+                }
+                console.log("The styles file was saved!");
+            }); 
+
+            fs.appendFile('projects.json', JSON.stringify(projectDetails), function (err) {
+                if (err) throw err;
+                console.log('Saved!');
+              });
+        }
+    });
+
+    // if 'mode' === text copy text editor template to directory above and load project
+    
+
+    // else if 'mode' === gui copy text editor template for selected 'layout' into directory and load project
+
+    // AFTER ABOVE IS RESOLVED OPEN NEW WINDOW AND loadProject()
 }
 
 // Function to select working project
