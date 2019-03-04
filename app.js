@@ -5,7 +5,7 @@ const url = require('url');
 const fs = require('file-system');
 
 // Set ENV
-process.env.NODE_ENV = 'production'
+process.env.NODE_ENV = 'development'
 
 // Init window so that it isn't destroyed in cleanup
 let window;
@@ -85,15 +85,20 @@ Copy/delete/paste block functions based on layout position - might need to be cl
 function newProject(projectDetails) {
     console.log("project details", projectDetails.name);
     
-    //make directory using 'name' (MAY NEED TO BE A PROMISE THEN - IN PROCESS OF DOING THIS)
+    //make directory using 'name'
     fs.mkdir(__dirname+'/saves/'+projectDetails.name+'/', (err)=> {
         if (err) {
             console.log('Failed to create directory', err);
         } else {
-
+            // If no errors
             let testHTML = '<head><link rel="stylesheet" type="text/css" href="style.css"></head><div><h1>Test HTML</h1><p>Delete this later</p></div>'//DELETE THIS LINE LATER AND CORRESPONDING VARIABLE IN WRITEFILE BELOW
             let testCSS = 'h1 {color:red}'//DELETE THIS LINE LATER AND CORRESPONDING VARIABLE IN WRITEFILE BELOW
+            
+            //***  if 'mode' === read text editor template files, save to variable here and write to the directory created above - finally load project
+                
+            //***  else if 'mode' === read gui editor template files for the selected 'layout' and write into the directory created - finally load project
 
+            //write index file - update the following blocks to reflect the above proposed if else psuedo
             fs.writeFile(__dirname+'/saves/'+projectDetails.name+'/index.html', testHTML, function(err) {
                 if(err) {
                     return console.log(err);
@@ -101,31 +106,31 @@ function newProject(projectDetails) {
                 console.log("The index file was saved!");
             }); 
 
+            //write css file
             fs.writeFile(__dirname+'/saves/'+projectDetails.name+'/style.css', testCSS, function(err) {
                 if(err) {
                     return console.log(err);
                 }
                 console.log("The styles file was saved!");
             }); 
-
-            fs.appendFile('projects.json', JSON.stringify(projectDetails), function (err) {
-                if (err) throw err;
-                console.log('Saved!');
-              });
+            //update project json file with new project data
+            fs.readFile('projects.json', (err, data)=> {
+                let json = JSON.parse(data);
+                json.push(projectDetails);
+                fs.writeFile("projects.json", JSON.stringify(json, null, 2));
+            });
         }
     });
 
-    // if 'mode' === text copy text editor template to directory above and load project
     
-
-    // else if 'mode' === gui copy text editor template for selected 'layout' into directory and load project
 
     // AFTER ABOVE IS RESOLVED OPEN NEW WINDOW AND loadProject()
 }
 
 // Function to select working project
 function loadProject() {
-
+    // This will need to check project name in projects.json and load all files from the corresponding directory
+    // Might need to store each page name in the project json file
 }
 
 // Function to create new page
