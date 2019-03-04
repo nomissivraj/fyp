@@ -170,3 +170,20 @@ main {
     border-radius: 5px;
     padding: 20px;
 }
+
+button {
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+button:hover {
+    background-color: rgba(0,0,0,.5);
+    cursor: pointer;
+    color: #fff;
+}
+
+.close-btn {
+    position: relative;
+    top: 0;
+    right: 0;
+}
