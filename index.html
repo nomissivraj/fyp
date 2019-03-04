@@ -50,7 +50,7 @@
                     </span>
                 </div>
 
-                <div class="project-select__option project-select__option--load">
+                <div class="project-select__option project-select__option--load" onclick="toggleDisplay('loadproject')">
                     <span class="project-select__icon">
                         <img src="img/app-loadproject.svg" alt="close window icon">
                     </span>
@@ -61,7 +61,8 @@
             </div>
 
             <!-- New Project -->
-            <div id="newproject-form" style="display: none">
+            <div id="newproject-form" class="dialogue" style="display: none">
+                <h1>Create Project</h1>
                 <form>
                     <label for="projectname">Project Title:</label>
                     <input type="text" id="projectname" name="projectname" autofocus required><br><br>
@@ -76,16 +77,24 @@
                         <input type="radio" name="projectlayout" value="layout1" required>layout 1<br>
                         <input type="radio" name="projectlayout" value="layout2">layout 2<br>
                     </label><br>
-                    <button type="button" class="negative" onclick="toggleDisplay('newproject-form')">Cancel</button>
-                    <button type="submit" class="positive">OK</button>
-                    <button type="button" class="close-btn" onclick="toggleDisplay('newproject-form')">Close</button>
+                    <button type="button" class="negative" onclick="resetForms('newproject-form')">Cancel</button>
+                    <button type="submit" class="positive" onclick="toggleDisplay('newproject-form')">OK</button>
+                    <button type="button" class="close-btn" onclick="resetForms('newproject-form')">Close</button>
                 </form>
             </div>
 
             <!-- Load Existing Project -->
-            <div id="loadproject">
+            <div id="loadproject" class="dialogue" style="display: none">
+                <h1>Load Project</h1>
                 <form>
-                    <label></label>
+                    <!-- This needs to be dynamically built based on entries in projects.json -->
+                    <label for="existing-projects">Existing Projects:<br>
+                        <input type="radio" name="existing-projects" value="project1" required>layout 1<br>
+                        <input type="radio" name="existing-projects" value="project2">layout 2<br>
+                    </label><br>
+                    <button type="button" class="negative" onclick="resetForms('loadproject')">Cancel</button>
+                    <button type="submit" class="positive" onclick="toggleDisplay('loadproject')">OK</button>
+                    <button type="button" class="close-btn" onclick="resetForms('loadproject')">Close</button>
                 </form>
             </div>
         </main>
@@ -97,24 +106,24 @@
         const {ipcRenderer} = electron;
         
         const form = document.querySelector('form');
-        form.addEventListener('submit', submitForm);
+        form.addEventListener('submit', submitProject);
 
-        function submitForm(e) {
+        function submitProject(e) {
             e.preventDefault();
             const projectname = document.querySelector('#projectname').value;
             const projectmode = document.querySelector('#modeselect').value;
             const projectlayout = document.querySelector('input[name="projectlayout"]:checked').value || 'n/a';
+
+            //READ PROJECTS.JSON TO CHECK PROJECTNAME DOESN'T ALREADY EXIST BEFORE SUBMITTING FORM
+            //IF project name is in projects.json already send alert that project already exists and to try a different name
 
             const projectDetails = {
                 'name': projectname,
                 'mode': projectmode,
                 'layout': projectlayout
             }
-
-            //READ PROJECTS.JSON TO CHECK PROJECTNAME DOESN'T ALREADY EXIST BEFORE SUBMITTING FORM
-            ipcRenderer.send('create:project', projectDetails);
-            //FORM SHOULD ONLY SUBMIT IF PROJECT DOESN'T ALREADY EXIST
             
+            ipcRenderer.send('create:project', projectDetails);            
         }
 
     </script>
