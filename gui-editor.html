@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Vocal Developer</title>
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <script src="node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="scripts/funcs.js"></script>
+    </head>
+    <body>
+        <header class="app-header">
+            <div class="app-toolbar">
+                <div class="app-toolbar__icon">
+                    <img src="img/app-icon-64x64.png" alt="Vocal Developer Icon">
+                </div>
+                <div class="app-toolbar__menu">
+                    File
+                </div>
+                <div class="app-toolbar__title">
+                    <span>Vocal Developer</span>
+                </div>
+                <div class="app-toolbar__options">
+                    <div id="min-btn" class="options__minimise">
+                        <img src="img/app-min.svg" width="12px" alt="minimise window icon">
+                    </div>
+                    <div id="max-btn" class="options__maximise">
+                        <img src="img/app-max.svg" width="12px" alt="maximise window icon">
+                    </div>
+                    <div id="restore-btn" class="options__restore">
+                        <img src="img/app-restore.svg" width="12px" alt="restore window icon">
+                    </div>
+                    <div id="close-btn" class="options__close">
+                        <img src="img/app-close.svg" width="12px" alt="close window icon">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <h1>GUI Editor</h1>
+            <div id="test-text">
+                text
+            </div>
+        </main>
+        
+    </body>
+    <script>
+        require('./scripts/renderer.js');
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+    </script>
+</html>
