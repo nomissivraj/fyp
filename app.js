@@ -7,12 +7,19 @@ const fs = require('file-system');
 // Set ENV
 process.env.NODE_ENV = 'development'
 
-// Init window so that it isn't destroyed in cleanup
-let window;
 
-function createWindow() {
+/*
+   //////////////////////// CREATE WINDOW FUNCTIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+*/
+
+// Init window so that it isn't destroyed in cleanup
+let mainWindow,
+    guiWindow,
+    textWindow;
+
+function createMainWindow() {
     // Set new window object using dimensions and icon
-    window = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
         minWidth: 400,
@@ -24,7 +31,7 @@ function createWindow() {
     });
     
     // Window loading method - use index.html with file protocol
-    window.loadURL(url.format({
+    mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file',
         slashes: true
@@ -32,12 +39,12 @@ function createWindow() {
 
     // Enable devtools if not production
     if (process.env.NODE_ENV !== "production") {
-        window.webContents.openDevTools();
+        mainWindow.webContents.openDevTools();
     }
     
 
-    window.on('closed', () => {
-        win = null
+    mainWindow.on('closed', () => {
+        mainWindow = null
     });
 
     /* var menu = Menu.buildFromTemplate([
@@ -54,11 +61,89 @@ function createWindow() {
     Menu.setApplicationMenu(menu); */
 }
 
+function createGuiWindow() {
+// Set new window object using dimensions and icon
+    guiWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        minWidth: 400,
+        minHeight: 300,
+        nodeIntegration: true,
+        backgroundColor: '#f5f5f5',
+        frame: false,
+        icon: path.join(__dirname, 'img/app-icon-64x64.png')
+    });
+    
+    // Window loading method - use index.html with file protocol
+    guiWindow.loadURL(url.format({
+        pathname: path.join(__dirname, 'gui-editor.html'),
+        protocol: 'file',
+        slashes: true
+    }));
+
+    // Enable devtools if not production
+    if (process.env.NODE_ENV !== "production") {
+        guiWindow.webContents.openDevTools();
+    }
+    
+
+    guiWindow.on('closed', () => {
+        guiWindow = null
+    });
+}
+
+function createTextEditorWindow() {
+// Set new window object using dimensions and icon
+    textWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        minWidth: 400,
+        minHeight: 300,
+        nodeIntegration: true,
+        backgroundColor: '#f5f5f5',
+        frame: false,
+        icon: path.join(__dirname, 'img/app-icon-64x64.png')
+    });
+    
+    // Window loading method - use index.html with file protocol
+    textWindow.loadURL(url.format({
+        pathname: path.join(__dirname, 'text-editor.html'),
+        protocol: 'file',
+        slashes: true
+    }));
+
+    // Enable devtools if not production
+    if (process.env.NODE_ENV !== "production") {
+        textWindow.webContents.openDevTools();
+    }
+    
+
+    textWindow.on('closed', () => {
+        textWindow = null
+    });
+}
+
+/*
+   //////////////////////// END WINDOW FUNCTIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+*/
+
+/*
+   //////////////////////// RENDERER COMMUNICATIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+*/
+
 // Catch item:add
 ipcMain.on('create:project', (e, data) => {
     newProject(data)
 });
 
+/*
+   //////////////////////// END RENDERED COMMUNICATIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+*/
+
+
+/*
+   //////////////////////// MAIN APP FUNCTIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+*/
 /*
 // Psuedo code:
 
@@ -83,8 +168,7 @@ Copy/delete/paste block functions based on layout position - might need to be cl
 
 // Function to create new project including folder structure and files
 function newProject(projectDetails) {
-    console.log("project details", projectDetails.name);
-    
+   
     //make directory using 'name'
     fs.mkdir(__dirname+'/saves/'+projectDetails.name+'/', (err)=> {
         if (err) {
@@ -100,21 +184,21 @@ function newProject(projectDetails) {
 
             //write index file - update the following blocks to reflect the above proposed if else psuedo
             fs.writeFile(__dirname+'/saves/'+projectDetails.name+'/index.html', testHTML, function(err) {
-                if(err) {
-                    return console.log(err);
-                }
+                if (err) return console.log(err);
+                
                 console.log("The index file was saved!");
             }); 
 
             //write css file
             fs.writeFile(__dirname+'/saves/'+projectDetails.name+'/style.css', testCSS, function(err) {
-                if(err) {
-                    return console.log(err);
-                }
+                if (err) return console.log(err);
+
                 console.log("The styles file was saved!");
             }); 
             //update project json file with new project data
             fs.readFile('projects.json', (err, data)=> {
+                if (err) return console.log(err);
+
                 let json = JSON.parse(data);
                 json.push(projectDetails);
                 fs.writeFile("projects.json", JSON.stringify(json, null, 2));
@@ -128,10 +212,27 @@ function newProject(projectDetails) {
 }
 
 // Function to select working project
-function loadProject() {
+function loadProject(projectId) {
+    //temp
+    projectId = "testproj";
+    //end temp
+    let currentProj;
     // This will need to check project name in projects.json and load all files from the corresponding directory
     // Might need to store each page name in the project json file
+    fs.readFile('projects.json', (err, data) => {
+        if (err) return console.log(err);
+
+        let projects = JSON.parse(data);
+        for (let i = 0; i < projects.length; i++) {
+            if (projectId.toLowerCase() === projects[i].name.toLowerCase()) {
+                currentProj = projects[i].name;
+            }
+        }
+    });
+    console.log('Selected Project:',currentProj);
 }
+loadProject();
+
 
 // Function to create new page
 function newPage() {
@@ -182,15 +283,16 @@ function autoSave() {
     // save every 5mins?
 }
 
+/*
+   //////////////////////// END MAIN APP FUNCTIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+*/
+
 // On ready call window function
-app.on('ready', createWindow);
-
-
-// ROUTES
-
-/* app.get('/new', (req, res) => {
-    res.
-}); */
+app.on('ready', () => {
+    createMainWindow()
+    createGuiWindow()
+    createTextEditorWindow()
+});
 
 // Kill program if all windows closed
 app.on('window-all-closed', () => {
