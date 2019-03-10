@@ -10,6 +10,8 @@ function toggleDisplay(el) {
 }
 
 function resetForms(el) {
+    if (selectedProject !== null || selectedProject !== undefined) selectedProject = null;
+    
     let forms = document.querySelectorAll('form');
     for (let i = 0; i < forms.length; i++) {
         forms[i].reset();
