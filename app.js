@@ -7,6 +7,8 @@ const fs = require('file-system');
 // Set ENV
 process.env.NODE_ENV = 'development'
 
+// Set Project properties
+var sessionProject;
 
 /*
    //////////////////////// CREATE WINDOW FUNCTIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -131,13 +133,20 @@ function createTextEditorWindow() {
    //////////////////////// RENDERER COMMUNICATIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 */
 
-// Catch item:add
+// Catch items
 ipcMain.on('create:project', (e, data) => {
     newProject(data)
 });
 
+ipcMain.on('load:project', (e, data) => {
+    loadProject(data);
+});
+
+
+//send items
+
 /*
-   //////////////////////// END RENDERED COMMUNICATIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+   //////////////////////// END RENDERER COMMUNICATIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 */
 
 
@@ -154,6 +163,12 @@ Copy/delete/paste block functions based on layout position - might need to be cl
 
 
 //Work out how to package app up as an installer and launcher etc.
+
+TODO: 
+    - create template
+    - Send data to new window 
+    - load from templates into new window based on data
+    - FUNCTION TO DELETE ENTRIES IN projects.json IF NO DIRECTORY EXISTS FOR THAT ENTRY
 
 */
 
@@ -211,27 +226,50 @@ function newProject(projectDetails) {
     // AFTER ABOVE IS RESOLVED OPEN NEW WINDOW AND loadProject()
 }
 
+
 // Function to select working project
 function loadProject(projectId) {
-    //temp
-    projectId = "testproj";
-    //end temp
-    let currentProj;
-    // This will need to check project name in projects.json and load all files from the corresponding directory
+    console.log('trying to load', projectId);
     // Might need to store each page name in the project json file
-    fs.readFile('projects.json', (err, data) => {
-        if (err) return console.log(err);
 
-        let projects = JSON.parse(data);
-        for (let i = 0; i < projects.length; i++) {
-            if (projectId.toLowerCase() === projects[i].name.toLowerCase()) {
-                currentProj = projects[i].name;
-            }
+    //Get project details using promise then load based off resolved/returned values
+    getProjectDetails(projectId).then((data)=>{
+        console.log("data:",data)
+        if (data.mode === 'gui') {
+            createGuiWindow();
+            mainWindow.close();
+            ipcMain.on('ready:gui-window', () => {
+                guiWindow.webContents.send('load:data', data);
+            })
+        }
+        if (data.mode === 'text') {
+            createTextEditorWindow();
+            mainWindow.close();
+            ipcMain.on('ready:text-window', () => {
+                textWindow.webContents.send('load:data', data);
+            })
         }
     });
-    console.log('Selected Project:',currentProj);
 }
-loadProject();
+
+function getProjectDetails(projectId) {
+    return new Promise((resolve, reject) => {
+        let test = null;
+        fs.readFile('projects.json', (err, data) => {
+        
+            if (err) return console.log(err);
+    
+            let projects = JSON.parse(data);
+            for (let i = 0; i < projects.length; i++) {
+    
+                //console.log("input:", projectId.toLowerCase(),"in file:",projects[i].name.toLowerCase())
+                if (projectId.toLowerCase() === projects[i].name.toLowerCase()) {
+                    resolve(projects[i])
+                } 
+            }
+        });
+    });
+}
 
 
 // Function to create new page
@@ -290,8 +328,6 @@ function autoSave() {
 // On ready call window function
 app.on('ready', () => {
     createMainWindow()
-    createGuiWindow()
-    createTextEditorWindow()
 });
 
 // Kill program if all windows closed
