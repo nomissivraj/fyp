@@ -50,5 +50,12 @@
         require('./scripts/renderer.js');
         const electron = require('electron');
         const {ipcRenderer} = electron;
+
+        ipcRenderer.send('ready:gui-window');
+
+        //Recieve
+        ipcRenderer.on('load:data', (e, data) => {
+            console.log(data.name);
+        })
     </script>
 </html>
