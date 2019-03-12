@@ -63,7 +63,7 @@
             <!-- New Project -->
             <div id="newproject-form" class="dialogue" style="display: none">
                 <h1>Create Project</h1>
-                <form>
+                <form id="create-project-form">
                     <label for="projectname">Project Title:</label>
                     <input type="text" id="projectname" name="projectname" autofocus required><br><br>
                     <label for="modeselect">Mode:</label>
@@ -78,7 +78,7 @@
                         <input type="radio" name="projectlayout" value="layout2">layout 2<br>
                     </label><br>
                     <button type="button" class="negative" onclick="resetForms('newproject-form')">Cancel</button>
-                    <button type="submit" class="positive" onclick="toggleDisplay('newproject-form')">Create</button>
+                    <button type="submit" class="positive">Create</button>
                     
                 </form>
                 <button type="button" class="close-btn" onclick="resetForms('newproject-form')"><strong>X</strong></button>
@@ -87,14 +87,16 @@
             <!-- Load Existing Project -->
             <div id="loadproject" class="dialogue" style="display: none">
                 <h1>Load Project</h1>
-                <form>
-                    <!-- This needs to be dynamically built based on entries in projects.json -->
-                    <div id="existing-projects">
-                        <h2>Existing Projects:</h2>
+                <form id="load-project-form">
+                    <h2>Existing Projects:</h2>
+                    <div id="existing-projects"><!-- This element recieves dynamically created buttons for each existing project -->
+                        
+                        <!-- JS will load projects here -->
                     </div><br>
+
+                    <input type="text" id="selected-project" name="selected-project" required>
                     <button type="button" class="negative" onclick="resetForms('loadproject')">Cancel</button>
                     <button type="submit" class="positive" onclick="toggleDisplay('loadproject')">Load</button>
-                    
                 </form>
                 <button type="button" class="close-btn" onclick="resetForms('loadproject')"><strong>X</strong></button>
             </div>
@@ -106,25 +108,34 @@
         const electron = require('electron');
         const {ipcRenderer} = electron;
         const fs = require('file-system');
-        const form = document.querySelector('form');
-        form.addEventListener('submit', submitProject);
+        const createProjForm = document.getElementById('create-project-form');
+        createProjForm.addEventListener('submit', submitProject);
+        const loadProjForm = document.getElementById('load-project-form');
+        loadProjForm.addEventListener("submit", loadProject);
 
         function submitProject(e) {
             e.preventDefault();
-            const projectname = document.querySelector('#projectname').value;
-            const projectmode = document.querySelector('#modeselect').value;
-            const projectlayout = document.querySelector('input[name="projectlayout"]:checked').value || 'n/a';
+            const projectName = document.querySelector('#projectname').value;
+            const projectMode = document.querySelector('#modeselect').value;
+            const projectLayout = document.querySelector('input[name="projectlayout"]:checked').value || 'n/a';
 
             //READ PROJECTS.JSON TO CHECK PROJECTNAME DOESN'T ALREADY EXIST BEFORE SUBMITTING FORM
             //IF project name is in projects.json already send alert that project already exists and to try a different name
 
             const projectDetails = {
-                'name': projectname,
-                'mode': projectmode,
-                'layout': projectlayout
+                'name': projectName,
+                'mode': projectMode,
+                'layout': projectLayout
             }
-            
+            toggleDisplay('newproject-form');
             ipcRenderer.send('create:project', projectDetails);            
+        }
+
+        function loadProject(e) {
+            e.preventDefault();
+            const projectName = document.querySelector('#selected-project').value;
+            ipcRenderer.send('load:project', projectName);    
+            console.log(projectName);
         }
 
         function fetchProjects() {
@@ -138,8 +149,8 @@
                         let node = document.createElement('button');
                         node.classList.add('project-result');
                         node.type = "button";
-                        node.addEventListener("click", () => {
-                            selectProject(projects[i].name)
+                        node.addEventListener("click", (e) => {
+                            selectProject(e, projects[i].name)
                         });
 
                         // Make button content
@@ -178,10 +189,31 @@
         }
 
         fetchProjects();
-        let selectedProject;
-        function selectProject(name) {
-            selectedProject = name;
-            console.log(name);
+        // Function to manage project selection and selected button appearance
+        function selectProject(e, name) {
+            // Set selected project to the name of button clicked
+            let selectedProject = document.querySelector('#selected-project');
+            selectedProject.value = name;
+
+            // Remove active class from all other buttons
+            let buttons = document.getElementsByClassName('project-result');
+            for (let i = 0; i < buttons.length; i++) {
+                if (buttons[i].classList.contains('active')) {
+                    buttons[i].classList.remove('active');
+                }
+            }
+
+            // Return button element clicked - can't do that using 'this' within electron & dynamically added event listeners as it returns the global event.
+            let el;
+            if (e.target.tagName === 'BUTTON') {
+                el = e.target;
+            } else if (e.target.tagName === 'DIV') {
+                el = e.target.parentNode;
+            } else {
+                el = e.target.parentNode.parentNode;
+            }
+            // Add active class to button clicked
+            el.classList.add('active');
         }
     </script>
 </html>
