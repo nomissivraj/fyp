@@ -199,9 +199,9 @@ button:hover {
     border-radius: 0 0 0 3px;
 }
 
-.existing-projects {
-    max-height: 80vh;
-    overflow-y: scroll;
+#existing-projects {
+    max-height: 30vh;
+    overflow-y: auto;
 }
 
 .project-title {
@@ -210,7 +210,11 @@ button:hover {
 
 .project-result {
     margin: 10px;
-    background: none;
+    background: rgba(165, 165, 165, 0.5);
+}
+
+.project-result.active {
+    background: rgba(165, 165, 165, 0.9);
 }
 
 .mode-text, .mode-gui {
@@ -234,3 +238,4 @@ button:hover {
 .mode-gui::before {
     content: 'GUI';
 }
+
