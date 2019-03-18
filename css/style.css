@@ -239,3 +239,7 @@ button:hover {
     content: 'GUI';
 }
 
+iframe {
+    width: calc(100vw - 40px);
+    height: calc(100vh - 50px);
+}
