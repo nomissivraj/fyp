@@ -193,41 +193,73 @@ function newProject(projectDetails) {
         if (err) {
             console.log('Failed to create directory', err);
         } else {
+
             // If no errors
+            
+            
             let testHTML = '<head><link rel="stylesheet" type="text/css" href="style.css"></head><div><h1>Test HTML</h1><p>Delete this later</p></div>'//DELETE THIS LINE LATER AND CORRESPONDING VARIABLE IN WRITEFILE BELOW
             let testCSS = 'h1 {color:red}'//DELETE THIS LINE LATER AND CORRESPONDING VARIABLE IN WRITEFILE BELOW
-            
-            //***  if 'mode' === read text editor template files, save to variable here and write to the directory created above - finally load project
-                
-            //***  else if 'mode' === read gui editor template files for the selected 'layout' and write into the directory created - finally load project
+            //IF MODE IS GUI EDITOR
+            if (projectDetails.mode.toLowerCase() === 'gui') {
+                promiseReadFile(__dirname+'/templates/gui-template.html', 'utf-8').then((data) => {
+                    console.log(data);
+                    createHtmlFile(projectDetails.name, data);
+                });
 
-            //write index file - update the following blocks to reflect the above proposed if else psuedo
-            fs.writeFile(__dirname+'/saves/'+projectDetails.name+'/index.html', testHTML, function(err) {
-                if (err) return console.log(err);
-                
-                console.log("The index file was saved!");
-            }); 
+                promiseReadFile(__dirname+'/templates/gui-styles.css').then((data) => {
+                    console.log(data);
+                    createCssFile(projectDetails.name, data); 
+                });
+                updateJson(projectDetails);
+            }
+            // IF MODE IS TEXT EDITOR
+            if (projectDetails.mode.toLowerCase() === 'text') {
+                promiseReadFile(__dirname+'/templates/text-template.html', 'utf-8').then((data) => {
+                    console.log(data);
+                    createHtmlFile(projectDetails.name, data);
+                });
 
-            //write css file
-            fs.writeFile(__dirname+'/saves/'+projectDetails.name+'/style.css', testCSS, function(err) {
-                if (err) return console.log(err);
-
-                console.log("The styles file was saved!");
-            }); 
-            //update project json file with new project data
-            fs.readFile('projects.json', (err, data)=> {
-                if (err) return console.log(err);
-
-                let json = JSON.parse(data);
-                json.push(projectDetails);
-                fs.writeFile("projects.json", JSON.stringify(json, null, 2));
-            });
-        }
+                promiseReadFile(__dirname+'/templates/text-styles.css').then((data) => {
+                    console.log(data);
+                    createCssFile(projectDetails.name, data); 
+                });
+                updateJson(projectDetails);
+            }
+        }    
     });
 
     
 
     // AFTER ABOVE IS RESOLVED OPEN NEW WINDOW AND loadProject()
+}
+
+function createHtmlFile(projectName, data) {
+    //write HTML file
+    fs.writeFile(__dirname+'/saves/'+projectName+'/index.html', data, (err) => {
+        if (err) return console.log(err);
+        console.log("The index file was saved!");
+    }); 
+}
+
+function createCssFile(projectName, data) {
+    //write css file
+    fs.writeFile(__dirname+'/saves/'+projectName+'/style.css', data, (err) => {
+        if (err) return console.log(err);
+
+        console.log("The styles file was saved!");
+    }); 
+    
+}
+
+function updateJson(projectDetails) {
+    //update project json file with new project data
+    fs.readFile('projects.json', (err, data)=> {
+        if (err) return console.log(err);
+
+        let json = JSON.parse(data);
+        json.push(projectDetails);
+        fs.writeFile("projects.json", JSON.stringify(json, null, 2));
+    });
 }
 
 
@@ -237,7 +269,7 @@ function loadProject(projectId) {
     // Might need to store each page name in the project json file
 
     //Get project details using promise then load based off resolved/returned values
-    getProjectDetails(projectId).then((data)=>{
+    getProjectDetails(projectId).then((data) => {
         console.log("data:",data)
         if (data.mode === 'gui') {
             createGuiWindow();
@@ -271,6 +303,16 @@ function getProjectDetails(projectId) {
                     resolve(projects[i])
                 } 
             }
+        });
+    });
+}
+
+function promiseReadFile(filePath, encode) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, encode, (err, data) => {
+            if (data) {
+                resolve(data)
+            } else reject();
         });
     });
 }
