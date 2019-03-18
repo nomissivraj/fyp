@@ -142,6 +142,10 @@ ipcMain.on('load:project', (e, data) => {
     loadProject(data);
 });
 
+ipcMain.on('save:project', (e, data) => {
+    saveProject(data);
+});
+
 
 //send items
 
