@@ -43,6 +43,9 @@
             <div id="test-text">
                 text
             </div>
+            <div id="editor">
+                <iframe></iframe>
+            </div>
         </main>
         
     </body>
@@ -59,8 +62,11 @@
             fs.readFile(__dirname+'/saves/'+data.name+'/index.html','utf-8',(err, fileData) => {
                 if (err) return console.log(err);
                 console.log(fileData);
+                
             });
             console.log(data);
+            let iframe = document.querySelector('iframe');
+                iframe.src = __dirname+'/saves/'+data.name+'/index.html';
         })
     </script>
 </html>
