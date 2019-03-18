@@ -73,8 +73,8 @@
                         <option value="gui">GUI Editor<br>
                     </select>
                     <br><br>
-                    <label for="projectlayout">Layout:<br>
-                        <input type="radio" name="projectlayout" value="layout1" required>layout 1<br>
+                    <label id="projectlayout-opts" for="projectlayout" style="display: none">Layout:<br>
+                        <input type="radio" name="projectlayout" value="layout1">layout 1<br>
                         <input type="radio" name="projectlayout" value="layout2">layout 2<br>
                     </label><br>
                     <button type="button" class="negative" onclick="resetForms('newproject-form')">Cancel</button>
@@ -113,12 +113,27 @@
         const loadProjForm = document.getElementById('load-project-form');
         loadProjForm.addEventListener("submit", loadProject);
 
+        // Handle Gui specific layout options
+        let selectedMode = document.getElementById('modeselect');
+        let layoutOptions = document.getElementById('projectlayout-opts');
+        selectedMode.addEventListener('change', () =>{
+            if (selectedMode.value === 'gui') {
+                layoutOptions.style.display = 'block';
+                layoutOptions.children[3].require = true;
+            } else layoutOptions.style.display = 'none';
+                layoutOptions.children[3].require = false;
+        });    
+        //IF MODE = GUI SHOW LAYOUT OPTIONS
+        console.log(layoutOptions.children[3]);
+
         function submitProject(e) {
             e.preventDefault();
             const projectName = document.querySelector('#projectname').value;
             const projectMode = document.querySelector('#modeselect').value;
-            const projectLayout = document.querySelector('input[name="projectlayout"]:checked').value || 'n/a';
-
+            let projectLayout;
+            if (projectMode === 'gui') {
+                projectLayout = document.querySelector('input[name="projectlayout"]:checked').value;
+            } else projectLayout = 'text';
             //READ PROJECTS.JSON TO CHECK PROJECTNAME DOESN'T ALREADY EXIST BEFORE SUBMITTING FORM
             //IF project name is in projects.json already send alert that project already exists and to try a different name
 
