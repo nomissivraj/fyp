@@ -50,12 +50,17 @@
         require('./scripts/renderer.js');
         const electron = require('electron');
         const {ipcRenderer} = electron;
+        const fs = require('file-system');
 
         ipcRenderer.send('ready:text-window');
 
         //Recieve
         ipcRenderer.on('load:data', (e, data) => {
-            console.log(data.name);
+            fs.readFile(__dirname+'/saves/'+data.name+'/index.html','utf-8',(err, fileData) => {
+                if (err) return console.log(err);
+                console.log(fileData);
+            });
+            console.log(data);
         })
     </script>
 </html>
