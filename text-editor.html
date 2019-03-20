@@ -9,7 +9,7 @@
         <script src="node_modules/jquery/dist/jquery.min.js"></script>
         <script src="scripts/funcs.js"></script>
     </head>
-    <body>
+    <body class="text-editor">
         <header class="app-header">
             <div class="app-toolbar">
                 <div class="app-toolbar__icon">
@@ -39,12 +39,10 @@
         </header>
 
         <main>
-            <h1>TEXT EDITOR</h1>
-            <div id="test-text">
-                text
-            </div>
             <div id="editor">
-                <iframe></iframe>
+                <textarea id="editor__text">
+
+                </textarea>
             </div>
         </main>
         
@@ -62,11 +60,12 @@
             fs.readFile(__dirname+'/saves/'+data.name+'/index.html','utf-8',(err, fileData) => {
                 if (err) return console.log(err);
                 console.log(fileData);
+                let editorText = document.getElementById('editor__text');
+                editorText.innerHTML = fileData;
                 
             });
             console.log(data);
-            let iframe = document.querySelector('iframe');
-                iframe.src = __dirname+'/saves/'+data.name+'/index.html';
+            
         })
     </script>
 </html>
