@@ -240,8 +240,13 @@ button:hover {
 }
 
 iframe {
-    width: calc(100vw - 40px);
-    height: calc(100vh - 50px);
+    width: 100%;
+    height: calc(100vh - 120px);
+}
+
+.gui-editor #editor {
+    float: left;
+    width: calc(100% - 80px);
 }
 
 #editor__text {
@@ -256,4 +261,9 @@ iframe {
 
 .text-editor main {
     padding: 10px;
+}
+
+#gui-sidebar {
+    float:left;
+    width: 80px;
 }
