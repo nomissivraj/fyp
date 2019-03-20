@@ -125,7 +125,7 @@
         });    
         //IF MODE = GUI SHOW LAYOUT OPTIONS
         console.log(layoutOptions.children[3]);
-
+        var projectList = [];
         function submitProject(e) {
             e.preventDefault();
             const projectName = document.querySelector('#projectname').value;
@@ -142,8 +142,24 @@
                 'mode': projectMode,
                 'layout': projectLayout
             }
-            toggleDisplay('newproject-form');
-            ipcRenderer.send('create:project', projectDetails);            
+            console.log(projectList.length)
+              
+            if (projectList.length > 0) {
+                for (let i = 0; i < projectList.length; i++) {
+                    console.log(projectList[i],projectName)
+                    if (projectList[i] === projectName) {
+                        return alert('A project with this name already exists, please try another name')
+                    } else {
+                        return ipcRenderer.send('create:project', projectDetails); 
+                        toggleDisplay('newproject-form');    
+                    } 
+                }  
+            } else if (projectList.length === 0) {
+                 return ipcRenderer.send('create:project', projectDetails); 
+                toggleDisplay('newproject-form');    
+            } 
+                
+              
         }
 
         function loadProject(e) {
@@ -159,7 +175,8 @@
 
                 let projects = JSON.parse(data);
                 if (projects.length > 0) {
-                    for (let i = 0; i < projects.length; i++) {                   
+                    for (let i = 0; i < projects.length; i++) {
+                        projectList.push(projects[i].name)                   
                         // Make button
                         let node = document.createElement('button');
                         node.classList.add('project-result');
