@@ -51,7 +51,7 @@ function createMainWindow() {
 
     /* var menu = Menu.buildFromTemplate([
         {
-            label: 'Meny',
+            label: 'Menu',
             submenu: [
                 {label: 'First'},
                 {label: 'Second'},
@@ -195,15 +195,12 @@ function newProject(projectDetails) {
         } else {
 
             // If no errors
-            
-            
-            let testHTML = '<head><link rel="stylesheet" type="text/css" href="style.css"></head><div><h1>Test HTML</h1><p>Delete this later</p></div>'//DELETE THIS LINE LATER AND CORRESPONDING VARIABLE IN WRITEFILE BELOW
-            let testCSS = 'h1 {color:red}'//DELETE THIS LINE LATER AND CORRESPONDING VARIABLE IN WRITEFILE BELOW
             //IF MODE IS GUI EDITOR
             if (projectDetails.mode.toLowerCase() === 'gui') {
                 promiseReadFile(__dirname+'/templates/gui-template.html', 'utf-8').then((data) => {
                     console.log(data);
                     createHtmlFile(projectDetails.name, data);
+                    loadProject(projectDetails.name);
                 });
 
                 promiseReadFile(__dirname+'/templates/gui-styles.css').then((data) => {
@@ -211,12 +208,14 @@ function newProject(projectDetails) {
                     createCssFile(projectDetails.name, data); 
                 });
                 updateJson(projectDetails);
+                
             }
             // IF MODE IS TEXT EDITOR
             if (projectDetails.mode.toLowerCase() === 'text') {
                 promiseReadFile(__dirname+'/templates/text-template.html', 'utf-8').then((data) => {
                     console.log(data);
                     createHtmlFile(projectDetails.name, data);
+                    loadProject(projectDetails.name);
                 });
 
                 promiseReadFile(__dirname+'/templates/text-styles.css').then((data) => {
@@ -224,13 +223,12 @@ function newProject(projectDetails) {
                     createCssFile(projectDetails.name, data); 
                 });
                 updateJson(projectDetails);
+                
             }
+            // AFTER ABOVE IS RESOLVED OPEN NEW WINDOW AND loadProject()
+            
         }    
     });
-
-    
-
-    // AFTER ABOVE IS RESOLVED OPEN NEW WINDOW AND loadProject()
 }
 
 function createHtmlFile(projectName, data) {
