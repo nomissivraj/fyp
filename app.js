@@ -3,9 +3,15 @@ const {app, BrowserWindow, Menu, ipcMain} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('file-system');
+const log = require('electron-log');
+const remote = require('electron').remote;
 
 // Set ENV
 process.env.NODE_ENV = 'development'
+const appPath = __dirname;
+const homePath = path.join(app.getPath('documents'),'Vocal Developer Projects');
+const savesPath = path.join(homePath,'/saves/');
+//if homepath doesn't exist create it etc
 
 // Set Project properties
 var sessionProject;
@@ -29,12 +35,12 @@ function createMainWindow() {
         nodeIntegration: true,
         backgroundColor: '#f5f5f5',
         frame: false,
-        icon: path.join(__dirname, 'img/app-icon-64x64.png')
+        icon: path.join(appPath, 'img/app-icon-64x64.png')
     });
     
     // Window loading method - use index.html with file protocol
     mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'index.html'),
+        pathname: path.join(appPath, 'index.html'),
         protocol: 'file',
         slashes: true
     }));
@@ -73,12 +79,12 @@ function createGuiWindow() {
         nodeIntegration: true,
         backgroundColor: '#f5f5f5',
         frame: false,
-        icon: path.join(__dirname, 'img/app-icon-64x64.png')
+        icon: path.join(appPath, 'img/app-icon-64x64.png')
     });
     
     // Window loading method - use index.html with file protocol
     guiWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'gui-editor.html'),
+        pathname: path.join(appPath, 'gui-editor.html'),
         protocol: 'file',
         slashes: true
     }));
@@ -104,12 +110,12 @@ function createTextEditorWindow() {
         nodeIntegration: true,
         backgroundColor: '#f5f5f5',
         frame: false,
-        icon: path.join(__dirname, 'img/app-icon-64x64.png')
+        icon: path.join(appPath, 'img/app-icon-64x64.png')
     });
     
     // Window loading method - use index.html with file protocol
     textWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'text-editor.html'),
+        pathname: path.join(appPath, 'text-editor.html'),
         protocol: 'file',
         slashes: true
     }));
@@ -135,6 +141,7 @@ function createTextEditorWindow() {
 
 // Catch items
 ipcMain.on('create:project', (e, data) => {
+    console.log('project creation requested');
     newProject(data)
 });
 
@@ -157,54 +164,28 @@ ipcMain.on('save:project', (e, data) => {
 /*
    //////////////////////// MAIN APP FUNCTIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 */
-/*
-// Psuedo code:
 
-On start up - option to load project or create new project
-Will need function to name and create project and files
-
-Copy/delete/paste block functions based on layout position - might need to be client-side
-
-
-//Work out how to package app up as an installer and launcher etc.
-
-TODO: 
-    - create template
-    - Send data to new window 
-    - load from templates into new window based on data
-    - FUNCTION TO DELETE ENTRIES IN projects.json IF NO DIRECTORY EXISTS FOR THAT ENTRY
-
-*/
-
-/* function makeDirectory(dirName){
-
-    return new Promise((resolve, reject) => {
-        fs.mkdirSync(path.join(__dirname+'/saves', dirName), 0777);
-        
-    });
-    //MAYBE TRY MKDIR
-}  */
 
 // Function to create new project including folder structure and files
 function newProject(projectDetails) {
    
     //make directory using 'name'
-    fs.mkdir(__dirname+'/saves/'+projectDetails.name+'/', (err)=> {
+    fs.mkdir(path.join(savesPath+projectDetails.name+'/'), 0777, (err)=> {
         if (err) {
-            console.log('Failed to create directory', err);
+            log.error('Failed to create directory', err);
         } else {
 
             // If no errors
             //IF MODE IS GUI EDITOR
             if (projectDetails.mode.toLowerCase() === 'gui') {
-                promiseReadFile(__dirname+'/templates/gui-template.html', 'utf-8').then((data) => {
-                    console.log(data);
+                promiseReadFile(path.join(appPath+'/templates/gui-template.html'), 'utf-8').then((data) => {
+                    //log.info(data);
                     createHtmlFile(projectDetails.name, data);
                     loadProject(projectDetails.name);
                 });
 
-                promiseReadFile(__dirname+'/templates/gui-styles.css').then((data) => {
-                    console.log(data);
+                promiseReadFile(path.join(appPath+'/templates/gui-styles.css')).then((data) => {
+                    //log.info(data);
                     createCssFile(projectDetails.name, data); 
                 });
                 updateJson(projectDetails);
@@ -212,14 +193,14 @@ function newProject(projectDetails) {
             }
             // IF MODE IS TEXT EDITOR
             if (projectDetails.mode.toLowerCase() === 'text') {
-                promiseReadFile(__dirname+'/templates/text-template.html', 'utf-8').then((data) => {
-                    console.log(data);
+                promiseReadFile(path.join(appPath+'/templates/text-template.html'), 'utf-8').then((data) => {
+                    //log.info(data);
                     createHtmlFile(projectDetails.name, data);
                     loadProject(projectDetails.name);
                 });
 
-                promiseReadFile(__dirname+'/templates/text-styles.css').then((data) => {
-                    console.log(data);
+                promiseReadFile(path.join(appPath+'/templates/text-styles.css')).then((data) => {
+                    //log.info(data);
                     createCssFile(projectDetails.name, data); 
                 });
                 updateJson(projectDetails);
@@ -233,42 +214,42 @@ function newProject(projectDetails) {
 
 function createHtmlFile(projectName, data) {
     //write HTML file
-    fs.writeFile(__dirname+'/saves/'+projectName+'/index.html', data, (err) => {
-        if (err) return console.log(err);
-        console.log("The index file was saved!");
+    fs.writeFile(path.join(savesPath+projectName+'/index.html'), data, (err) => {
+        if (err) return log.error(err);
+        log.info("The index file was saved!");
     }); 
 }
 
 function createCssFile(projectName, data) {
     //write css file
-    fs.writeFile(__dirname+'/saves/'+projectName+'/style.css', data, (err) => {
-        if (err) return console.log(err);
+    fs.writeFile(path.join(savesPath+projectName+'/style.css'), data, (err) => {
+        if (err) return log.error(err);
 
-        console.log("The styles file was saved!");
+        log.info("The styles file was saved!");
     }); 
     
 }
 
 function updateJson(projectDetails) {
     //update project json file with new project data
-    fs.readFile('projects.json', (err, data)=> {
-        if (err) return console.log(err);
+    fs.readFile(path.join(savesPath,'/projects.json'), (err, data)=> {
+        if (err) return log.error(err);
 
         let json = JSON.parse(data);
         json.push(projectDetails);
-        fs.writeFile("projects.json", JSON.stringify(json, null, 2));
+        fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
     });
 }
 
 
 // Function to select working project
 function loadProject(projectId) {
-    console.log('trying to load', projectId);
+    log.info('trying to load', projectId);
     // Might need to store each page name in the project json file
 
     //Get project details using promise then load based off resolved/returned values
     getProjectDetails(projectId).then((data) => {
-        console.log("data:",data)
+        log.info("data:",data)
         if (data.mode === 'gui') {
             createGuiWindow();
             mainWindow.close();
@@ -289,14 +270,14 @@ function loadProject(projectId) {
 function getProjectDetails(projectId) {
     return new Promise((resolve, reject) => {
         let test = null;
-        fs.readFile('projects.json', (err, data) => {
+        fs.readFile(path.join(savesPath,'projects.json'), (err, data) => {
         
-            if (err) return console.log(err);
+            if (err) return log.error(err);
     
             let projects = JSON.parse(data);
             for (let i = 0; i < projects.length; i++) {
     
-                //console.log("input:", projectId.toLowerCase(),"in file:",projects[i].name.toLowerCase())
+                //log.error("input:", projectId.toLowerCase(),"in file:",projects[i].name.toLowerCase())
                 if (projectId.toLowerCase() === projects[i].name.toLowerCase()) {
                     resolve(projects[i])
                 } 
@@ -322,19 +303,23 @@ function newPage() {
 }
 
 // Function to save html - possibly form/POST method that sends string back to be saved to file.
-function saveHTML() {
+function saveHTML(project) {
 
 }
 
 // Function to save CSS to css file
-function saveCSS() {
+function saveCSS(project) {
 
 }
 
 // Function to save entire project
-function saveProject() {
-    saveHTML();
-    saveCSS();
+function saveProject(projectName) {
+    saveHTML(projectName);
+    saveCSS(projectName);
+}
+
+function checkChanges() {
+
 }
 
 // Function to copy block
@@ -362,16 +347,65 @@ function deleteBlock() {
 
 //Auto save function?
 function autoSave() {
-    // save every 5mins?
+    // save every 10mins?
 }
 
 /*
    //////////////////////// END MAIN APP FUNCTIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 */
 
+/* prerequisit functions */
+
+function checkFileExists(path) {
+    try {
+        if (fs.existsSync(path)) {
+            return true;
+        }
+    } catch(e) {
+        return false;
+    }
+}
+
+function checkDirectoryExists(path) {
+    try {
+        let checkPath = fs.lstatSync(path);
+        if (checkPath.isDirectory()) {
+            return true;
+        }
+    } catch (e) {
+        return false;
+    }
+}
+
+function createUserStructure() {
+    fs.mkdir(path.join(app.getPath('documents'),'Vocal Developer Projects'), 0777, (err)=> { 
+        if (err) {
+            log.error(err)
+        } else {
+            fs.mkdir(path.join(savesPath), 0777, (err)=> { 
+                if (err) {
+                    log.error(err);
+                } else {
+                    fs.writeFile(path.join(savesPath,'projects.json'), '[]', (err) => {
+                        if (err) return console.log(err)//log.error(err);
+                        log.info("Public directories and projects file set up!");
+                    }); 
+                }
+            });
+        }
+    });
+}
+
+
 // On ready call window function
 app.on('ready', () => {
     createMainWindow()
+    console.log(app.getPath('documents'))
+    // If home path exists do nothing else create directory etc.
+    if(!checkDirectoryExists(homePath)) createUserStructure(); 
+    if(!checkDirectoryExists(savesPath)) createUserStructure();
+    if(!checkFileExists(savesPath+'projects.json')) createUserStructure();  
+    
 });
 
 // Kill program if all windows closed
