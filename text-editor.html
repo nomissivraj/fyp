@@ -51,13 +51,16 @@
         require('./scripts/renderer.js');
         const electron = require('electron');
         const {ipcRenderer} = electron;
+        const remote = require('electron').remote;
+        const app = remote.app;
+        const path = require('path');
         const fs = require('file-system');
-
+        const savesPath = path.join(app.getPath('documents'),'Vocal Developer Projects','/saves/');
         ipcRenderer.send('ready:text-window');
 
         //Recieve
         ipcRenderer.on('load:data', (e, data) => {
-            fs.readFile(__dirname+'/saves/'+data.name+'/index.html','utf-8',(err, fileData) => {
+            fs.readFile(savesPath+data.name+'/index.html','utf-8', (err, fileData) => {
                 if (err) return console.log(err);
                 console.log(fileData);
                 let editorText = document.getElementById('editor__text');

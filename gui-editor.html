@@ -54,22 +54,25 @@
         require('./scripts/renderer.js');
         const electron = require('electron');
         const {ipcRenderer} = electron;
+        const remote = require('electron').remote;
+        const app = remote.app;
+        const path = require('path');
         const fs = require('file-system');
-
+        const savesPath = path.join(app.getPath('documents'),'Vocal Developer Projects','/saves/');
         ipcRenderer.send('ready:gui-window');
 
         
         
         //Recieve
         ipcRenderer.on('load:data', (e, data) => {
-            fs.readFile(__dirname+'/saves/'+data.name+'/index.html','utf-8',(err, fileData) => {
+            fs.readFile(savesPath+data.name+'/index.html','utf-8',(err, fileData) => {
                 if (err) return console.log(err);
                 console.log(fileData);
                 
             });
             console.log(data);
             let iframe = document.querySelector('iframe');
-                iframe.src = __dirname+'/saves/'+data.name+'/index.html';
+                iframe.src = savesPath+data.name+'/index.html';
         })
     </script>
 </html>
