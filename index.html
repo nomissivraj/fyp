@@ -106,12 +106,17 @@
     <script>
         require('./scripts/renderer.js');
         const electron = require('electron');
+        const remote = require('electron').remote;
+        const app = remote.app;
         const {ipcRenderer} = electron;
         const fs = require('file-system');
+        const path = require('path');
         const createProjForm = document.getElementById('create-project-form');
         createProjForm.addEventListener('submit', submitProject);
         const loadProjForm = document.getElementById('load-project-form');
         loadProjForm.addEventListener("submit", loadProject);
+        const savesPath = path.join(app.getPath('documents'),'Vocal Developer Projects','/saves/');
+        const log = require('electron-log');
 
         // Handle Gui specific layout options
         let selectedMode = document.getElementById('modeselect');
@@ -124,7 +129,16 @@
                 layoutOptions.children[3].require = false;
         });    
         //IF MODE = GUI SHOW LAYOUT OPTIONS
-        console.log(layoutOptions.children[3]);
+        console.log('index-page:',layoutOptions.children[3]);
+
+        //Custom alert Function 
+        function createAlert(alertText) {
+            let alertContainer = document.createElement('div');
+            let alertTextContainer = document.createElement('span');
+            let alertText = document.createTextNode(alertText);
+            
+        }
+
         var projectList = [];
         function submitProject(e) {
             e.preventDefault();
@@ -142,21 +156,21 @@
                 'mode': projectMode,
                 'layout': projectLayout
             }
-            console.log(projectList.length)
+            log.info('index-page:',projectList.length)
               
             if (projectList.length > 0) {
-                for (let i = 0; i < projectList.length; i++) {
-                    console.log(projectList[i],projectName)
-                    if (projectList[i] === projectName) {
-                        return alert('A project with this name already exists, please try another name')
-                    } else {
-                        return ipcRenderer.send('create:project', projectDetails); 
-                        toggleDisplay('newproject-form');    
-                    } 
-                }  
+                if (projectList.indexOf(projectName) > -1) {
+                    alert('A project with that name already exists, try again')
+                    return
+                } else {
+                    ipcRenderer.send('create:project', projectDetails);
+                    toggleDisplay('newproject-form');     
+                }
             } else if (projectList.length === 0) {
-                 return ipcRenderer.send('create:project', projectDetails); 
+                log.info('index-page:','might be here')
+                ipcRenderer.send('create:project', projectDetails); 
                 toggleDisplay('newproject-form');    
+                return
             } 
                 
               
@@ -166,12 +180,12 @@
             e.preventDefault();
             const projectName = document.querySelector('#selected-project').value;
             ipcRenderer.send('load:project', projectName);    
-            console.log(projectName);
+            log.info('index-page:',projectName);
         }
 
         function fetchProjects() {
-            fs.readFile('projects.json', (err, data) => {
-                if (err) return console.log(err);
+            fs.readFile(path.join(savesPath,'projects.json'), (err, data) => {
+                if (err) return log.error(err);
 
                 let projects = JSON.parse(data);
                 if (projects.length > 0) {
