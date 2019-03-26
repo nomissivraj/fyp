@@ -316,44 +316,29 @@ function promiseReadFile(filePath, encode) {
 }
 
 
-// Function to create new page
-function newPage() {
-
-}
-
-// Function to save html - possibly form/POST method that sends string back to be saved to file.
-function saveHTML(project) {
-
-}
-
-// Function to save CSS to css file
-function saveCSS(project) {
-
-}
-
-// Function to save entire project
-function saveProject(projectName) {
-    saveHTML(projectName);
-    saveCSS(projectName);
-}
-
-function checkChanges() {
-
-}
-
-function deleteProject(directory) {
-    
+function deleteProject(projectName) {
+    let directory = path.join(savesPath,projectName);
     deleteAllDirFiles(directory).then((data)=>{
         //Promise deletion of all files in directory, to enable directory deletion then delete directory if promise resolved
-        console.log(data)
         fs.rmdirSync(directory);
         //Remove project from projects JSON
         promiseReadFile(path.join(savesPath,'projects.json')).then((data) => {
-            console.log(data);
+            let json = JSON.parse(data)
+            for (let i = 0; i < json.length; i++) {
+                console.log(json[i])
+                if (json[i].name === projectName) {
+                    console.log('match');
+                    json.splice(i,1);
+                    console.log(json);
+                    fs.writeFile(path.join(savesPath,'projects.json'), JSON.stringify(json, null, 2));
+                    mainWindow.webContents.send('fetch:projects');
+                }
+            }    
 
         }); 
     });
 }
+
 
 function deleteAllDirFiles(directory) {
     return new Promise((resolve, reject) =>{
@@ -382,7 +367,33 @@ function deleteAllDirFiles(directory) {
     });
 }
 
-deleteProject(path.join(savesPath,'test'));
+// Function to create new page
+function newPage() {
+
+}
+
+// Function to save html - possibly form/POST method that sends string back to be saved to file.
+function saveHTML(project) {
+
+}
+
+// Function to save CSS to css file
+function saveCSS(project) {
+
+}
+
+// Function to save entire project
+function saveProject(projectName) {
+    saveHTML(projectName);
+    saveCSS(projectName);
+}
+
+function checkChanges() {
+
+}
+
+
+
 // Function to copy block
 function copyBlock() {
     //clear temp clipboard storage/variable 
