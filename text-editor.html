@@ -6,8 +6,14 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Vocal Developer</title>
         <link rel="stylesheet" type="text/css" href="css/style.css">
-        <script src="node_modules/jquery/dist/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="node_modules/codemirror/lib/codemirror.css">
+        <script src="node_modules/codemirror/lib/codemirror.js"></script>
+        <script src="node_modules/codemirror/mode/xml/xml.js"></script>
+        <script src="node_modules/codemirror/mode/css/css.js"></script>
+        <script src="node_modules/codemirror/mode/javascript/javascript.js"></script>
+        <script src="node_modules/codemirror/mode/htmlmixed/htmlmixed.js"></script>
         <script src="scripts/funcs.js"></script>
+
     </head>
     <body class="text-editor">
         <header class="app-header">
@@ -40,10 +46,13 @@
 
         <main>
             <div id="editor">
-                <textarea id="editor__text">
+                <textarea id="editor__text" style="visibility: hidden; min-height: 1px;">
 
                 </textarea>
             </div>
+            <textarea id="test">
+
+            </textarea>
         </main>
         
     </body>
@@ -57,17 +66,27 @@
         const fs = require('file-system');
         const savesPath = path.join(app.getPath('documents'),'Vocal Developer Projects','/saves/');
         ipcRenderer.send('ready:text-window');
+        process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
+        
+        let test = document.getElementById('test');
+        console.log(CodeMirror.mimeModes)
+        let myModeSpec = {
+            lineNumbers: true,
+            mode: 'xml',
+            htmlMode: true
+        }
+        let editor = CodeMirror.fromTextArea(test, myModeSpec);
 
         //Recieve
         ipcRenderer.on('load:data', (e, data) => {
             fs.readFile(savesPath+data.name+'/index.html','utf-8', (err, fileData) => {
                 if (err) return console.log(err);
-                console.log(fileData);
+                //console.log(fileData);
                 let editorText = document.getElementById('editor__text');
                 editorText.innerHTML = fileData;
                 
             });
-            console.log(data);
+            //console.log(data);
             
         })
     </script>
