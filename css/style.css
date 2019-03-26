@@ -184,6 +184,7 @@ main {
 button {
     padding: 5px 10px;
     border-radius: 3px;
+    min-height: 30px;
 }
 
 button:hover {
@@ -199,9 +200,41 @@ button:hover {
     border-radius: 0 0 0 3px;
 }
 
+.delete-toggle {
+    height: 40px;
+    width: 40px;
+    padding: 5px;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+button.negative {
+    background: rgb(162, 59, 59);
+    color: #fff;
+}
+
+button.negative:hover {
+    background: rgba(126, 6, 6, 0.5);
+    color: #fff;
+}
+
+button.positive {
+    background: rgb(71, 162, 59);
+    color: #fff;
+}
+
+button.positive:hover {
+    background: rgba(71, 162, 59,0.5);
+    color: #fff;
+}
+
+
 #existing-projects {
     max-height: 30vh;
     overflow-y: auto;
+    border-radius:3px;
+    background: rgba(0,0,0,.2);
 }
 
 .project-title {
@@ -266,4 +299,22 @@ iframe {
 #gui-sidebar {
     float:left;
     width: 80px;
+}
+
+input[type="text"] {
+    height:30px;
+    border-radius: 3px;
+    width:100%;
+    display:block;
+    margin-bottom:10px;
+    padding: 10px;
+}
+select {
+    width: 100%;
+    height: 30px;
+    border-radius: 3px;
+}
+label {
+    margin-bottom: 10px;
+    display: inline-block;
 }
