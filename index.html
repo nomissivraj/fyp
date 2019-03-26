@@ -55,7 +55,7 @@
                         <img src="img/app-loadproject.svg" alt="close window icon">
                     </span>
                     <span class="project-select__text">
-                        Load Existing Project
+                        Existing Projects
                     </span>
                 </div>
             </div>
@@ -86,9 +86,8 @@
 
             <!-- Load Existing Project -->
             <div id="loadproject" class="dialogue" style="display: none">
-                <h1>Load Project</h1>
+                <h1>Existing Projects</h1>
                 <form id="load-project-form">
-                    <h2>Existing Projects:</h2>
                     <div id="existing-projects"><!-- This element recieves dynamically created buttons for each existing project -->
                         
                         <!-- JS will load projects here -->
@@ -99,11 +98,22 @@
                     <button type="submit" class="positive" onclick="toggleDisplay('loadproject')">Load</button>
                 </form>
                 <button type="button" class="close-btn" onclick="resetForms('loadproject')"><strong>X</strong></button>
+                <button type="button" class="delete-toggle" onclick="toggleDisplay('deleteproject')">bin</button>
+            </div>
+
+            <div id="deleteproject" class="dialogue" style="display: none">
+                <h1>Delete Project</h1>
+                <form id="delete-form">
+                    <input type="text" id="project-to-delete">
+                    <button type="submit" class="delete-btn">Delete</button>
+                </form>
+                <button type="button" class="close-btn" onclick="resetForms('deleteproject')"><strong>X</strong></button>
             </div>
         </main>
         
     </body>
     <script>
+        //Dependencies
         require('./scripts/renderer.js');
         const electron = require('electron');
         const remote = require('electron').remote;
@@ -111,12 +121,23 @@
         const {ipcRenderer} = electron;
         const fs = require('file-system');
         const path = require('path');
-        const createProjForm = document.getElementById('create-project-form');
-        createProjForm.addEventListener('submit', submitProject);
-        const loadProjForm = document.getElementById('load-project-form');
-        loadProjForm.addEventListener("submit", loadProject);
         const savesPath = path.join(app.getPath('documents'),'Vocal Developer Projects','/saves/');
         const log = require('electron-log');
+
+        ipcRenderer.on('fetch:projects', () => {
+            fetchProjects();
+        });
+
+        //Get forms to proccess
+        const createProjForm = document.getElementById('create-project-form');
+        createProjForm.addEventListener('submit', submitProject); //Add listener to form to handle processing
+
+    
+        const loadProjForm = document.getElementById('load-project-form');
+        loadProjForm.addEventListener("submit", loadProject); //Add listener to form to handle processing
+
+        const deleteForm = document.getElementById('delete-form');
+        deleteForm.addEventListener('submit', deleteProject)
 
         // Handle Gui specific layout options
         let selectedMode = document.getElementById('modeselect');
@@ -131,7 +152,7 @@
         //IF MODE = GUI SHOW LAYOUT OPTIONS
         console.log('index-page:',layoutOptions.children[3]);
 
-        //Custom alert Function 
+        //Custom alert Function IN PROGRESS
         function createAlert(alertText) {
             let alertContainer = document.createElement('div');
             let alertTextContainer = document.createElement('span');
@@ -164,7 +185,8 @@
                     return
                 } else {
                     ipcRenderer.send('create:project', projectDetails);
-                    toggleDisplay('newproject-form');     
+                    toggleDisplay('newproject-form'); 
+                    return    
                 }
             } else if (projectList.length === 0) {
                 log.info('index-page:','might be here')
@@ -173,7 +195,6 @@
                 return
             } 
                 
-              
         }
 
         function loadProject(e) {
@@ -184,6 +205,12 @@
         }
 
         function fetchProjects() {
+            console.log('fetch')
+            //clear innerHTML and projects list before populating
+            let existingProjects = document.getElementById('existing-projects');
+            existingProjects.innerHTML = null
+            projectList = []
+            //Populate HTML block with projects as buttons
             fs.readFile(path.join(savesPath,'projects.json'), (err, data) => {
                 if (err) return log.error(err);
 
@@ -219,7 +246,7 @@
                         nodeContent.appendChild(titleContainer);
                         node.appendChild(nodeContent);
 
-                        document.getElementById('existing-projects').appendChild(node);
+                        existingProjects.appendChild(node);
                     }
                 } else {
                     let node = document.createElement('span');
@@ -227,7 +254,7 @@
                     node.style.color = "#9e9e9e";
 
                     node.appendChild(text);
-                    document.getElementById('existing-projects').appendChild(node);
+                    existingProjects.appendChild(node);
                 }
 
                 
@@ -235,6 +262,7 @@
         }
 
         fetchProjects();
+
         // Function to manage project selection and selected button appearance
         function selectProject(e, name) {
             // Set selected project to the name of button clicked
@@ -260,6 +288,29 @@
             }
             // Add active class to button clicked
             el.classList.add('active');
+        }
+        
+        function deleteProject(e) {
+            e.preventDefault();
+            //if project matching input doesn't exist warn user
+            const projectName = document.getElementById('project-to-delete').value;
+            log.info(projectName)
+
+            
+            if (projectList.indexOf(projectName) === -1) {
+                alert("couldn't find project with then name '"+projectName+"' please try again.")
+                log.error('Project not found')
+                
+            } else {
+                //if project matching input does exist then alert user for second confirmation
+                let confirmation = confirm("Please confirm deletion of project '"+projectName+"'");
+
+                if (confirmation) {
+                    ipcRenderer.send('delete:project', projectName)
+                    toggleDisplay('deleteproject')
+                } else toggleDisplay('deleteproject');
+            }
+            //on second confirmation through alert, send project deletion to app.js
         }
     </script>
 </html>
