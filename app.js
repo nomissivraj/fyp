@@ -153,6 +153,9 @@ ipcMain.on('save:project', (e, data) => {
     saveProject(data);
 });
 
+ipcMain.on('delete:project', (e, data) => {
+    deleteProject(data);
+});
 
 //send items
 
@@ -178,32 +181,29 @@ function newProject(projectDetails) {
             // If no errors
             //IF MODE IS GUI EDITOR
             if (projectDetails.mode.toLowerCase() === 'gui') {
-                promiseReadFile(path.join(appPath+'/templates/gui-template.html'), 'utf-8').then((data) => {
-                    //log.info(data);
-                    createHtmlFile(projectDetails.name, data);
-                    loadProject(projectDetails.name);
-                });
-
-                promiseReadFile(path.join(appPath+'/templates/gui-styles.css')).then((data) => {
-                    //log.info(data);
-                    createCssFile(projectDetails.name, data); 
-                });
-                updateJson(projectDetails);
-                
+                let promiseHtml = promiseReadFile(path.join(appPath+'/templates/gui-template.html'), 'utf-8');
+                let promiseCss = promiseReadFile(path.join(appPath+'/templates/gui-styles.css'));
+                Promise.all([promiseHtml, promiseCss]).then((data) => {
+                    let promiseCreateHtml = createHtmlFile(projectDetails.name, data[0]);
+                    let promiseCreateCss = createCssFile(projectDetails.name, data[1]); 
+                    let promiseUpdate = updateJson(projectDetails);
+                    Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data)=>{
+                        loadProject(projectDetails.name);
+                    });
+                });                
             }
             // IF MODE IS TEXT EDITOR
             if (projectDetails.mode.toLowerCase() === 'text') {
-                promiseReadFile(path.join(appPath+'/templates/text-template.html'), 'utf-8').then((data) => {
-                    //log.info(data);
-                    createHtmlFile(projectDetails.name, data);
-                    loadProject(projectDetails.name);
+                let promiseHtml = promiseReadFile(path.join(appPath+'/templates/text-template.html'), 'utf-8');
+                let promiseCss = promiseReadFile(path.join(appPath+'/templates/text-styles.css'));
+                Promise.all([promiseHtml, promiseCss]).then((data) => {
+                    let promiseCreateHtml = createHtmlFile(projectDetails.name, data[0]);
+                    let promiseCreateCss = createCssFile(projectDetails.name, data[1]); 
+                    let promiseUpdate = updateJson(projectDetails);
+                    Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data)=>{
+                        loadProject(projectDetails.name);
+                    });
                 });
-
-                promiseReadFile(path.join(appPath+'/templates/text-styles.css')).then((data) => {
-                    //log.info(data);
-                    createCssFile(projectDetails.name, data); 
-                });
-                updateJson(projectDetails);
                 
             }
             // AFTER ABOVE IS RESOLVED OPEN NEW WINDOW AND loadProject()
@@ -214,30 +214,50 @@ function newProject(projectDetails) {
 
 function createHtmlFile(projectName, data) {
     //write HTML file
-    fs.writeFile(path.join(savesPath+projectName+'/index.html'), data, (err) => {
-        if (err) return log.error(err);
-        log.info("The index file was saved!");
+    return new Promise((resolve, reject) => {
+        fs.writeFile(path.join(savesPath+projectName+'/index.html'), data, (err) => {
+            if (err) { 
+                log.error(err);
+                reject('fail');
+            } else {
+                log.info("The index file was saved!");
+                resolve();
+            }
+        }); 
     }); 
+    
 }
 
 function createCssFile(projectName, data) {
     //write css file
-    fs.writeFile(path.join(savesPath+projectName+'/style.css'), data, (err) => {
-        if (err) return log.error(err);
-
-        log.info("The styles file was saved!");
-    }); 
+    return new Promise((resolve, reject) => {
+        fs.writeFile(path.join(savesPath+projectName+'/style.css'), data, (err) => {
+            if (err) {
+                log.error(err);
+                reject('fail');
+            } else {
+                log.info("The styles file was saved!");
+                resolve(projectName);
+            }
+        }); 
+    });
     
 }
 
 function updateJson(projectDetails) {
     //update project json file with new project data
-    fs.readFile(path.join(savesPath,'/projects.json'), (err, data)=> {
-        if (err) return log.error(err);
-
-        let json = JSON.parse(data);
-        json.push(projectDetails);
-        fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
+    return new Promise((resolve, reject) => {
+        fs.readFile(path.join(savesPath,'/projects.json'), (err, data)=> {
+            if (err) {
+                log.error(err)
+                reject('fail');
+            } else {
+                let json = JSON.parse(data);
+                json.push(projectDetails);
+                fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
+                resolve(projectDetails.name);
+            }            
+        });
     });
 }
 
@@ -269,7 +289,6 @@ function loadProject(projectId) {
 
 function getProjectDetails(projectId) {
     return new Promise((resolve, reject) => {
-        let test = null;
         fs.readFile(path.join(savesPath,'projects.json'), (err, data) => {
         
             if (err) return log.error(err);
@@ -322,6 +341,48 @@ function checkChanges() {
 
 }
 
+function deleteProject(directory) {
+    
+    deleteAllDirFiles(directory).then((data)=>{
+        //Promise deletion of all files in directory, to enable directory deletion then delete directory if promise resolved
+        console.log(data)
+        fs.rmdirSync(directory);
+        //Remove project from projects JSON
+        promiseReadFile(path.join(savesPath,'projects.json')).then((data) => {
+            console.log(data);
+
+        }); 
+    });
+}
+
+function deleteAllDirFiles(directory) {
+    return new Promise((resolve, reject) =>{
+        fs.readdir(directory, (err, files) => {
+            //If files are already deleted - perhaps by user then immediately resolve and proceed with directory deletions
+            if (files) {
+                if (files.length === 0) resolve();
+            
+                if (err) {
+                    log.error(err);
+                    reject(err);
+                } else {
+                    for (let i = 0; i < files.length; i++) {
+                        fs.unlink(path.join(directory,files[i]), err => {
+                            if (err) {
+                                log.error(err);
+                                reject(err);
+                            } else if (i === files.length -1) {
+                                resolve();
+                            }
+                        });
+                    }
+                }
+            } else return;
+        });
+    });
+}
+
+deleteProject(path.join(savesPath,'test'));
 // Function to copy block
 function copyBlock() {
     //clear temp clipboard storage/variable 
