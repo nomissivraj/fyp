@@ -221,11 +221,11 @@ function newProject(projectDetails) {
                 switch(projectDetails.layout.toLowerCase()) {
                     case 'layout1':
                         templateHtmlPath = '/templates/gui-layout1.html';
-                        templateCssPath = '/templates/gui-layout1.css';  
+                        templateCssPath = '/templates/css/gui-layout1.css';  
                         break;
                     case 'layout2':   
                         templateHtmlPath = '/templates/gui-layout2.html';
-                        templateCssPath = '/templates/gui-layout2.css';                     
+                        templateCssPath = '/templates/css/gui-layout2.css';                     
                         break;
                     default:
                         console.log('no layout match')
@@ -282,15 +282,24 @@ function createHtmlFile(projectName, data) {
 function createCssFile(projectName, data) {
     //write css file
     return new Promise((resolve, reject) => {
-        fs.writeFile(path.join(savesPath+projectName+'/style.css'), data, (err) => {
+        fs.mkdir(path.join(savesPath+projectName+'/css') , 0777, (err)=> {
             if (err) {
-                log.error(err);
-                reject('fail');
+                reject(err)
+                console.log('balls')
             } else {
-                log.info("The styles file was saved!");
-                resolve(projectName);
+                fs.writeFile(path.join(savesPath+projectName+'/css/style.css'), data, (err) => {
+                    if (err) {
+                        log.error(err);
+                        console.log(err)
+                        reject('fail');
+                    } else {
+                        log.info("The styles file was saved!");
+                        resolve(projectName);
+                    }
+                }); 
             }
-        }); 
+        });
+        
     });
     
 }
