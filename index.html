@@ -8,6 +8,7 @@
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <script src="node_modules/jquery/dist/jquery.min.js"></script>
         <script src="scripts/funcs.js"></script>
+        <script src="scripts/stt.js"></script>
     </head>
     <body>
         <header class="app-header">
@@ -15,9 +16,7 @@
                 <div class="app-toolbar__icon">
                     <img src="img/app-icon-64x64.png" alt="Vocal Developer Icon">
                 </div>
-                <div class="app-toolbar__menu">
-                    File
-                </div>
+                
                 <div class="app-toolbar__title">
                     <span>Vocal Developer</span>
                 </div>
@@ -65,7 +64,7 @@
                 <h1>Create Project</h1>
                 <form id="create-project-form">
                     <label for="projectname">Project Title:</label>
-                    <input type="text" id="projectname" name="projectname" autofocus required>
+                    <input type="text" id="projectname" name="projectname"  autofocus required>
                     <label for="modeselect">Mode:</label>
                     <select id="modeselect" name="modeselect" required>
                         <option value="" selected disabled>Please Select</option>
@@ -104,15 +103,18 @@
             <div id="deleteproject" class="dialogue" style="display: none">
                 <h1>Delete Project</h1>
                 <form id="delete-form">
-                    <input type="text" id="project-to-delete" placeholder="Name of project to delete">
+                    <input type="text" id="project-to-delete" placeholder="Name of project to delete" required>
                     <button type="submit" class="negative">Delete</button>
                 </form>
                 <button type="button" class="close-btn" onclick="resetForms('deleteproject')"><strong>X</strong></button>
             </div>
+            <button type="button" id="dictate" style="display: none; position: absolute; bottom: 10px; right: 10px;">dictate</button>
         </main>
         
     </body>
+
     <script>
+        
         //Dependencies
         require('./scripts/renderer.js');
         const electron = require('electron');
@@ -122,8 +124,10 @@
         const fs = require('file-system');
         const path = require('path');
         const savesPath = path.join(app.getPath('documents'),'Vocal Developer Projects','/saves/');
+        const speechPath = path.join(app.getPath('documents'),'Vocal Developer Projects','/speech/');
         const log = require('electron-log');
-
+        initDictate();
+        
         ipcRenderer.on('fetch:projects', () => {
             fetchProjects();
         });
