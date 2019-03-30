@@ -16,8 +16,10 @@
     "dependencies": {
         "codemirror": "^5.44.0",
         "electron-log": "^3.0.1",
+        "electron-tabs": "^0.9.5",
         "file-system": "^2.2.2",
-        "jquery": "^3.3.1"
+        "jquery": "^3.3.1",
+        "watson-developer-cloud": "^4.0.1"
     },
     "devDependencies": {
         "electron": "^4.0.4"
