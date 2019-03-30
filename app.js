@@ -130,7 +130,7 @@ function createTextEditorWindow() {
         textWindow = null
     });
 }
-
+  
 /*
    //////////////////////// END WINDOW FUNCTIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 */
@@ -149,8 +149,9 @@ ipcMain.on('load:project', (e, data) => {
     loadProject(data);
 });
 
-ipcMain.on('save:project', (e, data) => {
-    saveProject(data);
+ipcMain.on('save:file', (e, data) => {
+    console.log('received save request')
+    saveFile(data);
 });
 
 ipcMain.on('delete:project', (e, data) => {
@@ -181,8 +182,25 @@ function newProject(projectDetails) {
             // If no errors
             //IF MODE IS GUI EDITOR
             if (projectDetails.mode.toLowerCase() === 'gui') {
-                let promiseHtml = promiseReadFile(path.join(appPath+'/templates/gui-template.html'), 'utf-8');
-                let promiseCss = promiseReadFile(path.join(appPath+'/templates/gui-styles.css'));
+                let templateHtmlPath;
+                let templateCssPath;
+
+                switch(projectDetails.layout.toLowerCase()) {
+                    case 'layout1':
+                        templateHtmlPath = '/templates/gui-layout1.html';
+                        templateCssPath = '/templates/gui-layout1.css';  
+                        break;
+                    case 'layout2':   
+                        templateHtmlPath = '/templates/gui-layout2.html';
+                        templateCssPath = '/templates/gui-layout2.css';                     
+                        break;
+                    default:
+                        console.log('no layout match')
+                    
+                }
+                
+                let promiseHtml = promiseReadFile(path.join(appPath+templateHtmlPath), 'utf-8');
+                let promiseCss = promiseReadFile(path.join(appPath+templateCssPath));
                 Promise.all([promiseHtml, promiseCss]).then((data) => {
                     let promiseCreateHtml = createHtmlFile(projectDetails.name, data[0]);
                     let promiseCreateCss = createCssFile(projectDetails.name, data[1]); 
@@ -383,9 +401,8 @@ function saveCSS(project) {
 }
 
 // Function to save entire project
-function saveProject(projectName) {
-    saveHTML(projectName);
-    saveCSS(projectName);
+function saveFile(project) {
+    fs.writeFile(path.join(savesPath,project.name,project.file), project.content);
 }
 
 function checkChanges() {
