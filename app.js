@@ -11,6 +11,7 @@ process.env.NODE_ENV = 'development'
 const appPath = __dirname;
 const homePath = path.join(app.getPath('documents'),'Vocal Developer Projects');
 const savesPath = path.join(homePath,'/saves/');
+const speechPath = path.join(app.getPath('documents'),'Vocal Developer Projects','/speech/');
 //if homepath doesn't exist create it etc
 
 // Set Project properties
@@ -23,7 +24,8 @@ var sessionProject;
 // Init window so that it isn't destroyed in cleanup
 let mainWindow,
     guiWindow,
-    textWindow;
+    textWindow/* ,
+    testWindow */;
 
 function createMainWindow() {
     // Set new window object using dimensions and icon
@@ -131,6 +133,37 @@ function createTextEditorWindow() {
     });
 }
   
+   /*  function testWindow() {
+    // Set new window object using dimensions and icon
+        testWindow = new BrowserWindow({
+            width: 800,
+            height: 600,
+            minWidth: 400,
+            minHeight: 300,
+            nodeIntegration: true,
+            backgroundColor: '#f5f5f5',
+            frame: false,
+            icon: path.join(appPath, 'img/app-icon-64x64.png')
+        });
+        
+        // Window loading method - use index.html with file protocol
+        testWindow.loadURL(url.format({
+            pathname: path.join(appPath, 'text-editor.html'),
+            protocol: 'file',
+            slashes: true
+        }));
+    
+        // Enable devtools if not production
+        if (process.env.NODE_ENV !== "production") {
+            testWindow.webContents.openDevTools();
+        }
+        
+    
+        testWindow.on('closed', () => {
+            textWindow = null
+        });
+    } */
+
 /*
    //////////////////////// END WINDOW FUNCTIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 */
@@ -481,6 +514,13 @@ function createUserStructure() {
                     }); 
                 }
             });
+            fs.mkdir(path.join(speechPath), 0777, (err)=> { 
+                if (err) {
+                    log.error(err);
+                } else {
+                    log.info("Speech file path set up!");
+                }
+            });
         }
     });
 }
@@ -493,6 +533,7 @@ app.on('ready', () => {
     // If home path exists do nothing else create directory etc.
     if(!checkDirectoryExists(homePath)) createUserStructure(); 
     if(!checkDirectoryExists(savesPath)) createUserStructure();
+    if(!checkDirectoryExists(speechPath)) createUserStructure();
     if(!checkFileExists(savesPath+'projects.json')) createUserStructure();  
     
 });
