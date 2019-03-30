@@ -46,6 +46,7 @@ function initDictate() {
 
         textInputs[i].addEventListener('blur', () => {
             toggleDisplay('dictate');
+            stopRecording();
         });
 
     }
