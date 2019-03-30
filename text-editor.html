@@ -5,13 +5,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Vocal Developer</title>
-        <link rel="stylesheet" type="text/css" href="css/style.css">
+        
         <link rel="stylesheet" type="text/css" href="node_modules/codemirror/lib/codemirror.css">
+        <link rel="stylesheet" type="text/css" href="node_modules/codemirror/theme/lucario.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
         <script src="node_modules/codemirror/lib/codemirror.js"></script>
         <script src="node_modules/codemirror/mode/xml/xml.js"></script>
         <script src="node_modules/codemirror/mode/css/css.js"></script>
         <script src="node_modules/codemirror/mode/javascript/javascript.js"></script>
         <script src="node_modules/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+        <script src="node_modules/codemirror/addon/edit/matchtags.js"></script>
+        <script src="node_modules/codemirror/addon/edit/closetag.js"></script>
+        <script src="node_modules/codemirror/addon/fold/xml-fold.js"></script>
         <script src="scripts/funcs.js"></script>
 
     </head>
@@ -22,7 +27,25 @@
                     <img src="img/app-icon-64x64.png" alt="Vocal Developer Icon">
                 </div>
                 <div class="app-toolbar__menu">
-                    File
+                    <ul class="dropdown__menu">
+                        <li class="dropdown__item">
+                            <button class="dropdown__filebtn" onclick="toggleDisplay('dropdown__filemenu')">File</button>
+                            <div id="dropdown__filemenu" style="display: none">
+                                <ul class="submenu">
+                                    <li>
+                                        <button id="savebtn">
+                                            <span class="submenu__item-title">Save</span>
+                                            <span class="submenu__item-shortcut">Shortcut</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button>Other</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                    
                 </div>
                 <div class="app-toolbar__title">
                     <span>Vocal Developer</span>
@@ -45,14 +68,11 @@
         </header>
 
         <main>
-            <div id="editor">
+            <div id="editor" style="z-index: 0">
                 <textarea id="editor__text" style="visibility: hidden; min-height: 1px;">
 
                 </textarea>
             </div>
-            <textarea id="test">
-
-            </textarea>
         </main>
         
     </body>
@@ -68,26 +88,61 @@
         ipcRenderer.send('ready:text-window');
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
         
-        let test = document.getElementById('test');
-        console.log(CodeMirror.mimeModes)
+        
         let myModeSpec = {
             lineNumbers: true,
             mode: 'xml',
-            htmlMode: true
+            htmlMode: true,
+            theme: 'lucario',
+            lineWrapping: true,
+            autoCloseTags: true,
+            matchTags: true,
         }
-        let editor = CodeMirror.fromTextArea(test, myModeSpec);
+
+        let placeEditor = document.getElementById('editor__text');
+        let editor = CodeMirror.fromTextArea(placeEditor, myModeSpec);
+        editor.setSize("100%", "calc(100vh - 60px)");
+
+        //Add listeners for menu buttons
+        let saveBtn = document.getElementById('savebtn');
+        saveBtn.addEventListener('click', ()=>{
+            saveChanges(currentProject);
+        });
+
+        function saveChanges(currentProject) {
+            console.log('saving')
+            let changes = editor.getValue()
+            let data = {
+                name: currentProject,
+                file: 'index.html',//this is hardcoded for now (will be context based later)
+                content: changes
+            }
+            ipcRenderer.send('save:file', data)
+            toggleDisplay('dropdown__filemenu')
+        }
+        let currentProject;
+
 
         //Recieve
         ipcRenderer.on('load:data', (e, data) => {
+            currentProject = data.name;
+            // This is hardcoded for index currently... will loop through directory and load all files to array in future (then open in tabs?)
             fs.readFile(savesPath+data.name+'/index.html','utf-8', (err, fileData) => {
                 if (err) return console.log(err);
-                //console.log(fileData);
-                let editorText = document.getElementById('editor__text');
-                editorText.innerHTML = fileData;
-                
+                editor.setValue(fileData)
+                editor.focus()
+                editor.setCursor(10,5)
+                editor.clearHistory();
             });
             //console.log(data);
             
         })
+
+        var map = {}; // You could also use an array
+        onkeydown = onkeyup = function(e){
+            map[e.keyCode] = e.type == 'keydown';
+            /* insert conditional here */
+            console.log(map)
+        }
     </script>
 </html>
