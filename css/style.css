@@ -53,22 +53,22 @@ main {
     width: 100%;
     position: fixed;
     grid-template-columns: 50px 200px 400px 100px;
+    z-index: 1;
 }
 
 .app-toolbar {
     background: #444;
     color: #c5c5c5;
-    height: 40px;
+    height: 38px;
     -webkit-app-region: drag;
-    /* padding: 10px; */
     margin: 0;
-    overflow: hidden;
+    margin-top: 1px;
     grid-row: 1;
     display: flex;
     justify-content: center;
 }
 
-.app-toolbar div {
+.app-toolbar>div {
     display: inline-block;
     position: relative;
     top: 50%;
@@ -81,7 +81,7 @@ main {
 }
 
 .app-toolbar__icon {
-    width: 25%;
+    width: 40px;
 }
 
 .app-toolbar__icon img {
@@ -90,6 +90,17 @@ main {
 
 .app-toolbar__menu {
     width: 25%;
+}
+
+.app-toolbar__menu button {
+    background: none;
+    color: #fff;
+    border-radius: 0;
+}
+
+.app-toolbar__menu button:hover {
+    background: rgba(0,0,0,.5);
+    color: #fff;
 }
 
 .app-toolbar__title {
@@ -113,6 +124,7 @@ main {
 }
 
 .app-toolbar__options div {
+    display: inline-block;
     padding: 10px;
     width: calc(33.333% - 10px);
     text-align: center;
@@ -198,6 +210,9 @@ button:hover {
     top: 0;
     right: 0;
     border-radius: 0 0 0 3px;
+}
+.close-btn:hover {
+    background: rgb(162, 59, 59);
 }
 
 .delete-toggle {
@@ -317,4 +332,35 @@ select {
 label {
     margin-bottom: 10px;
     display: inline-block;
+}
+
+#dropdown__filemenu {
+    position: absolute;
+    top: 38px;
+    z-index: 10;
+    background: grey;
+    padding: 10px 0;
+    min-width: 150px;
+}
+
+.submenu__item-title {
+    text-align: left;
+    float: left;
+}
+
+.submenu__item-shortcut {
+    text-align: right;
+    float: right;
+    color: rgba(255,255,255,.5);
+}
+
+.CodeMirror {
+    z-index: 0!important;
+}
+
+
+.submenu button {
+    width: 100%;
+    padding: 10px 10px;
+    min-height: auto;
 }
