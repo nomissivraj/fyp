@@ -235,8 +235,8 @@ function newProject(projectDetails) {
                 let promiseHtml = promiseReadFile(path.join(appPath+templateHtmlPath), 'utf-8');
                 let promiseCss = promiseReadFile(path.join(appPath+templateCssPath));
                 Promise.all([promiseHtml, promiseCss]).then((data) => {
-                    let promiseCreateHtml = createHtmlFile(projectDetails.name, data[0]);
-                    let promiseCreateCss = createCssFile(projectDetails.name, data[1]); 
+                    let promiseCreateHtml = createHtmlFile(projectDetails, data[0]);
+                    let promiseCreateCss = createCssFile(projectDetails, data[1]); 
                     let promiseUpdate = updateJson(projectDetails);
                     Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data)=>{
                         loadProject(projectDetails.name);
@@ -246,10 +246,10 @@ function newProject(projectDetails) {
             // IF MODE IS TEXT EDITOR
             if (projectDetails.mode.toLowerCase() === 'text') {
                 let promiseHtml = promiseReadFile(path.join(appPath+'/templates/text-template.html'), 'utf-8');
-                let promiseCss = promiseReadFile(path.join(appPath+'/templates/text-styles.css'));
+                let promiseCss = promiseReadFile(path.join(appPath+'/templates/css/text-default.css'));
                 Promise.all([promiseHtml, promiseCss]).then((data) => {
-                    let promiseCreateHtml = createHtmlFile(projectDetails.name, data[0]);
-                    let promiseCreateCss = createCssFile(projectDetails.name, data[1]); 
+                    let promiseCreateHtml = createHtmlFile(projectDetails, data[0]);
+                    let promiseCreateCss = createCssFile(projectDetails, data[1]); 
                     let promiseUpdate = updateJson(projectDetails);
                     Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data)=>{
                         loadProject(projectDetails.name);
@@ -263,10 +263,10 @@ function newProject(projectDetails) {
     });
 }
 
-function createHtmlFile(projectName, data) {
+function createHtmlFile(project, data) {
     //write HTML file
     return new Promise((resolve, reject) => {
-        fs.writeFile(path.join(savesPath+projectName+'/index.html'), data, (err) => {
+        fs.writeFile(path.join(savesPath+project.name+'/index.html'), data, (err) => {
             if (err) { 
                 log.error(err);
                 reject('fail');
@@ -279,22 +279,22 @@ function createHtmlFile(projectName, data) {
     
 }
 
-function createCssFile(projectName, data) {
+function createCssFile(project, data) {
     //write css file
     return new Promise((resolve, reject) => {
-        fs.mkdir(path.join(savesPath+projectName+'/css') , 0777, (err)=> {
+        fs.mkdir(path.join(savesPath+project.name+'/css') , 0777, (err)=> {
             if (err) {
                 reject(err)
                 console.log('balls')
             } else {
-                fs.writeFile(path.join(savesPath+projectName+'/css/style.css'), data, (err) => {
+                fs.writeFile(path.join(savesPath+project.name+'/css/'+project.mode+'-'+project.layout+'.css'), data, (err) => {
                     if (err) {
                         log.error(err);
                         console.log(err)
                         reject('fail');
                     } else {
                         log.info("The styles file was saved!");
-                        resolve(projectName);
+                        resolve(project.name);
                     }
                 }); 
             }
@@ -378,31 +378,61 @@ function promiseReadFile(filePath, encode) {
 
 function deleteProject(projectName) {
     let directory = path.join(savesPath,projectName);
-    deleteAllDirFiles(directory).then((data)=>{
-        //Promise deletion of all files in directory, to enable directory deletion then delete directory if promise resolved
-        fs.rmdirSync(directory);
-        //Remove project from projects JSON
-        promiseReadFile(path.join(savesPath,'projects.json')).then((data) => {
-            let json = JSON.parse(data)
-            for (let i = 0; i < json.length; i++) {
-                console.log(json[i])
-                if (json[i].name === projectName) {
-                    console.log('match');
-                    json.splice(i,1);
-                    console.log(json);
-                    fs.writeFile(path.join(savesPath,'projects.json'), JSON.stringify(json, null, 2));
-                    mainWindow.webContents.send('fetch:projects');
-                }
-            }    
+    if (!checkDirectoryExists(directory)) {
+         removeFromJSON(savesPath, projectName);
+        return;    
+    }
 
-        }); 
+    //Cannot delete a directory that has files, so need to delete files of sub directories then delete those directories before deleting files from main directory and the main directory itself
+    let promiseDeleteCSS = deleteSubDirFiles(directory+'/css/');
+
+    Promise.all([promiseDeleteCSS/* , promiseImg etc. */]).then((data)=>{
+        //Promise deletion of all files in directory, to enable directory deletion then delete directory if promise resolved
+        deleteAllDirFiles(directory).then((data) =>{
+            fs.rmdirSync(directory);
+            //Remove project from projects JSON
+            removeFromJSON(savesPath, projectName);
+        });
+        
     });
 }
 
 
+function removeFromJSON(savesPath, projectName) {
+    promiseReadFile(path.join(savesPath,'projects.json')).then((data) => {
+        let json = JSON.parse(data)
+        for (let i = 0; i < json.length; i++) {
+            console.log(json[i])
+            if (json[i].name === projectName) {
+                console.log('match');
+                json.splice(i,1);
+                console.log(json);
+                fs.writeFile(path.join(savesPath,'projects.json'), JSON.stringify(json, null, 2));
+                console.log('refresh');
+                mainWindow.webContents.send('fetch:projects');
+            }
+        }    
+
+    }); 
+}
+
+function deleteSubDirFiles(directory) {
+    return new Promise((resolve, reject)=>{
+        deleteAllDirFiles(directory).then((data) => {
+            fs.rmdir(directory,(err) => { 
+                if (err) {
+                    reject()
+                } else resolve();
+            });
+        });
+    });
+}
+
 function deleteAllDirFiles(directory) {
+
     return new Promise((resolve, reject) =>{
         fs.readdir(directory, (err, files) => {
+            console.log('deleting files', files)
             //If files are already deleted - perhaps by user then immediately resolve and proceed with directory deletions
             if (files) {
                 if (files.length === 0) resolve();
