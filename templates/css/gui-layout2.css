@@ -1,7 +1,65 @@
 html {
     background:#fff;
+    margin:0;
+    padding:0;
+    height: 100%;
+}
+
+ul {
+    list-style-type: none;
+    margin:0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
 h1 {
     color: gold;
+}
+
+header {
+    background: grey;
+    height: 100px;
+    padding: 20px;
+    width: calc(100% - 40px);
+}
+
+nav.l2-mainnav {
+    float: left;
+    min-height: 100%;
+    width: 200px;
+    background: lightgray;
+    padding: 20px;
+}
+
+.l2-1col {
+    width: 100%;
+    clear:both;
+}
+
+.l2-3col article {
+    width: calc(33.333% - 40px);
+    float: left;
+    padding: 20px;
+}
+
+main {
+    float: left;
+    width: calc(100% - 280px);
+    max-width: 1000px;
+    background: lightcyan;
+    padding: 20px;
+    min-height: 100%;
+}
+
+footer {
+    padding: 20px;
+    width: calc(100% - 40px);
+    float: left;
+    background: lightslategray;
+    height: 200px;
 }
