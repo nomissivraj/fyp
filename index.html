@@ -97,7 +97,7 @@
                     <button id="load-submit" type="submit" class="positive" onclick="toggleDisplay('loadproject')">Load</button>
                 </form>
                 <button type="button" class="close-btn" onclick="resetForms('loadproject')"><strong>X</strong></button>
-                <button id="load-delete" type="button" class="delete-toggle negative" onclick="toggleDisplay('deleteproject')"><img src="img/trash.svg" alt="trash"></button>
+                <button id="load-delete" type="button" class="delete-toggle negative"><img src="img/trash.svg" alt="trash"></button>
             </div>
 
             <div id="deleteproject" class="dialogue" style="display: none">
@@ -140,6 +140,16 @@
         const loadProjForm = document.getElementById('load-project-form');
         loadProjForm.addEventListener("submit", loadProject); //Add listener to form to handle processing
 
+        const loadDeleteBtn = document.getElementById('load-delete');
+        loadDeleteBtn.addEventListener('click', () => {
+            toggleDisplay('deleteproject');
+            let selectedProj = document.getElementById('selected-project').value;
+            if (selectedProj) {
+                let projectToDel = document.getElementById('project-to-delete');
+                projectToDel.value = selectedProj;
+            }
+        });
+
         const deleteForm = document.getElementById('delete-form');
         deleteForm.addEventListener('submit', deleteProject)
 
@@ -172,7 +182,7 @@
             let projectLayout;
             if (projectMode === 'gui') {
                 projectLayout = document.querySelector('input[name="projectlayout"]:checked').value;
-            } else projectLayout = 'text';
+            } else projectLayout = 'default';
             //READ PROJECTS.JSON TO CHECK PROJECTNAME DOESN'T ALREADY EXIST BEFORE SUBMITTING FORM
             //IF project name is in projects.json already send alert that project already exists and to try a different name
 
