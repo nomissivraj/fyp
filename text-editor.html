@@ -18,6 +18,7 @@
         <script src="node_modules/codemirror/addon/edit/closetag.js"></script>
         <script src="node_modules/codemirror/addon/fold/xml-fold.js"></script>
         <script src="scripts/funcs.js"></script>
+        <script src="scripts/stt.js"></script>
 
     </head>
     <body class="text-editor">
@@ -73,6 +74,7 @@
 
                 </textarea>
             </div>
+            <button type="button" id="dictate" style="display: none; position: absolute; bottom: 10px; right: 10px;">dictate</button>
         </main>
         
     </body>
@@ -144,5 +146,6 @@
             /* insert conditional here */
             console.log(map)
         }
+        initDictate('textEditor');
     </script>
 </html>
