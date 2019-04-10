@@ -8,8 +8,8 @@
         "pack": "build --dir"
     },
     "build": {
-        "appId": "vocal-developer-app",
-        "productName": "Vocal Developer"
+        "appId": "voice-developer-app",
+        "productName": "Voice Developer"
     },
     "author": "Simon Jarvis",
     "license": "ISC",

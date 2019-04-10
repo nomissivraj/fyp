@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Vocal Developer</title>
+        <title>Voice Developer</title>
         
         <link rel="stylesheet" type="text/css" href="node_modules/codemirror/lib/codemirror.css">
         <link rel="stylesheet" type="text/css" href="node_modules/codemirror/theme/lucario.css">
@@ -25,7 +25,7 @@
         <header class="app-header">
             <div class="app-toolbar">
                 <div class="app-toolbar__icon">
-                    <img src="img/app-icon-64x64.png" alt="Vocal Developer Icon">
+                    <img src="img/app-icon-64x64.png" alt="Voice Developer Icon">
                 </div>
                 <div class="app-toolbar__menu">
                     <ul class="dropdown__menu">
@@ -49,7 +49,7 @@
                     
                 </div>
                 <div class="app-toolbar__title">
-                    <span>Vocal Developer</span>
+                    <span>Voice Developer</span>
                 </div>
                 <div class="app-toolbar__options">
                     <div id="min-btn" class="options__minimise">
@@ -86,7 +86,7 @@
         const app = remote.app;
         const path = require('path');
         const fs = require('file-system');
-        const savesPath = path.join(app.getPath('documents'),'Vocal Developer Projects','/saves/');
+        const savesPath = path.join(app.getPath('documents'),'Voice Developer Projects','/saves/');
         ipcRenderer.send('ready:text-window');
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
         

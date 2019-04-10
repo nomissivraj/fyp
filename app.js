@@ -7,11 +7,11 @@ const log = require('electron-log');
 const remote = require('electron').remote;
 
 // Set ENV
-process.env.NODE_ENV = 'production'
+process.env.NODE_ENV = 'development'
 const appPath = __dirname;
-const homePath = path.join(app.getPath('documents'),'Vocal Developer Projects');
+const homePath = path.join(app.getPath('documents'),'Voice Developer Projects');
 const savesPath = path.join(homePath,'/saves/');
-const speechPath = path.join(app.getPath('documents'),'Vocal Developer Projects','/speech/');
+const speechPath = path.join(app.getPath('documents'),'Voice Developer Projects','/speech/');
 //if homepath doesn't exist create it etc
 
 // Set Project properties
@@ -539,7 +539,7 @@ function checkDirectoryExists(path) {
 }
 
 function createUserStructure() {
-    fs.mkdir(path.join(app.getPath('documents'),'Vocal Developer Projects'), 0777, (err)=> { 
+    fs.mkdir(path.join(app.getPath('documents'),'Voice Developer Projects'), 0777, (err)=> { 
         if (err) {
             log.error(err)
         } else {
