@@ -91,7 +91,7 @@ function initDictate(target) {
 
 // possible words that could be intended as 'tag'
 let couldBeTag = [
-    {'tag':['tag','attack']}
+    {'tag':['tag','tags','attack', 'had','tack','tagged','tank','tak','tax']}
 ]
 
 let couldBeClass = [
@@ -99,6 +99,10 @@ let couldBeClass = [
 ]
 
 let couldBeAttr = [
+    {'attribute':['attribute']}
+]
+
+let attributes = [
     //haven't tested any of these yet
     {'alt':['alt']},
     {'src':['src']},
@@ -113,7 +117,10 @@ let couldBeAttr = [
 let tags = [
      {'div': ['div', 'dave']},
      {'main': ['main', 'mane', 'mean']},
-     {'p':['p','he','pee','pea','pay']},
+     {'p':['p','p.','he','pee','pea','pay','paragraph','paragraphs','pete']},
+     {'h1':['h1','heading']},
+     {'article':['article','articles']},
+     {'button':['button', 'buttons','but','martin','barton','bolton']},
      //Singletons
      {'area': ['area']},
      {'base':['base']},
@@ -141,14 +148,16 @@ let commands = [
     {'copy':['copy']},
     {'paste':['paste']},
     {'save':['save']},
-    {'exit':['exit','close']}
+    {'exit':['exit','close']},
+    {'undo':['undo']},
+    {'redo':['redo']}
 ]
 
 //Might need to set keyword such as 'tag' first and then evaluate all other words together as one string for phrases rather than single inputs?
 
 // List of HTML tags that don't need a closing tag
 // Compare the keys in tags list against this list of singletons
-let singletons = ['area','base','br','col','','','','','','','',]
+let singletons = ['area','base','br','col','embed','hr','img','input','keygen','link','meta','param','source','track'];
 
 function findKeyNameOfValue(array, data) {
     // This only works for [{key:['value','value1']},{['value','value1']}] data structure
@@ -170,26 +179,50 @@ function findKeyNameOfValue(array, data) {
 
 function speechToCode(data) {
     // Might need to track modes i.e. Text entry | html | css/styles (html or css could be set by active editor) text entry can be triggered by command or alternative click/right click?
-
+    let cursorPos = editor.getCursor();
     let words = data.toLowerCase().split(" ");
+
     if (dictateMode === 'markup') {
         for (let word in words) {
             // If word in words contains something equivalent to 'tags' then proceed
             if (words[word] === findKeyNameOfValue(couldBeTag, words[word])) {
+                console.log('istag')
                 // Search tags for a match of other words
                 let tag = findKeyNameOfValue(tags, words[0]);
-                if (tag === undefined) return;
-                document.activeElement.value = "<"+tag+"></"+tag+">";
-            } else if (words[word] === findKeyNameOfValue(couldBeClass, words[word])) { //IF CLASS
-                document.activeElement.value = " class='"+words[0]+"'";
+                console.log(tag);
+                if (tag === undefined) {console.log('undefined'); return};
+
+                let content;
+                if (singletons.indexOf(tag) !== -1) {
+                    content = "<"+tag+">";
+                } else {
+                    content = "<"+tag+"></"+tag+">";
+                }
+                    
+                editor.replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
+    
+            }
+            if (words[word] === findKeyNameOfValue(couldBeClass, words[word])) { //IF CLASS
+                let content = " class='"+words[0]+"'";
+                editor.replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
             } /* else {
-                alert('Sorry I did not understand that, try again');
+                console.log(data);
+                let responses = [
+                    'Sorry I did not understand that, try again',
+                    "Sorry I couldn't make that out",
+                    "Try speaking clearer"
+                ]
+                console.log(Math.floor(Math.random() * (responses.length - 1)));
+                alert(responses[Math.floor(Math.random() * (responses.length -1))]);
+                return;
             }  */
         }
     }
+
     if (dictateMode === 'plaintext') {
-        document.activeElement.value = data;
+        editor.replaceRange(data,{line: cursorPos.line, ch: cursorPos.ch});
     }
+
     if (dictateMode === 'command') {
         
         for (let word in words) {
