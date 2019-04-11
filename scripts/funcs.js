@@ -91,7 +91,7 @@ function initDictate(target) {
 
 // possible words that could be intended as 'tag'
 let couldBeTag = [
-    {'tag':['tag','tags','attack', 'had','tack','tagged','tank','tak','tax']}
+    {'tag':['tag','tags','attack', 'had','tack','tagged','tank','tak','tax','container']}
 ]
 
 let couldBeClass = [
@@ -150,7 +150,8 @@ let commands = [
     {'save':['save']},
     {'exit':['exit','close']},
     {'undo':['undo']},
-    {'redo':['redo']}
+    {'redo':['redo']},
+    {'tab':['tab','tampa','tam','tap']}
 ]
 
 //Might need to set keyword such as 'tag' first and then evaluate all other words together as one string for phrases rather than single inputs?
@@ -177,15 +178,34 @@ function findKeyNameOfValue(array, data) {
     }
 }
 
+function insertTagIndent(tag, cursorPos) {
+    // Insert Opening tag   
+    editor.replaceRange("<"+tag+">",{line: cursorPos.line, ch: cursorPos.ch});
+    CodeMirror.commands.indentAuto(editor); // Auto indent opening tab
+    CodeMirror.commands.newlineAndIndent(editor); // Simulate Enter key
+    
+    // Get cursor position to return to after insertion
+    let cursorPosfinal = editor.getCursor(); 
+    CodeMirror.commands.newlineAndIndent(editor); // Simulate Enter key for closing tag position
+    let cursorPos2 = editor.getCursor();  // Get new position for closing tag 
+
+    // Insert Closing tag
+    editor.replaceRange("</"+tag+">",{line: cursorPos2.line, ch: cursorPos2.ch});     
+    CodeMirror.commands.indentAuto(editor); // Auto Indet closing tag
+    editor.setCursor(cursorPosfinal.line,cursorPosfinal.ch) // Set cursor back to final position between two tags
+}
+
+
 function speechToCode(data) {
     // Might need to track modes i.e. Text entry | html | css/styles (html or css could be set by active editor) text entry can be triggered by command or alternative click/right click?
     let cursorPos = editor.getCursor();
     let words = data.toLowerCase().split(" ");
+    const codeEditor = document.getElementsByClassName('CodeMirror')[0];
 
     if (dictateMode === 'markup') {
         for (let word in words) {
             // If word in words contains something equivalent to 'tags' then proceed
-            if (words[word] === findKeyNameOfValue(couldBeTag, words[word])) {
+            if ('tag' === findKeyNameOfValue(couldBeTag, words[word])) {
                 console.log('istag')
                 // Search tags for a match of other words
                 let tag = findKeyNameOfValue(tags, words[0]);
@@ -195,14 +215,13 @@ function speechToCode(data) {
                 let content;
                 if (singletons.indexOf(tag) !== -1) {
                     content = "<"+tag+">";
+                    editor.replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
                 } else {
-                    content = "<"+tag+"></"+tag+">";
+                    insertTagIndent(tag, cursorPos);
                 }
-                    
-                editor.replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
-    
             }
-            if (words[word] === findKeyNameOfValue(couldBeClass, words[word])) { //IF CLASS
+
+            if ('class' === findKeyNameOfValue(couldBeClass, words[word])) { //IF CLASS
                 let content = " class='"+words[0]+"'";
                 editor.replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
             } /* else {
@@ -226,27 +245,28 @@ function speechToCode(data) {
     if (dictateMode === 'command') {
         
         for (let word in words) {
+            /* console.log(words[word],findKeyNameOfValue(commands, words[word]))
             if (words[word] === findKeyNameOfValue(commands, words[word])) {
-                // Search tags for a match of other words
-                let command = findKeyNameOfValue(commands,words[0]);
+                // Search tags for a match of other words */
+                let command = findKeyNameOfValue(commands,words[word]);
+                console.log(command)
                 switch(command) {
                     case 'space':
-                        console.log(command)
-                        let cursorPos = editor.getCursor();
+                        cursorPos = editor.getCursor();
                         editor.replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
-                        console.log(cursorPos.line,cursorPos.ch)
-                        //editor.setCursor(1,2);
-                        
                         break;
                     case 'save':
                         saveChanges(currentProject);
                         break;
                     case 'exit':
                         break;
+                    case 'tab':
+                        CodeMirror.commands.defaultTab(editor);
+                        break;
                     default: return;
                 }
                 
-            } 
+            /* } */ 
         }
         
     }
