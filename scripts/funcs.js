@@ -9,6 +9,20 @@ function toggleDisplay(el) {
     }
 }
 
+function toggleClass(el, className) {
+    console.log('element:',el,'class to add:',className)
+    if (!el) return;
+    if (typeof el === 'object') {
+        el.classList.contains(className) ? el.classList.remove(className) : el.classList.add(className);
+    } else if (typeof el === 'string') {
+        el = document.querySelectorAll(el);
+        for (let i = 0; i < el.length; i++) {
+            
+            el[i].classList.contains(className) ? el[i].classList.remove(className) : el[i].classList.add(className);
+        }
+    } else return;
+}
+
 function resetForms(el) {    
     let forms = document.querySelectorAll('form');
     for (let i = 0; i < forms.length; i++) {
@@ -23,8 +37,10 @@ function initDictate(target) {
     const speechPath = path.join(app.getPath('documents'),'Voice Developer Projects','/speech/test.wav');
     let active = false;
 
-    const dictate = document.getElementById('dictate');
-    
+    const dictate = document.getElementById('dictate-btn');
+    let frame = document.getElementsByClassName('CodeMirror')[0];
+    let gutter = document.getElementsByClassName('CodeMirror-gutters')[0];
+
     dictate.addEventListener('mousedown', (e) => {
         e.preventDefault();
         switch(e.which) {
@@ -44,14 +60,19 @@ function initDictate(target) {
              dictateMode = 'default';
         } 
         if (!active) {
-            dictate.innerHTML = "stop dictating"
+            toggleClass(dictate, 'active');
+            toggleClass(frame, 'shadow-positive');
+            toggleClass(gutter, 'transparent');
             startRecording(speechPath);
         } else {
             stopRecording();
-            dictate.innerHTML = "dictate";
+            toggleClass(dictate, 'active');
+            toggleClass(frame, 'shadow-positive');
+            toggleClass(gutter, 'transparent');
+            toggleClass(frame, 'working');
+            toggleClass(gutter, 'transparent');
             toText(speechPath).then((data) => {
                 if (target === 'textEditor') {
-/*                     console.log('text editor input') */
                     speechToCode(data);
                 } else {
                     document.activeElement.value = data;
@@ -64,11 +85,11 @@ function initDictate(target) {
     let textInputs = document.querySelectorAll('input[type=text]');
     for (let i = 0; i < textInputs.length; i++) {
         textInputs[i].addEventListener('focus', () => {
-            toggleDisplay('dictate');
+            toggleDisplay('dictate-btn');
         });
 
         textInputs[i].addEventListener('blur', () => {
-            toggleDisplay('dictate');
+            toggleDisplay('dictate-btn');
             stopRecording();
         });
 
@@ -76,11 +97,11 @@ function initDictate(target) {
     let textAreas = document.getElementsByTagName('textarea');
     for (let i = 0; i < textAreas.length; i++) {
         textAreas[i].addEventListener('focus', () => {
-            toggleDisplay('dictate');
+            toggleDisplay('dictate-btn');
         });
 
         textAreas[i].addEventListener('blur', () => {
-            toggleDisplay('dictate');
+            toggleDisplay('dictate-btn');
             stopRecording();
         });
     }
@@ -143,15 +164,16 @@ let tags = [
 let commands = [
     //none of these have been tested yet
     {'space':['space']},
-    {'cut':['cut']},
+    {'cut':['cut','scott']},
     {'delete':['delete']},
     {'copy':['copy']},
-    {'paste':['paste']},
+    {'paste':['paste','post']},
     {'save':['save']},
-    {'exit':['exit','close']},
-    {'undo':['undo']},
-    {'redo':['redo']},
-    {'tab':['tab','tampa','tam','tap']}
+    {'exit':['exit','close','closed','except']},
+    {'undo':['undo', 'reverse', 'reversed']},
+    {'redo':['redo','radio', 'redial','forward']},
+    {'tab':['tab','tampa','tam','tap']},
+    {'enter':['enter','line']}
 ]
 
 //Might need to set keyword such as 'tag' first and then evaluate all other words together as one string for phrases rather than single inputs?
@@ -201,6 +223,10 @@ function speechToCode(data) {
     let cursorPos = editor.getCursor();
     let words = data.toLowerCase().split(" ");
     const codeEditor = document.getElementsByClassName('CodeMirror')[0];
+    // Get elements for "working..." indication/feedback    
+
+    let frame = document.getElementsByClassName('CodeMirror')[0];
+    let gutter = document.getElementsByClassName('CodeMirror-gutters')[0];
 
     if (dictateMode === 'markup') {
         for (let word in words) {
@@ -240,6 +266,12 @@ function speechToCode(data) {
 
     if (dictateMode === 'plaintext') {
         editor.replaceRange(data,{line: cursorPos.line, ch: cursorPos.ch});
+        let newCursorPos = editor.getCursor()
+        editor.replaceRange(" ",{line: newCursorPos.line, ch: newCursorPos.ch});
+    }
+
+    if (dictateMode === 'css') {
+        //DO CSS functions here
     }
 
     if (dictateMode === 'command') {
@@ -259,16 +291,47 @@ function speechToCode(data) {
                         saveChanges(currentProject);
                         break;
                     case 'exit':
+                        let window = remote.getCurrentWindow();
+                        window.close();
                         break;
                     case 'tab':
                         CodeMirror.commands.defaultTab(editor);
                         break;
+                    case 'enter':
+                        CodeMirror.commands.newlineAndIndent(editor);
+                        break;
+                    case 'undo':
+                        editor.doc.undo();
+                        break;
+                    case 'redo':
+                        editor.doc.redo();
+                        break;
+                    case 'cut':
+                        document.execCommand('cut');
+                        break;
+                    case 'copy':
+                        document.execCommand('copy');
+                        break;
+                    case 'paste':
+                        document.execCommand('paste');
+                        break;
+                    case 'delete':
+                        document.execCommand('delete');
+                        break;
                     default: return;
+                    
                 }
                 
             /* } */ 
         }
         
     }
+    //confirmation of finished
+        toggleClass(frame, 'working');
+        toggleClass(frame, 'finished');
+        setTimeout(()=>{
+            toggleClass(frame, 'finished');
+            toggleClass(gutter, 'transparent');
+        },1000)        
 }
     
