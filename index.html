@@ -108,7 +108,7 @@
                 </form>
                 <button type="button" class="close-btn" onclick="resetForms('deleteproject')"><strong>X</strong></button>
             </div>
-            <button type="button" id="dictate" style="display: none; position: absolute; bottom: 10px; right: 10px;">dictate</button>
+            <button type="button" id="dictate-btn" style="display: none"></button>
         </main>
         
     </body>
@@ -127,6 +127,7 @@
         const speechPath = path.join(app.getPath('documents'),'Voice Developer Projects','/speech/');
         const log = require('electron-log');
         initDictate();
+        process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
         
         ipcRenderer.on('fetch:projects', () => {
             fetchProjects();
