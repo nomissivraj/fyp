@@ -30,6 +30,73 @@ function resetForms(el) {
     }
     toggleDisplay(el);
 }
+
+function targetInEl(parent, child) {
+    //If target is inside element return true
+    return child !== parent && parent.contains(child);
+}
+
+function initMenu(menuEl, btn) {
+    let menuBtn = document.querySelectorAll(btn);
+    let menu = document.getElementById(menuEl);
+    // On menu clicked anywhere, show whatever button is hovered
+
+
+    // Ensure that when an element that isn't the menu is clicked the menu will hide
+    document.addEventListener('mousedown', (e) => {
+        if (!targetInEl(menu, e.target)) {
+            hideAll('.dropdown__menu');
+            menu.classList.remove('active')
+        }
+    });
+
+    // When menu is clicked set to active
+    menu.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        menu.classList.add('active');
+    });
+
+    // Add listeners to all menu buttons that will handle hover and click functionality
+    for (let i = 0; i < menuBtn.length; i++) {
+        //handle hover functionality
+        menuBtn[i].addEventListener('mousemove', (e) => {
+            if (menu.classList.contains('active')){
+                let currentMenu = e.target.innerHTML.toLowerCase();
+                let currentDrpDwn = document.getElementById('dropdown__menu--'+currentMenu);
+
+                //show current hovered, hide all others
+                currentDrpDwn.style = "display: block;"
+                hideOthers('.dropdown__menu', currentDrpDwn);
+            }
+        });
+        menuBtn[i].addEventListener('mousedown', (e) => {
+            if (!menu.classList.contains('active')) {
+                let currentMenu = e.target.innerHTML.toLowerCase();
+                let currentDrpDwn = document.getElementById('dropdown__menu--'+currentMenu);
+
+                //show current hovered, hide all others
+                currentDrpDwn.style = "display: block;"
+            }
+        });
+    }
+}
+
+function hideAll(elements) {
+    let els = document.querySelectorAll(elements);
+    for (let i = 0; i < els.length; i++) {
+        els[i].style = 'display:none';
+    }
+}
+
+function hideOthers(elements, dontHide) {
+    let els = document.querySelectorAll(elements);
+    for (let i = 0; i < els.length; i++) {
+        if (els[i] !== dontHide) {
+            els[i].style = 'display: none';
+        }
+    }
+}
+
 // Initiate dictate button/function on target i.e. text editor or general UI input
 // If in text editor then pass through to a different function that processes the text
 let dictateMode = 'default';
