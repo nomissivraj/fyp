@@ -11,7 +11,6 @@ function toggleDisplay(el) {
 }
 
 function toggleClass(el, className) {
-    console.log('element:',el,'class to add:',className)
     if (!el) return;
     if (typeof el === 'object') {
         el.classList.contains(className) ? el.classList.remove(className) : el.classList.add(className);
