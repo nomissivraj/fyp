@@ -270,8 +270,17 @@ button.positive:hover {
     background-size: calc(100% - 20px);
     background-position: center;
     background-repeat: no-repeat;
+    opacity: 0;
     bottom: 0px;
     right: 0px;
+    
+    transition: opacity .4s ease;
+    height:0px;
+    width:0px;
+}
+
+#dictate-btn.ready {
+    opacity: 1;
     width: 80px;
     height: 80px;
 }
@@ -425,23 +434,26 @@ label {
     transition: box-shadow .4s ease;
 }
 
-.cm-s-lucario .CodeMirror-gutters.transparent {
+.cm-s-lucario .CodeMirror-gutters {
     background: transparent!important;
 }
-.CodeMirror.shadow-positive {
+.CodeMirror.shadow-positive,
+main.shadow-positive {
     z-index: 0!important;
     -webkit-box-shadow: inset 0 0 10px #29cc5b;
     box-shadow: inset 0 0 10px #29cc5b;
 }
 
-.CodeMirror.working {
+.CodeMirror.working,
+main.working {
     z-index: 0!important;
     -webkit-box-shadow: inset 0 0 10px #fbff00;
     box-shadow: inset 0 0 10px #fbff00;
     
 }
 
-.CodeMirror.working:before {
+.CodeMirror.working:before,
+main.working:before {
     color:#fbff00;
     content:"working";
     position: absolute;
@@ -449,7 +461,8 @@ label {
     right: 20px;
 } 
 
-.CodeMirror.working:after {
+.CodeMirror.working:after,
+main.working:after {
     color:#fbff00;
     overflow: hidden;
     position: absolute;
@@ -475,16 +488,34 @@ label {
     }
   }
 
-.CodeMirror.finished:before {
+.CodeMirror.finished:before,
+main.finished:before {
     color: #d1d1d1;
     content:"success";
     position: absolute;
     bottom: 70px;
     right: 20px;
 } 
-.CodeMirror.finished {
+.CodeMirror.finished,
+main.finished {
     z-index: 0!important;
     -webkit-box-shadow: inset 0 0 10px #d1d1d1;
     box-shadow: inset 0 0 10px #d1d1d1;
+}
+
+
+.CodeMirror.error:before,
+main.error:before {
+    color: #A13A3A;
+    content:"failure";
+    position: absolute;
+    bottom: 70px;
+    right: 20px;
+} 
+.CodeMirror.error,
+main.error {
+    z-index: 0!important;
+    -webkit-box-shadow: inset 0 0 10px #A13A3A;
+    box-shadow: inset 0 0 10px #A13A3A;
 }
 
