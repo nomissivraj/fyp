@@ -8,6 +8,8 @@ function initDictate(target) {
     const dictate = document.getElementById('dictate-btn');
     let frame = document.getElementsByClassName('CodeMirror')[0];
     let gutter = document.getElementsByClassName('CodeMirror-gutters')[0];
+    let main = document.getElementsByTagName('main')[0];
+    
 
     dictate.addEventListener('mousedown', (e) => {
         e.preventDefault();
@@ -29,21 +31,42 @@ function initDictate(target) {
         } 
         if (!active) {
             toggleClass(dictate, 'active');
-            toggleClass(frame, 'shadow-positive');
-            toggleClass(gutter, 'transparent');
+            if (document.getElementsByTagName('body')[0].classList.contains('text-editor')) {
+                toggleClass(frame, 'shadow-positive');
+            } else {
+                toggleClass(main, 'shadow-positive');
+            }
+            
             startRecording(speechPath);
         } else {
             stopRecording();
             toggleClass(dictate, 'active');
-            toggleClass(frame, 'shadow-positive');
-            toggleClass(gutter, 'transparent');
-            toggleClass(frame, 'working');
-            toggleClass(gutter, 'transparent');
+            if (document.getElementsByTagName('body')[0].classList.contains('text-editor')) {
+                toggleClass(frame, 'shadow-positive');
+                toggleClass(frame, 'working');
+            } else {
+                toggleClass(main, 'shadow-positive');
+                toggleClass(main, 'working');
+            }
+            
             toText(speechPath).then((data) => {
                 if (target === 'textEditor') {
                     speechToCode(data);
-                } else {
-                    document.activeElement.value = data;
+                } else { // If not textEditor insert as regular text
+                    toggleClass(main, 'working');
+                    if (data || data.length > 0) {
+                        toggleClass(main, 'finished');
+                        document.activeElement.value = data;
+                        setTimeout(()=>{
+                            toggleClass(main, 'finished');
+                        },1000);  
+                    } else {
+                        toggleClass(main, 'error');
+                        document.activeElement.value = data;
+                        setTimeout(()=>{
+                            toggleClass(main, 'error');
+                        },1000);      
+                    }
                 }
             });
         }
@@ -53,11 +76,13 @@ function initDictate(target) {
     let textInputs = document.querySelectorAll('input[type=text]');
     for (let i = 0; i < textInputs.length; i++) {
         textInputs[i].addEventListener('focus', () => {
-            toggleDisplay('dictate-btn');
+            /* toggleDisplay('dictate-btn'); */
+            toggleClass('#dictate-btn','ready');
         });
 
         textInputs[i].addEventListener('blur', () => {
-            toggleDisplay('dictate-btn');
+            /* toggleDisplay('dictate-btn'); */
+            toggleClass('#dictate-btn','ready');
             stopRecording();
         });
 
@@ -65,11 +90,13 @@ function initDictate(target) {
     let textAreas = document.getElementsByTagName('textarea');
     for (let i = 0; i < textAreas.length; i++) {
         textAreas[i].addEventListener('focus', () => {
-            toggleDisplay('dictate-btn');
+            /* toggleDisplay('dictate-btn'); */
+            toggleClass('#dictate-btn','ready');
         });
 
         textAreas[i].addEventListener('blur', () => {
-            toggleDisplay('dictate-btn');
+            /* toggleDisplay('dictate-btn'); */
+            toggleClass('#dictate-btn','ready');
             stopRecording();
         });
     }
@@ -80,7 +107,7 @@ function initDictate(target) {
 
 // possible words that could be intended as 'tag'
 let couldBeTag = [
-    {'tag':['tag','tags','attack', 'had','tack','tagged','tank','tak','tax','container']}
+    {'tag':['tag','tags','attack', 'had','tack','tagged','tank','tak','tax','contain','container']}
 ]
 
 let couldBeClass = [
@@ -88,25 +115,28 @@ let couldBeClass = [
 ]
 
 let couldBeAttr = [
-    {'attribute':['attribute']}
+    {'attribute':['attribute', 'attributes','tribute']}
 ]
 
 let attributes = [
     //haven't tested any of these yet
-    {'alt':['alt']},
-    {'src':['src']},
+    {'alt':['alt', 'out', 'alternative','ought']},
+    {'src':['src', 'source']},
     {'type':['type']},
-    {'width':['width']},
+    {'width':['width', 'with', 'which']},
     {'height':['height']},
     {'lang':['lang', 'language']},
     {'title':['title']},
-    {'required':['required']}
+    {'required':['required']},
+    {'rel':['rel', 'relationship', 'well', 'relationship']},
+    {'href':['hyperlink','hyperlinked']}
 ]
 
 let tags = [
      {'div': ['div', 'dave']},
      {'main': ['main', 'mane', 'mean']},
      {'p':['p','p.','he','pee','pea','pay','paragraph','paragraphs','pete']},
+     {'a':['anchor']},
      {'h1':['h1','heading']},
      {'article':['article','articles']},
      {'button':['button', 'buttons','but','martin','barton','bolton']},
@@ -187,6 +217,7 @@ function insertTagIndent(tag, cursorPos) {
 
 
 function speechToCode(data) {
+    let stcSuccess = false;
     // Might need to track modes i.e. Text entry | html | css/styles (html or css could be set by active editor) text entry can be triggered by command or alternative click/right click?
     let cursorPos = editor.getCursor();
     let words = data.toLowerCase().split(" ");
@@ -204,38 +235,55 @@ function speechToCode(data) {
                 // Search tags for a match of other words
                 let tag = findKeyNameOfValue(tags, words[0]);
                 console.log(tag);
-                if (tag === undefined) {console.log('undefined'); return};
+                /* if (tag === undefined) {console.log('undefined'); return}; */
+                if (tag !== undefined) {
+                    stcSuccess = true;
+                    let content;
+                    if (singletons.indexOf(tag) !== -1) {
+                        content = "<"+tag+">";
+                        editor.replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
+                    } else {
+                        insertTagIndent(tag, cursorPos);
+                    }
+                }
+                
+            }
 
-                let content;
-                if (singletons.indexOf(tag) !== -1) {
-                    content = "<"+tag+">";
+            // If attribute
+            if ('attribute' === findKeyNameOfValue(couldBeAttr, words[word])) {
+                console.log('is attribute')
+                let tag = findKeyNameOfValue(attributes, words[0]);
+                console.log(tag);
+                /* if (tag === undefined) {console.log('undefined'); return}; */
+                if (tag !== undefined) {
+                    stcSuccess = true;
+                    let content;
+                    if (tag === 'href') {
+                        content = ' '+tag+'="http://"';
+                    } else content = ' '+tag+'=""' ;
                     editor.replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
-                } else {
-                    insertTagIndent(tag, cursorPos);
+                
                 }
             }
 
+            // If class
             if ('class' === findKeyNameOfValue(couldBeClass, words[word])) { //IF CLASS
+                stcSuccess = true;
                 let content = " class='"+words[0]+"'";
                 editor.replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
-            } /* else {
-                console.log(data);
-                let responses = [
-                    'Sorry I did not understand that, try again',
-                    "Sorry I couldn't make that out",
-                    "Try speaking clearer"
-                ]
-                console.log(Math.floor(Math.random() * (responses.length - 1)));
-                alert(responses[Math.floor(Math.random() * (responses.length -1))]);
-                return;
-            }  */
+            } 
+
+            
         }
     }
 
     if (dictateMode === 'plaintext') {
-        editor.replaceRange(data,{line: cursorPos.line, ch: cursorPos.ch});
-        let newCursorPos = editor.getCursor()
-        editor.replaceRange(" ",{line: newCursorPos.line, ch: newCursorPos.ch});
+        if (data.length > 0) {
+            stcSuccess = true;
+            editor.replaceRange(data,{line: cursorPos.line, ch: cursorPos.ch});
+            let newCursorPos = editor.getCursor()
+            editor.replaceRange(" ",{line: newCursorPos.line, ch: newCursorPos.ch});
+        } 
     }
 
     if (dictateMode === 'css') {
@@ -250,6 +298,7 @@ function speechToCode(data) {
                 // Search tags for a match of other words */
                 let command = findKeyNameOfValue(commands,words[word]);
                 console.log(command)
+                if (command !== undefined) stcSuccess = true;
                 switch(command) {
                     case 'space':
                         cursorPos = editor.getCursor();
@@ -286,7 +335,8 @@ function speechToCode(data) {
                     case 'delete':
                         document.execCommand('delete');
                         break;
-                    default: return;
+                    default:
+                        break;
                     
                 }
                 
@@ -296,10 +346,21 @@ function speechToCode(data) {
     }
     //confirmation of finished
         toggleClass(frame, 'working');
-        toggleClass(frame, 'finished');
-        setTimeout(()=>{
+        console.log(stcSuccess)
+        if (stcSuccess && stcSuccess !== undefined) {
+            console.log('success', data.length)
             toggleClass(frame, 'finished');
-            toggleClass(gutter, 'transparent');
-        },1000)        
+            setTimeout(()=>{
+                toggleClass(frame, 'finished');
+            },1000);  
+        } else {
+            console.log('failure', data.length)
+            toggleClass(frame, 'error');
+            setTimeout(()=>{
+                toggleClass(frame, 'error');
+                toggleClass(gutter, 'error');
+            },1000);    
+        }
+          
 }
     
