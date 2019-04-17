@@ -181,8 +181,29 @@
         </header>
 
         <main>
-            <div id="editor" style="z-index: 0">
+            <div class="tab-bar__container"> 
+                <div class="tab-bar">
+                    <ul class="tabs">
+                        <li class="tab__item">
+                            <button id="indextab-btn" class="tab-btn">
+                                <span class="indextab-btn--title">Index.html</span>
+                            </button>
+                        </li>
+                        <li class="tab__item">
+                            <button id="csstab-btn" class="tab-btn">
+                                <span class="csstab-btn--title">text-default.css</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="editor" class="editor" style="z-index: 0">
                 <textarea id="editor__text" style="visibility: hidden; min-height: 1px;">
+
+                </textarea>
+            </div>
+            <div id="csseditor" class="editor" style="z-index: 0">
+                <textarea id="csseditor__text" style="visibility: hidden; min-height: 1px;">
 
                 </textarea>
             </div>
@@ -203,8 +224,13 @@
         ipcRenderer.send('ready:text-window');
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
         
+        // Global variables
+        let currentProject;
+        let editorMode = 'html';
+
+
         
-        let myModeSpec = {
+        let editorSpec = {
             lineNumbers: true,
             mode: 'xml',
             htmlMode: true,
@@ -215,10 +241,24 @@
         }
 
         let placeEditor = document.getElementById('editor__text');
-        let editor = CodeMirror.fromTextArea(placeEditor, myModeSpec);
+        let editor = CodeMirror.fromTextArea(placeEditor, editorSpec);
         editor.setSize("100%", "calc(100vh - 40px)");
+
+        let cssEditorSpec = {
+            lineNumbers: true,
+            mode: 'css',
+            theme: 'lucario',
+/*             htmlMode: true, */
+            lineWrapping: true,
+            autoCloseTags: true,
+            matchTags: true,
+        }
+
+        let placeCssEditor = document.getElementById('csseditor__text');
+        let cssEditor = CodeMirror.fromTextArea(placeCssEditor, cssEditorSpec)
+        cssEditor.setSize("100%", "calc(100vh - 40px)");
        
-        let currentProject;
+        
         //Add listeners for menu buttons
         //Recieve
         ipcRenderer.on('load:data', (e, data) => {
@@ -230,6 +270,11 @@
                 editor.focus()
                 editor.setCursor(10,0)
                 editor.clearHistory();
+            });
+            fs.readFile(savesPath+data.name+'/css/text-default.css','utf-8', (err, fileData) => {
+                if (err) return console.log(err);
+                cssEditor.setValue(fileData)
+                cssEditor.clearHistory();
             });
             //console.log(data);
             
@@ -243,5 +288,6 @@
         }
         initDictate('textEditor');
         initMenu('menu','.dropdown__btn', '.submenu__btn');
+        initTabs();
     </script>
 </html>
