@@ -171,7 +171,8 @@ let commands = [
     {'undo':['undo', 'reverse', 'reversed']},
     {'redo':['redo','radio', 'redial','forward']},
     {'tab':['tab','tampa','tam','tap']},
-    {'enter':['enter','line']}
+    {'enter':['enter','line']},
+    {'preview':['preview', 'previous']}
 ]
 
 //Might need to set keyword such as 'tag' first and then evaluate all other words together as one string for phrases rather than single inputs?
@@ -334,6 +335,11 @@ function speechToCode(data) {
                         break;
                     case 'delete':
                         document.execCommand('delete');
+                        break;
+                    case 'preview':
+                        let path = savesPath.replace(/\\/g, "/");
+                        let path2 = path.replace(/\s+/g, '%20');
+                        shell.openExternal('file:///'+path2+currentProject+'/index.html');
                         break;
                     default:
                         break;
