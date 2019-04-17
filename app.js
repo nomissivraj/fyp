@@ -37,7 +37,8 @@ function createMainWindow() {
         nodeIntegration: true,
         backgroundColor: '#f5f5f5',
         frame: false,
-        icon: path.join(appPath, 'img/app-icon-64x64.png')
+        icon: path.join(appPath, 'img/app-icon-64x64.png'),
+        show: false
     });
     
     // Window loading method - use index.html with file protocol
@@ -52,6 +53,9 @@ function createMainWindow() {
         mainWindow.webContents.openDevTools();
     }
     
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show();
+    });
 
     mainWindow.on('closed', () => {
         mainWindow = null
