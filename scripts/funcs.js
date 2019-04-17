@@ -223,20 +223,21 @@ function initMenu(menuEl, btn, subBtns) {
 }
 
 
-function setTab(tabEls, currentTabId, pageEl) {
+function setTab(tabEls, currentTabId, pageId) {
     let tabs = document.querySelectorAll(tabEls);
-    let curTab = document.getElementById(currentTabId);
-    let page = document.querySelectorAll(pageEl);
+    let curTab = document.querySelectorAll(currentTabId)[0];
+    console.log(curTab)
+    let page = document.querySelectorAll(pageId)[0];
+
     if (!curTab.classList.contains('active')) {
         curTab.classList.add('active');
         page.style = 'display: block';
         for(let i = 0; i < tabs.length; i++) {
             if (tabs[i] !== curTab) {
-                classList.remove('active');
+                tabs[i].classList.remove('active');
             }
         }
     }
-    
     hideOthers('.editor', page);
 }
 
@@ -244,34 +245,20 @@ function initTabs() {
     
     // Index tab
     let indexTab = document.getElementById('indextab-btn');
-    let indexPage = document.getElementById('editor');
-
-    // Start with indext tab active
-
+    setTimeout(() => {
+        setTab('.tab-btn', '#indextab-btn', '#editor');
+    },50);
     indexTab.addEventListener('click', (e) => {
-        /* if (!indexTab.classList.contains('active')) {
-            cssPage.style = 'display: none';
-            indexTab.classList.add('active');
-            cssTab.classList.remove('active');
-            indexPage.style = 'display: block';
-            editorMode = 'html';
-        } */
-        setTab('.tab-btn', indexTab, indexPage)
+        setTab('.tab-btn', '#indextab-btn', '#editor');
     });
 
     // CSS tab
     let cssTab = document.getElementById('csstab-btn');
-    let cssPage = document.getElementById('csseditor');
     cssTab.addEventListener('click', () => {
-        /* if (!cssTab.classList.contains('active')) {
-            indexPage.style = 'display: none';
-            cssTab.classList.add('active');
-            indexTab.classList.remove('active');
-            cssPage.style = 'display: block';
-            editorMode = 'css';
-        } */
-        setTab('.tab-btn', cssTab, cssPage)
+        setTab('.tab-btn', '#csstab-btn', '#csseditor')
     });
+
+    
 }
 
 function saveChanges(currentProject) {
