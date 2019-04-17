@@ -101,7 +101,7 @@ main {
 }
 
 .app-toolbar__menu {
-    width: 25%;
+    width: auto;
     padding: 4px 0;
     float: left;
 }
@@ -118,7 +118,7 @@ main {
 }
 
 .app-toolbar__title {
-    width: 25%;
+    width: calc(100% - 330px);
     float: left;
     padding: 10px;
     text-align: center;
@@ -137,7 +137,6 @@ main {
 
 .app-toolbar__options {
     -webkit-app-region: no-drag;
-    cursor: pointer;
     width: 200px;
     height: 40px;
     float: right;
@@ -146,7 +145,8 @@ main {
 .app-toolbar__options div {
     display: inline-block;
     padding: 10px;
-    width: calc(33.333% - 10px);
+    width:33.333%;
+    margin-right: -4px;
     text-align: center;
 }
 
