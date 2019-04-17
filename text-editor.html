@@ -108,6 +108,55 @@
                                 </ul>
                             </div>
                         </li>
+                        <li class="dropdown__item">
+                            <button class="dropdown__btn dropdown__btn--preview">Preview</button>
+                            <div class="dropdown__menu" id="dropdown__menu--preview"  style="display: none">
+                                <ul class="submenu">
+                                    <li>
+                                        <button id="previewbtn" class="submenu__btn">
+                                            <span class="submenu__item-title">Open in Browser</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="dropdown__item">
+                            <button class="dropdown__btn dropdown__btn--tags">Tags</button>
+                            <div class="dropdown__menu" id="dropdown__menu--tags"  style="display: none">
+                                <ul class="submenu">
+                                    <li>
+                                        <button id="heading1btn" class="submenu__btn">
+                                            <span class="submenu__item-title">Heading 1</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button id="heading2btn" class="submenu__btn">
+                                            <span class="submenu__item-title">Heading 2</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button id="heading3btn" class="submenu__btn">
+                                            <span class="submenu__item-title">Heading 3</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button id="heading4btn" class="submenu__btn">
+                                            <span class="submenu__item-title">Heading 4</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button id="heading5btn" class="submenu__btn">
+                                            <span class="submenu__item-title">Heading 5</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button id="heading6btn" class="submenu__btn">
+                                            <span class="submenu__item-title">Heading 6</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                     </ul>
                     
                 </div>
@@ -150,6 +199,7 @@
         const path = require('path');
         const fs = require('file-system');
         const savesPath = path.join(app.getPath('documents'),'Voice Developer Projects','/saves/');
+        const shell = require('electron').shell;
         ipcRenderer.send('ready:text-window');
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
         
@@ -170,79 +220,6 @@
        
         let currentProject;
         //Add listeners for menu buttons
-
-        //  File menu
-        //      - File menu - save
-        let saveBtn = document.getElementById('savebtn');
-        saveBtn.addEventListener('click', () => {
-            saveChanges(currentProject);
-        });
-        //      - File menu - exit
-        let exitBtn = document.getElementById('exitbtn');
-        exitBtn.addEventListener('click', () => {
-            let window = remote.getCurrentWindow();
-            window.close();
-        });
-        // Edit Menu
-        //      - Edit menu 
-        let undoBtn = document.getElementById('undobtn');
-        undoBtn.addEventListener('click', () => {
-            editor.doc.undo();
-            toggleDisplay('dropdown__menu--edit');
-        });
-
-        let redoBtn = document.getElementById('redobtn');
-        redoBtn.addEventListener('click', () => {
-            editor.doc.redo();
-            toggleDisplay('dropdown__menu--edit');
-        });
-
-        //cut copy paste
-        let cutBtn = document.getElementById('cutbtn');
-        cutBtn.addEventListener('click', () => {
-            document.execCommand('cut');
-            toggleDisplay('dropdown__menu--edit');
-        });
-
-        let copyBtn = document.getElementById('copybtn');
-        copyBtn.addEventListener('click', () => {
-            document.execCommand('copy');
-            toggleDisplay('dropdown__menu--edit');
-        });
-
-        let pasteBtn = document.getElementById('pastebtn');
-        pasteBtn.addEventListener('click', () => {
-            document.execCommand('paste');
-            toggleDisplay('dropdown__menu--edit');
-        });
-
-        let deleteBtn = document.getElementById('deletebtn');
-        deleteBtn.addEventListener('click', () => {
-            document.execCommand('delete');
-            toggleDisplay('dropdown__menu--edit');
-        });
-
-        let enterBtn = document.getElementById('enterbtn');
-        enterBtn.addEventListener('click', () => {
-            CodeMirror.commands.newlineAndIndent(editor);
-            toggleDisplay('dropdown__menu--edit');
-        });
-
-        let tabBtn = document.getElementById('tabbtn');
-        tabBtn.addEventListener('click', () => {
-            CodeMirror.commands.defaultTab(editor);
-            toggleDisplay('dropdown__menu--edit');
-        });
-
-        let spaceBtn = document.getElementById('spacebtn');
-        spaceBtn.addEventListener('click', () => {
-            let cursorPos = editor.getCursor();
-            editor.replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
-            toggleDisplay('dropdown__menu--edit');
-        });
-
-
-
         //Recieve
         ipcRenderer.on('load:data', (e, data) => {
             currentProject = data.name;
