@@ -98,6 +98,130 @@ function initMenu(menuEl, btn, subBtns) {
             }
         });
     }
+
+    //  File menu
+        //      - File menu - save
+        let saveBtn = document.getElementById('savebtn');
+        saveBtn.addEventListener('click', () => {
+            saveChanges(currentProject);
+        });
+        //      - File menu - exit
+        let exitBtn = document.getElementById('exitbtn');
+        exitBtn.addEventListener('click', () => {
+            let window = remote.getCurrentWindow();
+            window.close();
+        });
+        // Edit Menu
+        //      - Edit menu 
+        let undoBtn = document.getElementById('undobtn');
+        undoBtn.addEventListener('click', () => {
+            editor.doc.undo();
+            toggleDisplay('dropdown__menu--edit');
+        });
+
+        let redoBtn = document.getElementById('redobtn');
+        redoBtn.addEventListener('click', () => {
+            editor.doc.redo();
+            toggleDisplay('dropdown__menu--edit');
+        });
+
+        //cut copy paste
+        let cutBtn = document.getElementById('cutbtn');
+        cutBtn.addEventListener('click', () => {
+            document.execCommand('cut');
+            toggleDisplay('dropdown__menu--edit');
+        });
+
+        let copyBtn = document.getElementById('copybtn');
+        copyBtn.addEventListener('click', () => {
+            document.execCommand('copy');
+            toggleDisplay('dropdown__menu--edit');
+        });
+
+        let pasteBtn = document.getElementById('pastebtn');
+        pasteBtn.addEventListener('click', () => {
+            document.execCommand('paste');
+            toggleDisplay('dropdown__menu--edit');
+        });
+
+        let deleteBtn = document.getElementById('deletebtn');
+        deleteBtn.addEventListener('click', () => {
+            document.execCommand('delete');
+            toggleDisplay('dropdown__menu--edit');
+        });
+
+        let enterBtn = document.getElementById('enterbtn');
+        enterBtn.addEventListener('click', () => {
+            CodeMirror.commands.newlineAndIndent(editor);
+            toggleDisplay('dropdown__menu--edit');
+        });
+
+        let tabBtn = document.getElementById('tabbtn');
+        tabBtn.addEventListener('click', () => {
+            CodeMirror.commands.defaultTab(editor);
+            toggleDisplay('dropdown__menu--edit');
+        });
+
+        let spaceBtn = document.getElementById('spacebtn');
+        spaceBtn.addEventListener('click', () => {
+            let cursorPos = editor.getCursor();
+            editor.replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
+            toggleDisplay('dropdown__menu--edit');
+        });
+
+        //Preview Menu
+        let previewBtn = document.getElementById('previewbtn');
+        previewBtn.addEventListener('click', () => {
+            let path = savesPath.replace(/\\/g, "/");
+            let path2 = path.replace(/\s+/g, '%20');
+            shell.openExternal('file:///'+path2+currentProject+'/index.html');
+            toggleDisplay('dropdown__menu--preview');
+        })
+
+        //Tags Menu
+        let heading1 = document.getElementById('heading1btn');
+        heading1.addEventListener('click', () => {
+            let cursorPos = editor.getCursor();
+            editor.replaceRange("<h1></h1>",{line: cursorPos.line, ch: cursorPos.ch});
+            toggleDisplay('dropdown__menu--tags');
+        });
+
+        let heading2 = document.getElementById('heading2btn');
+        heading2.addEventListener('click', () => {
+            let cursorPos = editor.getCursor();
+            editor.replaceRange("<h2></h2>",{line: cursorPos.line, ch: cursorPos.ch});
+            toggleDisplay('dropdown__menu--tags');
+        });
+
+        let heading3 = document.getElementById('heading3btn');
+        heading3.addEventListener('click', () => {
+            let cursorPos = editor.getCursor();
+            editor.replaceRange("<h3></h3>",{line: cursorPos.line, ch: cursorPos.ch});
+            toggleDisplay('dropdown__menu--tags');
+        });
+
+        let heading4 = document.getElementById('heading4btn');
+        heading4.addEventListener('click', () => {
+            let cursorPos = editor.getCursor();
+            editor.replaceRange("<h4></h4>",{line: cursorPos.line, ch: cursorPos.ch});
+            toggleDisplay('dropdown__menu--tags');
+        });
+
+        let heading5 = document.getElementById('heading5btn');
+        heading5.addEventListener('click', () => {
+            let cursorPos = editor.getCursor();
+            editor.replaceRange("<h5></h5>",{line: cursorPos.line, ch: cursorPos.ch});
+            toggleDisplay('dropdown__menu--tags');
+        });
+
+        let heading6 = document.getElementById('heading6btn');
+        heading6.addEventListener('click', () => {
+            let cursorPos = editor.getCursor();
+            editor.replaceRange("<h6></h6>",{line: cursorPos.line, ch: cursorPos.ch});
+            toggleDisplay('dropdown__menu--tags');
+        });
+
+
 }
 
 function saveChanges(currentProject) {
