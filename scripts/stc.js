@@ -87,8 +87,11 @@ function initDictate(target) {
         });
 
     }
+    
     let textAreas = document.getElementsByTagName('textarea');
+    console.log(textAreas.length)
     for (let i = 0; i < textAreas.length; i++) {
+        console.log('bap')
         textAreas[i].addEventListener('focus', () => {
             /* toggleDisplay('dictate-btn'); */
             toggleClass('#dictate-btn','ready');
@@ -201,26 +204,26 @@ function findKeyNameOfValue(array, data) {
 
 function insertTagIndent(tag, cursorPos) {
     // Insert Opening tag   
-    editor.replaceRange("<"+tag+">",{line: cursorPos.line, ch: cursorPos.ch});
-    CodeMirror.commands.indentAuto(editor); // Auto indent opening tab
-    CodeMirror.commands.newlineAndIndent(editor); // Simulate Enter key
+    editors[currentEditor].replaceRange("<"+tag+">",{line: cursorPos.line, ch: cursorPos.ch});
+    CodeMirror.commands.indentAuto(editors[currentEditor]); // Auto indent opening tab
+    CodeMirror.commands.newlineAndIndent(editors[currentEditor]); // Simulate Enter key
     
     // Get cursor position to return to after insertion
-    let cursorPosfinal = editor.getCursor(); 
-    CodeMirror.commands.newlineAndIndent(editor); // Simulate Enter key for closing tag position
-    let cursorPos2 = editor.getCursor();  // Get new position for closing tag 
+    let cursorPosfinal = editors[currentEditor].getCursor(); 
+    CodeMirror.commands.newlineAndIndent(editors[currentEditor]); // Simulate Enter key for closing tag position
+    let cursorPos2 = editors[currentEditor].getCursor();  // Get new position for closing tag 
 
     // Insert Closing tag
-    editor.replaceRange("</"+tag+">",{line: cursorPos2.line, ch: cursorPos2.ch});     
-    CodeMirror.commands.indentAuto(editor); // Auto Indet closing tag
-    editor.setCursor(cursorPosfinal.line,cursorPosfinal.ch) // Set cursor back to final position between two tags
+    editors[currentEditor].replaceRange("</"+tag+">",{line: cursorPos2.line, ch: cursorPos2.ch});     
+    CodeMirror.commands.indentAuto(editors[currentEditor]); // Auto Indet closing tag
+    editors[currentEditor].setCursor(cursorPosfinal.line,cursorPosfinal.ch) // Set cursor back to final position between two tags
 }
 
 
 function speechToCode(data) {
     let stcSuccess = false;
     // Might need to track modes i.e. Text entry | html | css/styles (html or css could be set by active editor) text entry can be triggered by command or alternative click/right click?
-    let cursorPos = editor.getCursor();
+    let cursorPos = editors[currentEditor].getCursor();
     let words = data.toLowerCase().split(" ");
     const codeEditor = document.getElementsByClassName('CodeMirror')[0];
     // Get elements for "working..." indication/feedback    
@@ -242,7 +245,7 @@ function speechToCode(data) {
                     let content;
                     if (singletons.indexOf(tag) !== -1) {
                         content = "<"+tag+">";
-                        editor.replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
+                        editors[currentEditor].replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
                     } else {
                         insertTagIndent(tag, cursorPos);
                     }
@@ -262,7 +265,7 @@ function speechToCode(data) {
                     if (tag === 'href') {
                         content = ' '+tag+'="http://"';
                     } else content = ' '+tag+'=""' ;
-                    editor.replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
+                    editors[currentEditor].replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
                 
                 }
             }
@@ -271,7 +274,7 @@ function speechToCode(data) {
             if ('class' === findKeyNameOfValue(couldBeClass, words[word])) { //IF CLASS
                 stcSuccess = true;
                 let content = " class='"+words[0]+"'";
-                editor.replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
+                editors[currentEditor].replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
             } 
 
             
@@ -281,9 +284,9 @@ function speechToCode(data) {
     if (dictateMode === 'plaintext') {
         if (data.length > 0) {
             stcSuccess = true;
-            editor.replaceRange(data,{line: cursorPos.line, ch: cursorPos.ch});
-            let newCursorPos = editor.getCursor()
-            editor.replaceRange(" ",{line: newCursorPos.line, ch: newCursorPos.ch});
+            editors[currentEditor].replaceRange(data,{line: cursorPos.line, ch: cursorPos.ch});
+            let newCursorPos = editors[currentEditor].getCursor()
+            editors[currentEditor].replaceRange(" ",{line: newCursorPos.line, ch: newCursorPos.ch});
         } 
     }
 
@@ -302,8 +305,8 @@ function speechToCode(data) {
                 if (command !== undefined) stcSuccess = true;
                 switch(command) {
                     case 'space':
-                        cursorPos = editor.getCursor();
-                        editor.replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
+                        cursorPos = editors[currentEditor].getCursor();
+                        editors[currentEditor].replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
                         break;
                     case 'save':
                         saveChanges(currentProject);
@@ -313,16 +316,16 @@ function speechToCode(data) {
                         window.close();
                         break;
                     case 'tab':
-                        CodeMirror.commands.defaultTab(editor);
+                        CodeMirror.commands.defaultTab(editors[currentEditor]);
                         break;
                     case 'enter':
-                        CodeMirror.commands.newlineAndIndent(editor);
+                        CodeMirror.commands.newlineAndIndent(editors[currentEditor]);
                         break;
                     case 'undo':
-                        editor.doc.undo();
+                        editors[currentEditor].doc.undo();
                         break;
                     case 'redo':
-                        editor.doc.redo();
+                        editors[currentEditor].doc.redo();
                         break;
                     case 'cut':
                         document.execCommand('cut');
@@ -337,9 +340,7 @@ function speechToCode(data) {
                         document.execCommand('delete');
                         break;
                     case 'preview':
-                        let path = savesPath.replace(/\\/g, "/");
-                        let path2 = path.replace(/\s+/g, '%20');
-                        shell.openExternal('file:///'+path2+currentProject+'/index.html');
+                        pagePreview();
                         break;
                     default:
                         break;
