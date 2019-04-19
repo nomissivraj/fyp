@@ -169,6 +169,10 @@ ipcMain.on('create:page', (e, data) =>{
     createPage(data);
 });
 
+ipcMain.on('delete:page', (e, data) => {
+    deletePage(data);
+});
+
 //send items
 
 /*
@@ -307,9 +311,8 @@ function addPageToJSON(project, pageName) {
                 log.error(err)
                 reject('fail');
             } else {
-                // stuff to add page 
-                let json = JSON.parse(data);
 
+                let json = JSON.parse(data);
                 for (let i = 0; i < json.length; i++) {
                     if (json[i].name === project.name) {
                         json[i].pages.push(pageName);
@@ -322,8 +325,28 @@ function addPageToJSON(project, pageName) {
     });
 }
 
-function removePageFromJSON() {
-
+function removePageFromJSON(details, pageName) {
+    console.log('removing page')
+    return new Promise((resolve,reject) =>{
+        
+        fs.readFile(path.join(savesPath,'/projects.json'), (err, data)=> {
+            if (err) {
+                log.error(err)
+                
+                reject('fail');
+            } else {
+                let json = JSON.parse(data);
+                for (let i = 0; i < json.length; i++) {
+                    if (json[i].name === details.name) {
+                        let pageIndex = json[i].pages.indexOf(pageName);
+                        json[i].pages.splice(pageIndex, 1);
+                        fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
+                        resolve(pageName);
+                    }
+                }
+            }
+        });
+    });
 }
 
 // Function to select working project
@@ -401,6 +424,22 @@ function deleteProject(projectName) {
     });
 }
 
+function deletePage(details) {
+    removePageFromJSON(details, details.deletepage).then((data) => {
+        if (details.mode === 'text') {
+            fs.unlink(savesPath+details.name+'/'+details.deletepage+'.html', (err)=>{
+                if (err) return console.log(err);
+            });
+            textWindow.webContents.send('remove:page', data);
+        } else {
+            fs.unlink(savesPath+details.name+'/'+details.deletepage+'.html', (err)=>{
+                if (err) return console.log(err);
+            });
+            guiWindow.webContents.send('remove:page', data);
+        }
+    });
+}
+
 
 function removeFromJSON(savesPath, projectName) {
     promiseReadFile(path.join(savesPath,'projects.json')).then((data) => {
@@ -467,7 +506,12 @@ function createPage(details) {
         createHtmlFile(details, data, details.newpage).then((data) => {
             addPageToJSON(details, details.newpage).then((data) => {
                 getProjectDetails(details.name).then((data) => {
-                    textWindow.webContents.send('insert:page', data);
+                    if (details.mode === 'text') {
+                        textWindow.webContents.send('insert:page', data);
+                    } else {
+                        guiWindow.webContents.send('insert:page', data);
+                    }
+                    
                 });
                 
             });
