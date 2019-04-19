@@ -247,6 +247,9 @@ function newProject(projectDetails) {
 
 function createHtmlFile(project, data, pageName) {
     //write HTML file
+    
+    data = data.replace('<title>Document</title>','<title>'+pageName+'</title>');
+
     return new Promise((resolve, reject) => {
         fs.writeFile(path.join(savesPath+project.name+'/'+pageName+'.html'), data, (err) => {
             if (err) { 
