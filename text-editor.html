@@ -203,12 +203,21 @@
 
             </div>
 
-            <div id="newpage__container" class="dialogue">
+            <div id="newpageform__container" class="dialogue" style="display:none">
                 <h1>New Page</h1>
                 <form id="newpage__form">
                     <input type="text" id="page-to-create" placeholder="Page name" required>
-                    <button type="button" onclick="resetForms('newpage__container')">Cancel</button>
+                    <button type="button" onclick="resetForms('newpageform__container')">Cancel</button>
                     <button type="submit" class="positive">Create</button>
+                </form>
+            </div>
+
+            <div id="deletepageform__container" class="dialogue" style="display:none">
+                <h1>Delete Page</h1>
+                <form id="deletepage__form">
+                    <input type="text" id="page-to-delete" placeholder="Page name" required>
+                    <button type="button" onclick="resetForms('deletepageform__container')">Cancel</button>
+                    <button type="submit" class="negative">Delete</button>
                 </form>
             </div>
 
@@ -233,6 +242,9 @@
         const newPageForm = document.getElementById('newpage__form');
         newPageForm.addEventListener('submit', newPage);
 
+        const deletePageForm = document.getElementById('deletepage__form');
+        deletePageForm.addEventListener('submit', deletePage);
+
         function newPage(e) {
             e.preventDefault();
             let pages = curProjectDetails.pages;
@@ -251,10 +263,34 @@
                     return
                 } else {
                     ipcRenderer.send('create:page', projectDetails)
+                    toggleDisplay('newpage__container');
                 }
             } else if (pages.length === 0) {
                 ipcRenderer.send('create:page', projectDetails);
                 toggleDisplay('newpage__container');
+            }
+        }
+
+        function deletePage(e) {
+            e.preventDefault();
+            const pageName = document.getElementById('page-to-delete').value;
+            let projectDetails = {
+                'name' : currentProject,
+                'mode' : curProjectDetails.mode,
+                'layout' : curProjectDetails.layout,
+                'pages' : curProjectDetails.pages,
+                'deletepage' : pageName
+            }
+            console.log(pageName)
+            if (curProjectDetails.pages.indexOf(pageName) === -1) {
+                alert("No existing page with the name '"+pageName+"' please try again.")
+                log.error('Page not found')
+            } else {
+                let confirmation = confirm("Please confirm deletion of page",pageName);
+                if (confirmation) {
+                    ipcRenderer.send('delete:page', projectDetails);
+                    toggleDisplay('deletepageform__container');
+                } else toggleDisplay('deletepageform__container');
             }
         }
 
@@ -304,6 +340,25 @@
             updateCurProjectDetails(data);
             //FINALLY UPDATE curProjectDetails with new stuff
             //'''''''''''''''==========>>>>>>>>><<<<<<<<<<<<<
+        });
+
+        ipcRenderer.on('remove:page', (e, data) => {
+
+            //Remove Container
+            let container = document.getElementById('page-container-'+data);
+            container.parentNode.removeChild(container);
+            //Remove tab
+            let tab = document.getElementById(data+'-tab__item');
+            tab.parentNode.removeChild(tab);
+            //Remove page from current project index
+            let cpdPageIndex = curProjectDetails.pages.indexOf(data)
+            curProjectDetails.pages.splice(cpdPageIndex,1);
+            // Remove page from editors instances
+            delete editors.data;
+            let pageId = curProjectDetails.pages.length > 0 ? curProjectDetails.pages[0] : 'css';
+            console.log(pageId)
+            setTab('.tab-btn', '#'+pageId+'-tab-btn', '#page-container-'+pageId, pageId);
+            
         });
 
         var map = {}; // You could also use an array
