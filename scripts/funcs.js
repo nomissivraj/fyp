@@ -100,6 +100,8 @@ function initMenu(menuEl, btn, subBtns) {
     }
 
     //  File menu
+        //      - File menu - New Page
+            
         //      - File menu - save
         let saveBtn = document.getElementById('savebtn');
         saveBtn.addEventListener('click', () => {
@@ -267,6 +269,27 @@ function initCMcontainers(details) {
     container.appendChild(cssPageCont);   
 }
 
+function insertCmContainer(data) {
+    let pages = data.pages;
+    let container = document.getElementById('pages-container');
+    for (let i = 0; i < pages.length; i++) {
+        if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
+            console.log(pages[i]);
+            let pageCont = document.createElement('div');
+            pageCont.setAttribute('id', 'page-container-'+pages[i]);
+            pageCont.setAttribute('style','z-index:0');       
+            pageCont.setAttribute('class','editor');       
+            //textarea with page id and style of: style="visibility: hidden; min-height: 1px;"
+            let textArea = document.createElement('textarea');
+            textArea.setAttribute('id','editor-'+pages[i]);   
+            textArea.setAttribute('style','visibility: hidden; min-height: 1px;');
+            
+            pageCont.appendChild(textArea);
+            container.appendChild(pageCont);   
+        }
+    }
+}
+
 function initCMInstances(details) {
     let pages = details.pages;
     // HTML page settings:
@@ -304,6 +327,29 @@ function initCMInstances(details) {
     editors[details.mode+'-'+details.layout] = cssEditor;
 }
 
+function newCmInstance(data) {
+    let pages = data.pages;
+
+    let htmlSpec = {
+        lineNumbers: true,
+        mode: 'xml',
+        htmlMode: true,
+        theme: 'lucario',
+        lineWrapping: true,
+        autoCloseTags: true,
+        matchTags: true,
+    }
+
+    for (let i = 0; i < pages.length; i++) {
+        if (curProjectDetails.pages.indexOf(pages[i]) === -1) { 
+            let currentPageCont = document.getElementById('editor-'+pages[i]);
+            let editor = CodeMirror.fromTextArea(currentPageCont, htmlSpec);
+            editor.setSize("100%", "calc(100vh - 70px)");
+            editors[pages[i]] = editor;
+        }
+    }
+}
+
 function loadPageContent(details) {
     let pages = details.pages;
     for (let i = 0; i < pages.length; i++) {
@@ -320,6 +366,20 @@ function loadPageContent(details) {
         editors["text-default"].setValue(fileData)
         editors["text-default"].clearHistory();
     });
+}
+
+function loadNewPageContent(details) {
+    let pages = details.pages;
+    for (let i = 0; i < pages.length; i++) {
+        if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
+            fs.readFile(savesPath+details.name+'/'+pages[i]+'.html','utf-8', (err, fileData) => {
+                if (err) return console.log(err);
+      /*           console.log(editors[pages[i]]); */
+                editors[pages[i]].setValue(fileData)
+                editors[pages[i]].clearHistory();
+            });
+        }
+    }
 }
 
 function setTab(tabEls, currentTabId, pageId, curPage) {
@@ -374,6 +434,27 @@ function initTabs(details) {
     initTabListeners(details);
 }
 
+function addNewTab(details) {
+    let tabsList = document.getElementsByClassName('tabs')[0];
+    let pages = details.pages;
+    for (let i = 0; i < pages.length; i++) {
+        if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
+            let li = document.createElement('li');
+            li.setAttribute('class', 'tab__item');
+            let button = document.createElement('button');
+            button.setAttribute('id',pages[i]+'-tab-btn');
+            button.setAttribute('class','tab-btn');
+            let text = document.createTextNode(pages[i]+'.html');
+
+            button.appendChild(text);
+            li.appendChild(button);
+            tabsList.appendChild(li);
+        }
+    }
+    console.log(tabsList);
+    initNewTabListener(details);
+}
+
 function initTabListeners(details) {
 
     let pages = details.pages;
@@ -393,6 +474,27 @@ function initTabListeners(details) {
         setTab('.tab-btn','#css-tab-btn', '#container-css', 'text-default');
     });
 
+}
+
+function initNewTabListener(details) {
+    let pages = details.pages;
+    for (let i = 0; i < pages.length; i++) {
+        if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
+            let tab = document.getElementById(pages[i]+'-tab-btn');
+            tab.addEventListener('click', (e) => {
+                setTab('.tab-btn','#'+pages[i]+'-tab-btn', '#page-container-'+pages[i], pages[i]);
+            });
+        }
+    }
+}
+
+function updateCurProjectDetails(data) {
+    let pages = data.pages;
+    for (let i = 0; i < pages.length; i++) {
+        if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
+            curProjectDetails.pages.push(pages[i]);
+        }
+    }
 }
 
 function saveChanges(currentProject) {
