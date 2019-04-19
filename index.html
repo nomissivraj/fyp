@@ -314,12 +314,11 @@
             e.preventDefault();
             //if project matching input doesn't exist warn user
             const projectName = document.getElementById('project-to-delete').value;
-            log.info(projectName)
 
             
             if (projectList.indexOf(projectName) === -1) {
-                alert("couldn't find project with then name '"+projectName+"' please try again.")
-                log.error('Project not found')
+                alert("couldn't find project with the name '"+projectName+"' please try again.");
+                log.error('Project not found');
                 
             } else {
                 //if project matching input does exist then alert user for second confirmation
