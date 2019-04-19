@@ -202,7 +202,16 @@
             <div id="pages-container">
 
             </div>
-            
+
+            <div id="newpage__container" class="dialogue">
+                <h1>New Page</h1>
+                <form id="newpage__form">
+                    <input type="text" id="page-to-create" placeholder="Page name" required>
+                    <button type="button" onclick="resetForms('newpage__container')">Cancel</button>
+                    <button type="submit" class="positive">Create</button>
+                </form>
+            </div>
+
             <button type="button" id="dictate-btn"></button>
         </main>
         
@@ -220,6 +229,35 @@
         ipcRenderer.send('ready:text-window');
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
         
+        //Process Forms
+        const newPageForm = document.getElementById('newpage__form');
+        newPageForm.addEventListener('submit', newPage);
+
+        function newPage(e) {
+            e.preventDefault();
+            let pages = curProjectDetails.pages;
+            let pageName = document.querySelectorAll('#page-to-create')[0].value;
+            console.log(pageName);
+            let projectDetails = {
+                'name' : currentProject,
+                'mode' : curProjectDetails.mode,
+                'layout' : curProjectDetails.layout,
+                'pages' : pages,
+                'newpage' : pageName
+            }
+            if (pages.length > 0) {
+                if (pages.indexOf(pageName) > -1) {
+                    alert('A project with that name already exists, try again');
+                    return
+                } else {
+                    ipcRenderer.send('create:page', projectDetails)
+                }
+            } else if (pages.length === 0) {
+                ipcRenderer.send('create:page', projectDetails);
+                toggleDisplay('newpage__container');
+            }
+        }
+
         // Global variables
         let currentProject;
         let curProjectDetails;
@@ -247,7 +285,26 @@
             loadPageContent(curProjectDetails);
             initDictate('textEditor');
             initMenu('menu','.dropdown__btn', '.submenu__btn');
+            
         })
+
+        ipcRenderer.on('insert:page', (e, data) => {
+            console.log(data);
+
+            //add new CM container
+            insertCmContainer(data);
+            // add new CM instance
+            newCmInstance(data);
+            //add new tab
+            addNewTab(data);
+            //load new page content into new CM instance
+            loadNewPageContent(data);
+            initDictate('textEditor');
+            
+            updateCurProjectDetails(data);
+            //FINALLY UPDATE curProjectDetails with new stuff
+            //'''''''''''''''==========>>>>>>>>><<<<<<<<<<<<<
+        });
 
         var map = {}; // You could also use an array
         onkeydown = onkeyup = function(e){
