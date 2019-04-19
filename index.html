@@ -198,7 +198,7 @@
               
             if (projectList.length > 0) {
                 if (projectList.indexOf(projectName) > -1) {
-                    alert('A project with that name already exists, try again')
+                    alert('A project with that name already exists, try again');
                     return
                 } else {
                     ipcRenderer.send('create:project', projectDetails);
