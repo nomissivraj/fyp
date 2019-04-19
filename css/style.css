@@ -59,7 +59,7 @@ main {
     width: 100%;
     position: fixed;
     grid-template-columns: 50px 200px 400px 100px;
-    z-index: 1;
+    z-index: 2;
 }
 
 .app-toolbar {
@@ -120,12 +120,13 @@ main {
 .app-toolbar__title {
     width: calc(100% - 454px);
     float: left;
-    padding: 10px;
+    padding: 11px;
     text-align: center;
 }
 
 .index .app-toolbar__title {
     width: calc(100% - 240px);
+    padding-left: 160px;
 }
 
 .app-toolbar__title span {
@@ -133,6 +134,7 @@ main {
     display: block;
     text-overflow: ellipsis;
     overflow: hidden;
+    font-size: .8em;
 }
 
 .app-toolbar__options {
@@ -404,7 +406,7 @@ label {
 
 .submenu {
     position: absolute;
-    top: 38px;
+    top: 40px;
     z-index: 10;
     background: grey;
     padding: 5px 0;
@@ -536,7 +538,6 @@ main.error {
 
 .tab__item {
     display: inline-block;
-    margin-right: -4px;
     border-right: 1px solid rgba(255, 255, 255, 0.2);
 }
 
