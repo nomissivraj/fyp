@@ -32,8 +32,8 @@ function createMainWindow() {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
-        minWidth: 400,
-        minHeight: 300,
+        'minWidth': 600,
+        'minHeight': 300,
         nodeIntegration: true,
         backgroundColor: '#f5f5f5',
         frame: false,
@@ -80,8 +80,8 @@ function createGuiWindow() {
     guiWindow = new BrowserWindow({
         width: 800,
         height: 600,
-        minWidth: 400,
-        minHeight: 300,
+        'minWidth': 600,
+        'minHeight': 300,
         nodeIntegration: true,
         backgroundColor: '#f5f5f5',
         frame: false,
@@ -111,8 +111,8 @@ function createTextEditorWindow() {
     textWindow = new BrowserWindow({
         width: 800,
         height: 600,
-        minWidth: 400,
-        minHeight: 300,
+        'minWidth': 600,
+        'minHeight': 300,
         nodeIntegration: true,
         backgroundColor: '#f5f5f5',
         frame: false,
@@ -137,37 +137,7 @@ function createTextEditorWindow() {
     });
 }
   
-   /*  function testWindow() {
-    // Set new window object using dimensions and icon
-        testWindow = new BrowserWindow({
-            width: 800,
-            height: 600,
-            minWidth: 400,
-            minHeight: 300,
-            nodeIntegration: true,
-            backgroundColor: '#f5f5f5',
-            frame: false,
-            icon: path.join(appPath, 'img/app-icon-64x64.png')
-        });
-        
-        // Window loading method - use index.html with file protocol
-        testWindow.loadURL(url.format({
-            pathname: path.join(appPath, 'text-editor.html'),
-            protocol: 'file',
-            slashes: true
-        }));
-    
-        // Enable devtools if not production
-        if (process.env.NODE_ENV !== "production") {
-            testWindow.webContents.openDevTools();
-        }
-        
-    
-        testWindow.on('closed', () => {
-            textWindow = null
-        });
-    } */
-
+   
 /*
    //////////////////////// END WINDOW FUNCTIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 */
@@ -478,36 +448,15 @@ function saveCSS(project) {
 
 // Function to save entire project
 function saveFile(project) {
-    fs.writeFile(path.join(savesPath,project.name,project.file), project.content);
+    let file = project.file;
+    let extension = file.split(".");
+    extension = extension[extension.length - 1];
+    let filePath = extension === 'css' ? '/css/'+file : file;
+    fs.writeFile(path.join(savesPath,project.name,filePath), project.content);
 }
 
 function checkChanges() {
 
-}
-
-
-
-// Function to copy block
-function copyBlock() {
-    //clear temp clipboard storage/variable 
-
-    //identify block to copy
-    //copy block into temp clipboard storage/variable
-}
-
-// Function to paste block
-function pasteBlock() {
-    // If nothing in clipboard storage/variable don't run
-    
-    // Identify location to place block
-    // append data from clipboard storage/variable into identified location
-}
-
-// Function to delete block
-function deleteBlock() {
-    // Identify block to be deleted
-    // Confirm deletion
-    // Delete block
 }
 
 //Auto save function?
