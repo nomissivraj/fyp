@@ -35,6 +35,17 @@
                             <div class="dropdown__menu" id="dropdown__menu--file"  style="display: none">
                                 <ul class="submenu">
                                     <li>
+                                        <button id="newpagebtn" class="submenu__btn">
+                                            <span class="submenu__item-title">New Page</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                            <button id="deletepagebtn" class="submenu__btn">
+                                                <span class="submenu__item-title">Delete Page</span>
+                                            </button>
+                                        </li>
+                                    <hr>
+                                    <li>
                                         <button id="savebtn" class="submenu__btn">
                                             <span class="submenu__item-title">Save</span>
                                             <span class="submenu__item-shortcut">Shortcut</span>
@@ -184,29 +195,14 @@
             <div class="tab-bar__container"> 
                 <div class="tab-bar">
                     <ul class="tabs">
-                        <li class="tab__item">
-                            <button id="indextab-btn" class="tab-btn">
-                                <span class="indextab-btn--title">Index.html</span>
-                            </button>
-                        </li>
-                        <li class="tab__item">
-                            <button id="csstab-btn" class="tab-btn">
-                                <span class="csstab-btn--title">text-default.css</span>
-                            </button>
-                        </li>
+                        
                     </ul>
                 </div>
             </div>
-            <div id="editor" class="editor" style="z-index: 0">
-                <textarea id="editor__text" style="visibility: hidden; min-height: 1px;">
+            <div id="pages-container">
 
-                </textarea>
             </div>
-            <div id="csseditor" class="editor" style="z-index: 0">
-                <textarea id="csseditor__text" style="visibility: hidden; min-height: 1px;">
-
-                </textarea>
-            </div>
+            
             <button type="button" id="dictate-btn"></button>
         </main>
         
@@ -226,58 +222,31 @@
         
         // Global variables
         let currentProject;
+        let curProjectDetails;
         let editorMode = 'html';
-
-
-        
-        let editorSpec = {
-            lineNumbers: true,
-            mode: 'xml',
-            htmlMode: true,
-            theme: 'lucario',
-            lineWrapping: true,
-            autoCloseTags: true,
-            matchTags: true,
-        }
-
-        let placeEditor = document.getElementById('editor__text');
-        let editor = CodeMirror.fromTextArea(placeEditor, editorSpec);
-        editor.setSize("100%", "calc(100vh - 70px)");
-
-        let cssEditorSpec = {
-            lineNumbers: true,
-            mode: 'css',
-            theme: 'lucario',
-/*             htmlMode: true, */
-            lineWrapping: true,
-            autoCloseTags: true,
-            matchTags: true,
-        }
-
-        let placeCssEditor = document.getElementById('csseditor__text');
-        let cssEditor = CodeMirror.fromTextArea(placeCssEditor, cssEditorSpec)
-        cssEditor.setSize("100%", "calc(100vh - 40px)");
-       
-        
-        //Add listeners for menu buttons
-        //Recieve
+        let editors = {};
+        let currentEditor;
+        let currentPage;
+          
+        // Recieve
         ipcRenderer.on('load:data', (e, data) => {
             currentProject = data.name;
-            // This is hardcoded for index currently... will loop through directory and load all files to array in future (then open in tabs?)
-            fs.readFile(savesPath+data.name+'/index.html','utf-8', (err, fileData) => {
-                if (err) return console.log(err);
-                editor.setValue(fileData)
-                editor.focus()
-                editor.setCursor(10,0)
-                editor.clearHistory();
-            });
-            fs.readFile(savesPath+data.name+'/css/text-default.css','utf-8', (err, fileData) => {
-                if (err) return console.log(err);
-                cssEditor.setValue(fileData)
-                cssEditor.clearHistory();
-            });
-            //console.log(data);
-            
+            curProjectDetails = data;
+            let titleCont = document.querySelectorAll('.app-toolbar__title span')[0];
+            let projectTitle = document.createTextNode(' - '+currentProject);
+            titleCont.style = 'text-transform:capitalize';
+            titleCont.appendChild(projectTitle);
+            console.log(titleCont)
+            // Load html containers for CM instances
+            initCMcontainers(curProjectDetails);
+            // Load CM instances
+            initCMInstances(curProjectDetails);
+            // Load tabs
+            initTabs(curProjectDetails);
+            // Load file content into page editors 
+            loadPageContent(curProjectDetails);
+            initDictate('textEditor');
+            initMenu('menu','.dropdown__btn', '.submenu__btn');
         })
 
         var map = {}; // You could also use an array
@@ -286,8 +255,8 @@
             /* insert conditional here */
             console.log(map)
         }
-        initDictate('textEditor');
-        initMenu('menu','.dropdown__btn', '.submenu__btn');
-        initTabs();
+        
+        
+        
     </script>
 </html>
