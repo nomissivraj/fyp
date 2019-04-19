@@ -165,6 +165,10 @@ ipcMain.on('delete:project', (e, data) => {
     deleteProject(data);
 });
 
+ipcMain.on('create:page', (e, data) =>{
+    createPage(data);
+});
+
 //send items
 
 /*
@@ -209,7 +213,7 @@ function newProject(projectDetails) {
                 let promiseHtml = promiseReadFile(path.join(appPath+templateHtmlPath), 'utf-8');
                 let promiseCss = promiseReadFile(path.join(appPath+templateCssPath));
                 Promise.all([promiseHtml, promiseCss]).then((data) => {
-                    let promiseCreateHtml = createHtmlFile(projectDetails, data[0]);
+                    let promiseCreateHtml = createHtmlFile(projectDetails, data[0], 'index');
                     let promiseCreateCss = createCssFile(projectDetails, data[1]); 
                     let promiseUpdate = updateJson(projectDetails);
                     Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data)=>{
@@ -222,7 +226,7 @@ function newProject(projectDetails) {
                 let promiseHtml = promiseReadFile(path.join(appPath+'/templates/text-template.html'), 'utf-8');
                 let promiseCss = promiseReadFile(path.join(appPath+'/templates/css/text-default.css'));
                 Promise.all([promiseHtml, promiseCss]).then((data) => {
-                    let promiseCreateHtml = createHtmlFile(projectDetails, data[0]);
+                    let promiseCreateHtml = createHtmlFile(projectDetails, data[0], 'index');
                     let promiseCreateCss = createCssFile(projectDetails, data[1]); 
                     let promiseUpdate = updateJson(projectDetails);
                     Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data)=>{
@@ -237,15 +241,15 @@ function newProject(projectDetails) {
     });
 }
 
-function createHtmlFile(project, data) {
+function createHtmlFile(project, data, pageName) {
     //write HTML file
     return new Promise((resolve, reject) => {
-        fs.writeFile(path.join(savesPath+project.name+'/index.html'), data, (err) => {
+        fs.writeFile(path.join(savesPath+project.name+'/'+pageName+'.html'), data, (err) => {
             if (err) { 
                 log.error(err);
                 reject('fail');
             } else {
-                log.info("The index file was saved!");
+                log.info("The html file was saved!");
                 resolve();
             }
         }); 
@@ -295,6 +299,32 @@ function updateJson(projectDetails) {
     });
 }
 
+function addPageToJSON(project, pageName) {
+    console.log('adding page')
+    return new Promise((resolve,reject) =>{
+        fs.readFile(path.join(savesPath,'/projects.json'), (err, data)=> {
+            if (err) {
+                log.error(err)
+                reject('fail');
+            } else {
+                // stuff to add page 
+                let json = JSON.parse(data);
+
+                for (let i = 0; i < json.length; i++) {
+                    if (json[i].name === project.name) {
+                        json[i].pages.push(pageName);
+                        fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
+                        resolve(pageName);
+                    }
+                }
+            }
+        });
+    });
+}
+
+function removePageFromJSON() {
+
+}
 
 // Function to select working project
 function loadProject(projectId) {
@@ -432,18 +462,18 @@ function deleteAllDirFiles(directory) {
 }
 
 // Function to create new page
-function newPage() {
-
-}
-
-// Function to save html - possibly form/POST method that sends string back to be saved to file.
-function saveHTML(project) {
-
-}
-
-// Function to save CSS to css file
-function saveCSS(project) {
-
+function createPage(details) {
+    promiseReadFile(path.join(appPath+'/templates/text-template.html'), 'utf-8').then((data) =>{
+        createHtmlFile(details, data, details.newpage).then((data) => {
+            addPageToJSON(details, details.newpage).then((data) => {
+                getProjectDetails(details.name).then((data) => {
+                    textWindow.webContents.send('insert:page', data);
+                });
+                
+            });
+        });
+    });
+    
 }
 
 // Function to save entire project
