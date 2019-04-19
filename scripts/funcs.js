@@ -101,7 +101,23 @@ function initMenu(menuEl, btn, subBtns) {
 
     //  File menu
         //      - File menu - New Page
+        let newPageBtn = document.getElementById('newpagebtn');
+        newPageBtn.addEventListener('click', () => {
+            hideOthers('.dialogue','#newpageform__container');
+            toggleDisplay('newpageform__container');
+            toggleDisplay('dropdown__menu--file');
             
+        });
+        //      - File menu - Delete Page
+        let delPageBtn = document.getElementById('deletepagebtn');
+        delPageBtn.addEventListener('click', () => {
+            hideOthers('.dialogue','#deletepageform__container');
+            let input = document.getElementById('page-to-delete');
+            input.value = currentPage;
+            toggleDisplay('deletepageform__container')
+            toggleDisplay('dropdown__menu--file');
+        });
+
         //      - File menu - save
         let saveBtn = document.getElementById('savebtn');
         saveBtn.addEventListener('click', () => {
@@ -258,7 +274,7 @@ function initCMcontainers(details) {
 
     // then make css page container
     let cssPageCont = document.createElement('div');
-    cssPageCont.setAttribute('id', 'container-css');
+    cssPageCont.setAttribute('id', 'page-container-css');
     cssPageCont.setAttribute('style','z-index:0');       
     cssPageCont.setAttribute('class','editor');  
     let cssTextArea = document.createElement('textarea');
@@ -383,6 +399,7 @@ function loadNewPageContent(details) {
 }
 
 function setTab(tabEls, currentTabId, pageId, curPage) {
+    
     let tabs = document.querySelectorAll(tabEls);
     let curTab = document.querySelectorAll(currentTabId)[0];
     let page = document.querySelectorAll(pageId)[0];
@@ -409,6 +426,7 @@ function initTabs(details) {
     for (let i = 0; i < pages.length; i++) {
         let li = document.createElement('li');
         li.setAttribute('class', 'tab__item');
+        li.setAttribute('id', pages[i]+'-tab__item');
         let button = document.createElement('button');
         button.setAttribute('id',pages[i]+'-tab-btn');
         button.setAttribute('class','tab-btn');
@@ -425,7 +443,7 @@ function initTabs(details) {
     let cssButton = document.createElement('button');
     cssButton.setAttribute('id','css-tab-btn');
     cssButton.setAttribute('class','tab-btn');
-    let cssText = document.createTextNode('text-default.css');
+    let cssText = document.createTextNode('/css/text-default.css');
 
     cssButton.appendChild(cssText);
     cssLi.appendChild(cssButton);
@@ -440,6 +458,7 @@ function addNewTab(details) {
     for (let i = 0; i < pages.length; i++) {
         if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
             let li = document.createElement('li');
+            li.setAttribute('id', pages[i]+'-tab__item');
             li.setAttribute('class', 'tab__item');
             let button = document.createElement('button');
             button.setAttribute('id',pages[i]+'-tab-btn');
@@ -459,19 +478,22 @@ function initTabListeners(details) {
 
     let pages = details.pages;
    // Add listener to all html tabs
-    setTimeout(()=>{
-        setTab('.tab-btn','#'+pages[0]+'-tab-btn', '#page-container-'+pages[0], pages[0]);
-    },100);
-    for (let i = 0; i < pages.length; i++) {
-        let tab = document.getElementById(pages[i]+'-tab-btn');
-        tab.addEventListener('click', (e) => {
-            setTab('.tab-btn','#'+pages[i]+'-tab-btn', '#page-container-'+pages[i], pages[i]);
-        });
+    if (pages.length > 0) {
+        setTimeout(()=>{
+            setTab('.tab-btn','#'+pages[0]+'-tab-btn', '#page-container-'+pages[0], pages[0]);
+        },100);
+        for (let i = 0; i < pages.length; i++) {
+            let tab = document.getElementById(pages[i]+'-tab-btn');
+            tab.addEventListener('click', (e) => {
+                setTab('.tab-btn','#'+pages[i]+'-tab-btn', '#page-container-'+pages[i], pages[i]);
+            });
+        }
     }
+    
     // Add listener to css tab
     let cssTab = document.getElementById('css-tab-btn');
     cssTab.addEventListener('click', (e) => {
-        setTab('.tab-btn','#css-tab-btn', '#container-css', 'text-default');
+        setTab('.tab-btn','#css-tab-btn', '#page-container-css', 'text-default');
     });
 
 }
@@ -484,6 +506,7 @@ function initNewTabListener(details) {
             tab.addEventListener('click', (e) => {
                 setTab('.tab-btn','#'+pages[i]+'-tab-btn', '#page-container-'+pages[i], pages[i]);
             });
+            setTab('.tab-btn','#'+pages[i]+'-tab-btn', '#page-container-'+pages[i], pages[i]);
         }
     }
 }
