@@ -27,6 +27,9 @@ let mainWindow,
     textWindow/* ,
     testWindow */;
 
+let winX,
+    winY;
+
 function createMainWindow() {
     // Set new window object using dimensions and icon
     mainWindow = new BrowserWindow({
@@ -85,7 +88,9 @@ function createGuiWindow() {
         nodeIntegration: true,
         backgroundColor: '#f5f5f5',
         frame: false,
-        icon: path.join(appPath, 'img/app-icon-64x64.png')
+        icon: path.join(appPath, 'img/app-icon-64x64.png'),
+        x : winX,
+        y : winY
     });
     
     // Window loading method - use index.html with file protocol
@@ -116,7 +121,9 @@ function createTextEditorWindow() {
         nodeIntegration: true,
         backgroundColor: '#f5f5f5',
         frame: false,
-        icon: path.join(appPath, 'img/app-icon-64x64.png')
+        icon: path.join(appPath, 'img/app-icon-64x64.png'),
+        x : winX,
+        y : winY
     });
     
     // Window loading method - use index.html with file protocol
@@ -153,6 +160,9 @@ ipcMain.on('create:project', (e, data) => {
 });
 
 ipcMain.on('load:project', (e, data) => {
+    let winPos = mainWindow.getPosition();
+    winX = winPos[0];
+    winY = winPos[1];
     loadProject(data);
 });
 
