@@ -345,7 +345,7 @@ button.positive:hover {
     position: absolute;
     top: -5px;
     left: -10px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.5);
     padding: 2px 4px 1px 4px;
     border-radius: 3px 0 3px 0;
 }
