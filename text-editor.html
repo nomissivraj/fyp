@@ -35,15 +35,15 @@
                             <div class="dropdown__menu" id="dropdown__menu--file"  style="display: none">
                                 <ul class="submenu">
                                     <li>
-                                        <button id="newpagebtn" class="submenu__btn">
-                                            <span class="submenu__item-title">New Page</span>
+                                        <button id="newfilebtn" class="submenu__btn">
+                                            <span class="submenu__item-title">New File</span>
                                         </button>
                                     </li>
                                     <li>
-                                            <button id="deletepagebtn" class="submenu__btn">
-                                                <span class="submenu__item-title">Delete Page</span>
-                                            </button>
-                                        </li>
+                                        <button id="deletefilebtn" class="submenu__btn">
+                                            <span class="submenu__item-title">Delete File</span>
+                                        </button>
+                                    </li>
                                     <hr>
                                     <li>
                                         <button id="savebtn" class="submenu__btn">
@@ -169,7 +169,6 @@
                             </div>
                         </li>
                     </ul>
-                    
                 </div>
                 <div class="app-toolbar__title">
                     <span>Voice Developer</span>
@@ -192,6 +191,7 @@
         </header>
 
         <main>
+        
             <div class="tab-bar__container"> 
                 <div class="tab-bar">
                     <ul class="tabs">
@@ -199,24 +199,28 @@
                     </ul>
                 </div>
             </div>
+            <div id="no-files" style="display: none; user-select: none;">
+                    <h1>No files! :(</h1>
+                    <p>You have no files in this project. Please begin by creating a new HTML or CSS file through the menu. <br><br>e.g. 'File' > 'New File'</p>
+                </div>
             <div id="pages-container">
 
             </div>
 
-            <div id="newpageform__container" class="dialogue" style="display:none">
+            <div id="newfileform__container" class="dialogue" style="display:none">
                 <h1>New Page</h1>
-                <form id="newpage__form">
-                    <input type="text" id="page-to-create" placeholder="Page name" required>
-                    <button type="button" onclick="resetForms('newpageform__container')">Cancel</button>
+                <form id="newfile__form">
+                    <input type="text" id="file-to-create" placeholder="file.html / file.css" required>
+                    <button type="button" onclick="resetForms('newfileform__container')">Cancel</button>
                     <button type="submit" class="positive">Create</button>
                 </form>
             </div>
 
-            <div id="deletepageform__container" class="dialogue" style="display:none">
+            <div id="deletefileform__container" class="dialogue" style="display:none">
                 <h1>Delete Page</h1>
-                <form id="deletepage__form">
-                    <input type="text" id="page-to-delete" placeholder="Page name" required>
-                    <button type="button" onclick="resetForms('deletepageform__container')">Cancel</button>
+                <form id="deletefile__form">
+                    <input type="text" id="file-to-delete" placeholder="Page name" required>
+                    <button type="button" onclick="resetForms('deletefileform__container')">Cancel</button>
                     <button type="submit" class="negative">Delete</button>
                 </form>
             </div>
@@ -239,54 +243,96 @@
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
         
         //Process Forms
-        const newPageForm = document.getElementById('newpage__form');
-        newPageForm.addEventListener('submit', newPage);
+        const newFileForm = document.getElementById('newfile__form');
+        newFileForm.addEventListener('submit', newFile);
 
-        const deletePageForm = document.getElementById('deletepage__form');
-        deletePageForm.addEventListener('submit', deletePage);
+        const deleteFileForm = document.getElementById('deletefile__form');
+        deleteFileForm.addEventListener('submit', deleteFile);
 
-        function newPage(e) {
+        function newFile(e) {
             e.preventDefault();
             let pages = curProjectDetails.pages;
-            let pageName = document.querySelectorAll('#page-to-create')[0].value;
-            console.log(pageName);
-            let projectDetails = {
-                'name' : currentProject,
-                'mode' : curProjectDetails.mode,
-                'layout' : curProjectDetails.layout,
-                'pages' : pages,
-                'newpage' : pageName
+            let stylesheets = curProjectDetails.stylesheets;
+            let fileName = document.querySelectorAll('#file-to-create')[0].value;
+            fileName = fileName.replace(' ', '-');
+            let supportedExts = ['css', 'html'];
+            
+            let fileDetails = fileName.split('.');
+            if (fileDetails.length === 1) {
+                //IF no extension .html or .css is given assume html file
+                fileName = fileName+'.html';
             }
-            if (pages.length > 0) {
-                if (pages.indexOf(pageName) > -1) {
-                    alert('A project with that name already exists, try again');
-                    return
-                } else {
-                    ipcRenderer.send('create:page', projectDetails)
-                    toggleDisplay('newpage__container');
-                }
-            } else if (pages.length === 0) {
-                ipcRenderer.send('create:page', projectDetails);
-                toggleDisplay('newpage__container');
-            }
-        }
-
-        function deletePage(e) {
-            e.preventDefault();
-            const pageName = document.getElementById('page-to-delete').value;
             let projectDetails = {
                 'name' : currentProject,
                 'mode' : curProjectDetails.mode,
                 'layout' : curProjectDetails.layout,
                 'pages' : curProjectDetails.pages,
-                'deletepage' : pageName
+                'stylesheets' : curProjectDetails.stylesheets,
+                'newfile' : fileName
             }
-            console.log(pageName)
-            if (curProjectDetails.pages.indexOf(pageName) === -1) {
-                alert("No existing page with the name '"+pageName+"' please try again.")
-                log.error('Page not found')
+            fileDetails = fileName.split('.');
+            if (fileDetails.length > 1) {
+                let extension = fileDetails[1];
+                if (supportedExts.indexOf(extension) === -1) {
+                    //alert
+                    alert('please use a valid file extension. Currently only .html and .css are supported');
+                    return
+                }
+
+                switch(extension) {
+                    case 'html':
+                        if (pages.length > 0) {
+                            if (pages.indexOf(fileDetails[0]) > -1) {
+                                alert('A file with that name already exists, try again');
+                                return
+                            } else {
+                                ipcRenderer.send('create:file', projectDetails)
+                                resetForms('newfileform__container');
+                            }
+                        } else if (pages.length === 0) {
+                            ipcRenderer.send('create:file', projectDetails);
+                            resetForms('newfileform__container');
+                        }
+                        break;
+                    case 'css':
+                        if (stylesheets.length > 0) {
+                            if (stylesheets.indexOf(fileDetails[0]) > -1) {
+                                alert('A file with that name already exists, try again');
+                                return
+                            } else {
+                                ipcRenderer.send('create:file', projectDetails)
+                                resetForms('newfileform__container');
+                            }
+                        } else if (stylesheets.length === 0) {
+                            ipcRenderer.send('create:file', projectDetails);
+                            resetForms('newfileform__container');
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            
+        }
+
+        function deleteFile(e) {
+            e.preventDefault();
+            const fileName = document.getElementById('file-to-delete').value;
+            let projectDetails = {
+                'name' : currentProject,
+                'mode' : curProjectDetails.mode,
+                'layout' : curProjectDetails.layout,
+                'pages' : curProjectDetails.pages,
+                'stylesheets' : curProjectDetails.stylesheets,
+                'deletefile' : fileName
+            }
+
+            if (curProjectDetails.pages.indexOf(fileName) === -1 && curProjectDetails.stylesheets.indexOf(fileName) === -1) {
+                alert("No existing file with the name '"+fileName+"' please try again.")
+                console.log('Page not found')
             } else {
-                let confirmation = confirm("Please confirm deletion of page",pageName);
+                let confirmation = confirm("Please confirm deletion of file",fileName);
                 if (confirmation) {
                     ipcRenderer.send('delete:page', projectDetails);
                     toggleDisplay('deletepageform__container');
@@ -321,12 +367,16 @@
             loadPageContent(curProjectDetails);
             initDictate('textEditor');
             initMenu('menu','.dropdown__btn', '.submenu__btn');
+            if (data.pages.length === 0 && data.stylesheets.length === 0) {
+                toggleDisplay('no-files');
+            }
             
         })
 
         ipcRenderer.on('insert:page', (e, data) => {
             console.log(data);
-
+            let noFiles = document.getElementById('no-files');
+            noFiles.style = 'display: none';
             //add new CM container
             insertCmContainer(data);
             // add new CM instance
@@ -335,7 +385,6 @@
             addNewTab(data);
             //load new page content into new CM instance
             loadNewPageContent(data);
-            initDictate('textEditor');
             
             updateCurProjectDetails(data);
             //FINALLY UPDATE curProjectDetails with new stuff
@@ -343,29 +392,21 @@
         });
 
         ipcRenderer.on('remove:page', (e, data) => {
-
-            //Remove Container
-            let container = document.getElementById('page-container-'+data);
-            container.parentNode.removeChild(container);
-            //Remove tab
-            let tab = document.getElementById(data+'-tab__item');
-            tab.parentNode.removeChild(tab);
-            //Remove page from current project index
-            let cpdPageIndex = curProjectDetails.pages.indexOf(data)
-            curProjectDetails.pages.splice(cpdPageIndex,1);
-            // Remove page from editors instances
-            delete editors.data;
-            let pageId = curProjectDetails.pages.length > 0 ? curProjectDetails.pages[0] : 'css';
-            console.log(pageId)
-            setTab('.tab-btn', '#'+pageId+'-tab-btn', '#page-container-'+pageId, pageId);
+            // Remove page from renderer/window and all links to it (tabs, variables etc.)
+            rendererDestroyPage(data);
             
+            resetForms('deletefileform__container');
+            
+            setTab('.tab-btn', firstTab());
+            
+            noPages();
         });
 
         var map = {}; // You could also use an array
         onkeydown = onkeyup = function(e){
             map[e.keyCode] = e.type == 'keydown';
             /* insert conditional here */
-            console.log(map)
+           // console.log(map)
         }
         
         
