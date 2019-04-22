@@ -285,8 +285,6 @@ function speechToCode(data) {
         if (data.length > 0) {
             stcSuccess = true;
             editors[currentEditor].replaceRange(data,{line: cursorPos.line, ch: cursorPos.ch});
-            let newCursorPos = editors[currentEditor].getCursor()
-            editors[currentEditor].replaceRange(" ",{line: newCursorPos.line, ch: newCursorPos.ch});
         } 
     }
 
