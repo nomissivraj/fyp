@@ -28,7 +28,8 @@ let mainWindow,
     testWindow */;
 
 let winX,
-    winY;
+    winY,
+    winSize;
 
 function createMainWindow() {
     // Set new window object using dimensions and icon
@@ -81,8 +82,8 @@ function createMainWindow() {
 function createGuiWindow() {
 // Set new window object using dimensions and icon
     guiWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: winSize[0] ,
+        height: winSize[1],
         'minWidth': 600,
         'minHeight': 300,
         nodeIntegration: true,
@@ -114,8 +115,8 @@ function createGuiWindow() {
 function createTextEditorWindow() {
 // Set new window object using dimensions and icon
     textWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: winSize[0],
+        height: winSize[1],
         'minWidth': 600,
         'minHeight': 300,
         nodeIntegration: true,
@@ -155,6 +156,10 @@ function createTextEditorWindow() {
 
 // Catch items
 ipcMain.on('create:project', (e, data) => {
+    let winPos = mainWindow.getPosition();
+    winX = winPos[0];
+    winY = winPos[1];
+    winSize = mainWindow.getSize();
     console.log('project creation requested');
     newProject(data)
 });
@@ -163,6 +168,8 @@ ipcMain.on('load:project', (e, data) => {
     let winPos = mainWindow.getPosition();
     winX = winPos[0];
     winY = winPos[1];
+    console.log('HAPPENING?')
+    winSize = mainWindow.getSize();
     loadProject(data);
 });
 
@@ -175,8 +182,8 @@ ipcMain.on('delete:project', (e, data) => {
     deleteProject(data);
 });
 
-ipcMain.on('create:page', (e, data) =>{
-    createPage(data);
+ipcMain.on('create:file', (e, data) =>{
+    createFile(data);
 });
 
 ipcMain.on('delete:page', (e, data) => {
@@ -228,7 +235,7 @@ function newProject(projectDetails) {
                 let promiseCss = promiseReadFile(path.join(appPath+templateCssPath));
                 Promise.all([promiseHtml, promiseCss]).then((data) => {
                     let promiseCreateHtml = createHtmlFile(projectDetails, data[0], 'index');
-                    let promiseCreateCss = createCssFile(projectDetails, data[1]); 
+                    let promiseCreateCss = createCssFile(projectDetails, data[1], projectDetails.mode+'-'+projectDetails.layout); 
                     let promiseUpdate = updateJson(projectDetails);
                     Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data)=>{
                         loadProject(projectDetails.name);
@@ -241,7 +248,7 @@ function newProject(projectDetails) {
                 let promiseCss = promiseReadFile(path.join(appPath+'/templates/css/text-default.css'));
                 Promise.all([promiseHtml, promiseCss]).then((data) => {
                     let promiseCreateHtml = createHtmlFile(projectDetails, data[0], 'index');
-                    let promiseCreateCss = createCssFile(projectDetails, data[1]); 
+                    let promiseCreateCss = createCssFile(projectDetails, data[1], projectDetails.mode+'-'+projectDetails.layout); 
                     let promiseUpdate = updateJson(projectDetails);
                     Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data)=>{
                         loadProject(projectDetails.name);
@@ -274,15 +281,15 @@ function createHtmlFile(project, data, pageName) {
     
 }
 
-function createCssFile(project, data) {
+function createCssFile(project, data, fileName) {
     //write css file
     return new Promise((resolve, reject) => {
         fs.mkdir(path.join(savesPath+project.name+'/css') , 0777, (err)=> {
             if (err) {
                 reject(err)
-                console.log('balls')
+                console.log('fail')
             } else {
-                fs.writeFile(path.join(savesPath+project.name+'/css/'+project.mode+'-'+project.layout+'.css'), data, (err) => {
+                fs.writeFile(path.join(savesPath+project.name+'/css/'+fileName+'.css'), data, (err) => {
                     if (err) {
                         log.error(err);
                         console.log(err)
@@ -338,8 +345,30 @@ function addPageToJSON(project, pageName) {
     });
 }
 
-function removePageFromJSON(details, pageName) {
-    console.log('removing page')
+function addStylesheetToJSON(project, fileName) {
+    console.log('adding stylesheet')
+    return new Promise((resolve,reject) =>{
+        fs.readFile(path.join(savesPath,'/projects.json'), (err, data)=> {
+            if (err) {
+                log.error(err)
+                reject('fail');
+            } else {
+
+                let json = JSON.parse(data);
+                for (let i = 0; i < json.length; i++) {
+                    if (json[i].name === project.name) {
+                        json[i].stylesheets.push(fileName);
+                        fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
+                        resolve(fileName);
+                    }
+                }
+            }
+        });
+    });
+}
+
+function removePageFromJSON(details, fileName) {
+    console.log('removing file')
     return new Promise((resolve,reject) =>{
         
         fs.readFile(path.join(savesPath,'/projects.json'), (err, data)=> {
@@ -350,11 +379,30 @@ function removePageFromJSON(details, pageName) {
             } else {
                 let json = JSON.parse(data);
                 for (let i = 0; i < json.length; i++) {
-                    if (json[i].name === details.name) {
-                        let pageIndex = json[i].pages.indexOf(pageName);
-                        json[i].pages.splice(pageIndex, 1);
-                        fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
-                        resolve(pageName);
+                    if (json[i].name === details.name) {//if matching project
+                        console.log('FILENAME',fileName)
+                        let fileDetails = fileName.split('.');
+                        let fileExt = fileDetails[1];
+
+                        switch(fileExt) {
+                            case 'html':
+                                //Check pages/html for file to remove from JSON
+                                let fileIndex = json[i].pages.indexOf(fileName);
+                                json[i].pages.splice(fileIndex, 1);
+                                fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
+                                resolve(fileName);
+                                break;
+                            case 'css':
+                                let cssFileIndex = json[i].stylesheets.indexOf(fileName);
+                                json[i].stylesheets.splice(cssFileIndex, 1);
+                                fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
+                                resolve(fileName);
+                                break;
+                            default:
+                                break;
+                        }
+
+                        //check stylesheets/css for file to remove from JSON
                     }
                 }
             }
@@ -438,14 +486,31 @@ function deleteProject(projectName) {
 }
 
 function deletePage(details) {
-    removePageFromJSON(details, details.deletepage).then((data) => {
+    let fileDetails = details.deletefile.split('.');
+    let fileExt = fileDetails[1];
+
+    let delFilePath;
+    
+    switch(fileExt) {
+        case 'css':
+            delFilePath = 'css/'+details.deletefile;
+            console.log('DELFILE CSS', delFilePath);
+            break;
+        case 'html':
+            delFilePath = details.deletefile;
+            console.log('DELFILE', delFilePath);
+            break;
+        default:
+            break;
+    }
+    removePageFromJSON(details, details.deletefile).then((data) => {
         if (details.mode === 'text') {
-            fs.unlink(savesPath+details.name+'/'+details.deletepage+'.html', (err)=>{
+            fs.unlink(savesPath+details.name+'/'+delFilePath, (err)=>{
                 if (err) return console.log(err);
             });
             textWindow.webContents.send('remove:page', data);
         } else {
-            fs.unlink(savesPath+details.name+'/'+details.deletepage+'.html', (err)=>{
+            fs.unlink(savesPath+details.name+'/'+delFilePath, (err)=>{
                 if (err) return console.log(err);
             });
             guiWindow.webContents.send('remove:page', data);
@@ -514,22 +579,55 @@ function deleteAllDirFiles(directory) {
 }
 
 // Function to create new page
-function createPage(details) {
-    promiseReadFile(path.join(appPath+'/templates/text-template.html'), 'utf-8').then((data) =>{
-        createHtmlFile(details, data, details.newpage).then((data) => {
-            addPageToJSON(details, details.newpage).then((data) => {
-                getProjectDetails(details.name).then((data) => {
-                    if (details.mode === 'text') {
-                        textWindow.webContents.send('insert:page', data);
-                    } else {
-                        guiWindow.webContents.send('insert:page', data);
-                    }
-                    
+function createFile(details) {
+    console.log(details);
+    let newFile = details.newfile;
+    let fileDetails = newFile.split('.');
+    let extension = fileDetails[1];
+    let fileName = fileDetails[0];
+    console.log(extension);
+    switch (extension) {
+        case 'css':
+            console.log('createCSS');
+            promiseReadFile(path.join(appPath+'/templates/css/'+details.mode+'-'+details.layout+'.css'), 'utf-8').then((data) =>{
+                createCssFile(details, data, fileName).then((data) => {
+                    addStylesheetToJSON(details, newFile).then((data) => {
+                        getProjectDetails(details.name).then((data) => {
+                            if (details.mode === 'text') {
+                                textWindow.webContents.send('insert:page', data);
+                            } else {
+                                guiWindow.webContents.send('insert:page', data);
+                            }
+                            
+                        });
+                        
+                    });
                 });
-                
             });
-        });
-    });
+            break;
+        case 'html':
+        console.log('about to read file')
+        console.log(path.join(appPath+'/templates/text-template.html'))
+            promiseReadFile(path.join(appPath+'/templates/text-template.html'), 'utf-8').then((data) =>{
+                console.log('reading file')
+                createHtmlFile(details, data, fileName).then((data) => {
+                    addPageToJSON(details, newFile).then((data) => {
+                        getProjectDetails(details.name).then((data) => {
+                            if (details.mode === 'text') {
+                                textWindow.webContents.send('insert:page', data);
+                            } else {
+                                guiWindow.webContents.send('insert:page', data);
+                            }
+                            
+                        });
+                        
+                    });
+                });
+            });
+            break;
+        default:
+            break;
+    }
     
 }
 
