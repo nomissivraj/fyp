@@ -18,6 +18,11 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     -webkit-user-select: none;
+    user-select: none;
+}
+
+p {
+    user-select: none;
 }
 
 img {
@@ -430,6 +435,15 @@ label {
     color: rgba(255,255,255,.5);
 }
 
+#no-files {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0 auto;
+    width: 70%;
+    opacity: .5;
+}
+
 
 .CodeMirror {
     z-index: 0!important;
@@ -544,8 +558,12 @@ main.error {
 .tab__item button {
     border-radius: 0;
     background: #444;
-    color: #fff;
+    color: #8f8f8f;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tab__item button span {
+    color: #d6d5d5;
 }
 
 .tab__item button:focus {
