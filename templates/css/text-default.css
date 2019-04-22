@@ -4,6 +4,11 @@ html {
   padding:0;
 }
 
+title {
+  text-transform: capitalize;
+}
+
 h1 {
     color: blue;
+    text-transform: capitalize;
 }

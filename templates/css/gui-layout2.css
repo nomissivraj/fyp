@@ -5,6 +5,10 @@ html {
     height: 100%;
 }
 
+title {
+    text-transform: capitalize;
+}
+
 ul {
     list-style-type: none;
     margin:0;
@@ -19,6 +23,7 @@ body {
 
 h1 {
     color: gold;
+    text-transform: capitalize;
 }
 
 header {
