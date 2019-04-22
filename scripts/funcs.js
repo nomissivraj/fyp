@@ -1,4 +1,24 @@
 // This file is for general purpose functions
+//CodeMirror Properties
+const htmlSpec = {
+    lineNumbers: true,
+    mode: 'xml',
+    htmlMode: true,
+    theme: 'lucario',
+    lineWrapping: true,
+    autoCloseTags: true,
+    matchTags: true,
+}
+
+const cssSpec = {
+    lineNumbers: true,
+    mode: 'css',
+    theme: 'lucario',
+    lineWrapping: true,
+    autoCloseTags: true,
+    matchTags: true,
+}
+
 function toggleDisplay(el) {
     el = document.getElementById(el);
     if (!el) return; 
@@ -101,20 +121,20 @@ function initMenu(menuEl, btn, subBtns) {
 
     //  File menu
         //      - File menu - New Page
-        let newPageBtn = document.getElementById('newpagebtn');
-        newPageBtn.addEventListener('click', () => {
-            hideOthers('.dialogue','#newpageform__container');
-            toggleDisplay('newpageform__container');
+        let newFileBtn = document.getElementById('newfilebtn');
+        newFileBtn.addEventListener('click', () => {
+            hideOthers('.dialogue','#newfileform__container');
+            toggleDisplay('newfileform__container');
             toggleDisplay('dropdown__menu--file');
             
         });
         //      - File menu - Delete Page
-        let delPageBtn = document.getElementById('deletepagebtn');
-        delPageBtn.addEventListener('click', () => {
-            hideOthers('.dialogue','#deletepageform__container');
-            let input = document.getElementById('page-to-delete');
+        let delFileBtn = document.getElementById('deletefilebtn');
+        delFileBtn.addEventListener('click', () => {
+            hideOthers('.dialogue','#deletefileform__container');
+            let input = document.getElementById('file-to-delete');
             input.value = currentPage;
-            toggleDisplay('deletepageform__container')
+            toggleDisplay('deletefileform__container')
             toggleDisplay('dropdown__menu--file');
         });
 
@@ -243,7 +263,7 @@ function pagePreview() {
     let path = savesPath.replace(/\\/g, "/");
     let path2 = path.replace(/\s+/g, '%20');
     console.log(currentPage);
-    let filePath = editorMode === 'css' ? '/index.html' : '/'+currentPage+'.'+editorMode;
+    let filePath = editorMode === 'css' ? '/index.html' : '/'+currentPage;
     console.log(path2+currentProject+filePath)
     shell.openExternal('file:///'+path2+currentProject+filePath);
     toggleDisplay('dropdown__menu--preview');
@@ -255,17 +275,21 @@ function initCMcontainers(details) {
     //div container with id, class of 'editor' and style of z-index: 0;
     //make html containers
     let pages = details.pages;
+    let stylesheets = details.stylesheets;
     let container = document.getElementById('pages-container');
 
     for (let i = 0; i < pages.length; i++) {
-        //div with page id+container
+        let newPageDetails = pages[i].split('.');
+        let newPageName = newPageDetails[0];
+
+        //DOM CREATION
         let pageCont = document.createElement('div');
-        pageCont.setAttribute('id', 'page-container-'+pages[i]);
+        pageCont.setAttribute('id', 'page-container-'+newPageName);
         pageCont.setAttribute('style','z-index:0');       
         pageCont.setAttribute('class','editor');       
-        //textarea with page id and style of: style="visibility: hidden; min-height: 1px;"
+        
         let textArea = document.createElement('textarea');
-        textArea.setAttribute('id','editor-'+pages[i]);   
+        textArea.setAttribute('id','editor-'+newPageName);   
         textArea.setAttribute('style','visibility: hidden; min-height: 1px;');
         
         pageCont.appendChild(textArea);
@@ -273,31 +297,60 @@ function initCMcontainers(details) {
     }
 
     // then make css page container
-    let cssPageCont = document.createElement('div');
-    cssPageCont.setAttribute('id', 'page-container-css');
-    cssPageCont.setAttribute('style','z-index:0');       
-    cssPageCont.setAttribute('class','editor');  
-    let cssTextArea = document.createElement('textarea');
-    cssTextArea.setAttribute('id','editor-css');   
-    cssTextArea.setAttribute('style','visibility: hidden; min-height: 1px;');
+    for (let i = 0; i < stylesheets.length; i++){
+        let newCssDetails = stylesheets[i].split('.');
+        let newCssName = newCssDetails[0];
 
-    cssPageCont.appendChild(cssTextArea);
-    container.appendChild(cssPageCont);   
+        // DOM CREATION
+        let cssPageCont = document.createElement('div');
+        cssPageCont.setAttribute('id', 'page-container-css-'+newCssName);
+        cssPageCont.setAttribute('style','z-index:0');       
+        cssPageCont.setAttribute('class','editor');  
+
+        let cssTextArea = document.createElement('textarea');
+        cssTextArea.setAttribute('id','editor-css-'+newCssName);   
+        cssTextArea.setAttribute('style','visibility: hidden; min-height: 1px;');
+    
+        cssPageCont.appendChild(cssTextArea);
+        container.appendChild(cssPageCont);   
+    }
 }
 
 function insertCmContainer(data) {
     let pages = data.pages;
+    let stylesheets = data.stylesheets;
     let container = document.getElementById('pages-container');
+    
     for (let i = 0; i < pages.length; i++) {
         if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
-            console.log(pages[i]);
+            let newPageDetails = pages[i].split('.');
+            let newPageName = newPageDetails[0];
+            //DOM CREATION
             let pageCont = document.createElement('div');
-            pageCont.setAttribute('id', 'page-container-'+pages[i]);
+            pageCont.setAttribute('id', 'page-container-'+newPageName);
             pageCont.setAttribute('style','z-index:0');       
             pageCont.setAttribute('class','editor');       
             //textarea with page id and style of: style="visibility: hidden; min-height: 1px;"
             let textArea = document.createElement('textarea');
-            textArea.setAttribute('id','editor-'+pages[i]);   
+            textArea.setAttribute('id','editor-'+newPageName);   
+            textArea.setAttribute('style','visibility: hidden; min-height: 1px;');
+            
+            pageCont.appendChild(textArea);
+            container.appendChild(pageCont);   
+        }
+    }
+    for (let i = 0; i < stylesheets.length; i++) {
+        if (curProjectDetails.stylesheets.indexOf(stylesheets[i]) === -1) {
+            let newCssDetails = stylesheets[i].split('.');
+            let newCssName = newCssDetails[0];
+            //DOM CREATION
+            let pageCont = document.createElement('div');
+            pageCont.setAttribute('id', 'page-container-css-'+newCssName);
+            pageCont.setAttribute('style','z-index:0');       
+            pageCont.setAttribute('class','editor');       
+            //textarea with page id and style of: style="visibility: hidden; min-height: 1px;"
+            let textArea = document.createElement('textarea');
+            textArea.setAttribute('id','editor-css-'+newCssName);   
             textArea.setAttribute('style','visibility: hidden; min-height: 1px;');
             
             pageCont.appendChild(textArea);
@@ -308,101 +361,121 @@ function insertCmContainer(data) {
 
 function initCMInstances(details) {
     let pages = details.pages;
-    // HTML page settings:
-    let htmlSpec = {
-        lineNumbers: true,
-        mode: 'xml',
-        htmlMode: true,
-        theme: 'lucario',
-        lineWrapping: true,
-        autoCloseTags: true,
-        matchTags: true,
-    }
+    let stylesheets = details.stylesheets;
+    
     //instance for each page
     for (let i = 0; i < pages.length; i++) {
-        let currentPageCont = document.getElementById('editor-'+pages[i]);
+        let newPageDetails = pages[i].split('.');
+        let newPageName = newPageDetails[0];
+
+        let currentPageCont = document.getElementById('editor-'+newPageName);
         let editor = CodeMirror.fromTextArea(currentPageCont, htmlSpec);
         editor.setSize("100%", "calc(100vh - 70px)");
         editors[pages[i]] = editor;
     }
 
     //then instance for css file
-    //CSS page settings:
-    let cssSpec = {
-        lineNumbers: true,
-        mode: 'css',
-        theme: 'lucario',
-        lineWrapping: true,
-        autoCloseTags: true,
-        matchTags: true,
-    }
+    
+    for (let i = 0; i < stylesheets.length; i++) {
+        let newCssDetails = stylesheets[i].split('.');
+        let newCssName = newCssDetails[0];
 
-    let cssEditorCont = document.getElementById('editor-css');
-    let cssEditor = CodeMirror.fromTextArea(cssEditorCont, cssSpec);
-    cssEditor.setSize("100%", "calc(100vh - 70px)");
-    editors[details.mode+'-'+details.layout] = cssEditor;
+        let cssEditorCont = document.getElementById('editor-css-'+newCssName);
+        console.log(cssEditorCont)
+        let cssEditor = CodeMirror.fromTextArea(cssEditorCont, cssSpec);
+        cssEditor.setSize("100%", "calc(100vh - 70px)");
+        editors[stylesheets[i]] = cssEditor;
+    }
+    
 }
 
 function newCmInstance(data) {
     let pages = data.pages;
-
-    let htmlSpec = {
-        lineNumbers: true,
-        mode: 'xml',
-        htmlMode: true,
-        theme: 'lucario',
-        lineWrapping: true,
-        autoCloseTags: true,
-        matchTags: true,
-    }
+    let stylesheets = data.stylesheets;
 
     for (let i = 0; i < pages.length; i++) {
         if (curProjectDetails.pages.indexOf(pages[i]) === -1) { 
-            let currentPageCont = document.getElementById('editor-'+pages[i]);
+            let newPageDetails = pages[i].split('.');
+            let newPageName = newPageDetails[0];
+
+            let currentPageCont = document.getElementById('editor-'+newPageName);
             let editor = CodeMirror.fromTextArea(currentPageCont, htmlSpec);
             editor.setSize("100%", "calc(100vh - 70px)");
             editors[pages[i]] = editor;
+        }
+    }
+
+    for (let i = 0; i < stylesheets.length; i++) {
+        if (curProjectDetails.stylesheets.indexOf(stylesheets[i]) === -1) { 
+            let newCssDetails = stylesheets[i].split('.');
+            let newCssName = newCssDetails[0];
+            let cssEditorCont = document.getElementById('editor-css-'+newCssName);
+            let cssEditor = CodeMirror.fromTextArea(cssEditorCont, cssSpec);
+            cssEditor.setSize("100%", "calc(100vh - 70px)");
+            editors[stylesheets[i]] = cssEditor;
         }
     }
 }
 
 function loadPageContent(details) {
     let pages = details.pages;
+    let stylesheets = details.stylesheets;
     for (let i = 0; i < pages.length; i++) {
-        fs.readFile(savesPath+details.name+'/'+pages[i]+'.html','utf-8', (err, fileData) => {
+        fs.readFile(savesPath+details.name+'/'+pages[i],'utf-8', (err, fileData) => {
             if (err) return console.log(err);
   /*           console.log(editors[pages[i]]); */
             editors[pages[i]].setValue(fileData)
             editors[pages[i]].clearHistory();
         });
     }
-    fs.readFile(savesPath+details.name+'/css/text-default.css','utf-8', (err, fileData) => {
-        if (err) return console.log(err);
-        /* console.log(fileData) */
-        editors["text-default"].setValue(fileData)
-        editors["text-default"].clearHistory();
-    });
+    for (let i = 0; i < stylesheets.length; i++) {
+        fs.readFile(savesPath+details.name+'/css/'+stylesheets[i],'utf-8', (err, fileData) => {
+            if (err) return console.log(err);
+            /* console.log(fileData) */
+            editors[stylesheets[i]].setValue(fileData)
+            editors[stylesheets[i]].clearHistory();
+        });
+    }
 }
 
 function loadNewPageContent(details) {
+    console.log(curProjectDetails);
     let pages = details.pages;
+    let stylesheets = details.stylesheets;
     for (let i = 0; i < pages.length; i++) {
         if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
-            fs.readFile(savesPath+details.name+'/'+pages[i]+'.html','utf-8', (err, fileData) => {
+            fs.readFile(savesPath+details.name+'/'+pages[i],'utf-8', (err, fileData) => {
                 if (err) return console.log(err);
-      /*           console.log(editors[pages[i]]); */
+                console.log('new page:',pages[i]);
                 editors[pages[i]].setValue(fileData)
                 editors[pages[i]].clearHistory();
             });
         }
     }
+
+    for (let i = 0; i < stylesheets.length; i++) {
+        if (curProjectDetails.stylesheets.indexOf(stylesheets[i]) === -1) {
+            fs.readFile(savesPath+details.name+'/css/'+stylesheets[i],'utf-8', (err, fileData) => {
+                if (err) return console.log(err);
+                console.log('new stylesheet:',stylesheets[i]);
+                editors[stylesheets[i]].setValue(fileData)
+                editors[stylesheets[i]].clearHistory();
+            });
+        }
+    }
+
 }
 
-function setTab(tabEls, currentTabId, pageId, curPage) {
-    
+function setTab(tabEls, pageId/* tabEls, currentTabId, pageId, curPage */) {
     let tabs = document.querySelectorAll(tabEls);
-    let curTab = document.querySelectorAll(currentTabId)[0];
-    let page = document.querySelectorAll(pageId)[0];
+    if (tabs.length === 0) return;
+
+    let pageDetails = pageId.split('.');
+    let pageName = pageDetails[0];
+    let pageExt = pageDetails[1];
+    
+    let curTab = pageExt === 'html' ? document.querySelectorAll('#'+pageName+'-tab-btn')[0] : document.querySelectorAll('#'+pageName+'-css-tab-btn')[0];
+    let page = pageExt === 'html' ? document.querySelectorAll('#page-container-'+pageName)[0] : document.querySelectorAll('#page-container-css-'+pageName)[0];
 
     if (!curTab.classList.contains('active')) {
         curTab.classList.add('active');
@@ -413,61 +486,86 @@ function setTab(tabEls, currentTabId, pageId, curPage) {
             }
         }
     }
-    currentPage = curPage;
-    currentEditor = curPage;
-    currentPage === 'text-default' ? editorMode = 'css' : editorMode = 'html';
+    currentPage = pageId;
+    currentEditor = pageId;
+    pageExt === 'css' ? editorMode = 'css' : editorMode = 'html';
     hideOthers('.editor', page);
+}
+
+function htmlTab(pageTitle, parent) {
+    let li = document.createElement('li');
+    li.setAttribute('class', 'tab__item');
+    li.setAttribute('id', pageTitle+'-tab__item');
+    let button = document.createElement('button');
+    button.setAttribute('id',pageTitle+'-tab-btn');
+    button.setAttribute('class','tab-btn');
+    let span = document.createElement('span');
+    let title = document.createTextNode(pageTitle);
+    let extension = document.createTextNode('.html')
+
+    span.appendChild(title);
+    button.appendChild(span);
+    button.appendChild(extension);
+    li.appendChild(button);
+    parent.appendChild(li);
+}
+
+function cssTab(pageTitle, parent) {
+    // Make CSS tab
+    let cssLi = document.createElement('li');
+    cssLi.setAttribute('class', 'tab__item');
+    cssLi.setAttribute('id', pageTitle+'-css-tab__item');
+    let cssButton = document.createElement('button');
+    cssButton.setAttribute('id',pageTitle+'-css-tab-btn');
+    cssButton.setAttribute('class','tab-btn');
+    let span = document.createElement('span');
+    let relPath = document.createTextNode('/css/');
+    let title = document.createTextNode(pageTitle);
+    let extension = document.createTextNode('.css');
+
+    span.appendChild(title);
+    cssButton.appendChild(relPath);
+    cssButton.appendChild(span);
+    cssButton.appendChild(extension);
+    cssLi.appendChild(cssButton);
+    parent.appendChild(cssLi);
 }
 
 function initTabs(details) {
     //Dynamically create tabs based of pages
     let tabsList = document.getElementsByClassName('tabs')[0];
     let pages = details.pages;
+    let stylesheets = details.stylesheets;
     for (let i = 0; i < pages.length; i++) {
-        let li = document.createElement('li');
-        li.setAttribute('class', 'tab__item');
-        li.setAttribute('id', pages[i]+'-tab__item');
-        let button = document.createElement('button');
-        button.setAttribute('id',pages[i]+'-tab-btn');
-        button.setAttribute('class','tab-btn');
-        let text = document.createTextNode(pages[i]+'.html');
-
-        button.appendChild(text);
-        li.appendChild(button);
-        tabsList.appendChild(li);
+        let tabDetails = pages[i].split('.');
+        let tabName = tabDetails[0];
+        htmlTab(tabName, tabsList);
     }
-
-    // Make CSS tab
-    let cssLi = document.createElement('li');
-    cssLi.setAttribute('class', 'tab__item');
-    let cssButton = document.createElement('button');
-    cssButton.setAttribute('id','css-tab-btn');
-    cssButton.setAttribute('class','tab-btn');
-    let cssText = document.createTextNode('/css/text-default.css');
-
-    cssButton.appendChild(cssText);
-    cssLi.appendChild(cssButton);
-    tabsList.appendChild(cssLi);
-
+    for (let i = 0; i < stylesheets.length; i++) {
+        let tabDetails = stylesheets[i].split('.');
+        let tabName = tabDetails[0];
+        cssTab(tabName, tabsList)
+    }
     initTabListeners(details);
 }
 
 function addNewTab(details) {
+    console.log('DETAILS',details)
     let tabsList = document.getElementsByClassName('tabs')[0];
     let pages = details.pages;
+    let stylesheets = details.stylesheets;
     for (let i = 0; i < pages.length; i++) {
         if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
-            let li = document.createElement('li');
-            li.setAttribute('id', pages[i]+'-tab__item');
-            li.setAttribute('class', 'tab__item');
-            let button = document.createElement('button');
-            button.setAttribute('id',pages[i]+'-tab-btn');
-            button.setAttribute('class','tab-btn');
-            let text = document.createTextNode(pages[i]+'.html');
-
-            button.appendChild(text);
-            li.appendChild(button);
-            tabsList.appendChild(li);
+            let tabDetails = pages[i].split('.');
+            let tabName = tabDetails[0];
+            htmlTab(tabName, tabsList);
+        }
+    }
+    for (let i = 0; i < stylesheets.length; i++) {
+        if (curProjectDetails.stylesheets.indexOf(stylesheets[i]) === -1) {
+            let tabDetails = stylesheets[i].split('.');
+            let tabName = tabDetails[0];
+            cssTab(tabName, tabsList);
         }
     }
     console.log(tabsList);
@@ -477,45 +575,79 @@ function addNewTab(details) {
 function initTabListeners(details) {
 
     let pages = details.pages;
-   // Add listener to all html tabs
+    let stylesheets = details.stylesheets;
+    // Add listener to all html tabs
     if (pages.length > 0) {
         setTimeout(()=>{
-            setTab('.tab-btn','#'+pages[0]+'-tab-btn', '#page-container-'+pages[0], pages[0]);
+            setTab('.tab-btn', pages[0]);
         },100);
         for (let i = 0; i < pages.length; i++) {
-            let tab = document.getElementById(pages[i]+'-tab-btn');
+            let tabDetails = pages[i].split('.');
+            let tabName = tabDetails[0];
+            let tab = document.getElementById(tabName+'-tab-btn');
             tab.addEventListener('click', (e) => {
-                setTab('.tab-btn','#'+pages[i]+'-tab-btn', '#page-container-'+pages[i], pages[i]);
+                setTab('.tab-btn', pages[i]);
+            });
+        }
+    }
+    // Add listener to all css tabs
+    if (stylesheets.length > 0) {
+        for (let i = 0; i < stylesheets.length; i++) {
+            // Add listener to css tab
+            let tabDetails = stylesheets[i].split('.');
+            let tabName = tabDetails[0];
+            let cssTab = document.getElementById(tabName+'-css-tab-btn');
+            cssTab.addEventListener('click', (e) => {
+                setTab('.tab-btn', stylesheets[i]);
             });
         }
     }
     
-    // Add listener to css tab
-    let cssTab = document.getElementById('css-tab-btn');
-    cssTab.addEventListener('click', (e) => {
-        setTab('.tab-btn','#css-tab-btn', '#page-container-css', 'text-default');
-    });
-
+    if (pages.length == 0 && stylesheets.length > 0) {
+        setTimeout(()=>{
+            setTab('.tab-btn', stylesheets[0]);
+        },100);
+    }
 }
 
 function initNewTabListener(details) {
     let pages = details.pages;
+    let stylesheets = details.stylesheets;
     for (let i = 0; i < pages.length; i++) {
         if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
-            let tab = document.getElementById(pages[i]+'-tab-btn');
+            let tabDetails = pages[i].split('.');
+            let tabName = tabDetails[0];
+            let tab = document.getElementById(tabName+'-tab-btn');
             tab.addEventListener('click', (e) => {
-                setTab('.tab-btn','#'+pages[i]+'-tab-btn', '#page-container-'+pages[i], pages[i]);
+                setTab('.tab-btn', pages[i]);
             });
-            setTab('.tab-btn','#'+pages[i]+'-tab-btn', '#page-container-'+pages[i], pages[i]);
+            setTab('.tab-btn', pages[i]);
+        }
+    }
+    for (let i = 0; i < stylesheets.length; i++) {
+        if (curProjectDetails.stylesheets.indexOf(stylesheets[i]) === -1) {
+            let tabDetails = stylesheets[i].split('.');
+            let tabName = tabDetails[0];
+            let tab = document.getElementById(tabName+'-css-tab-btn');
+            tab.addEventListener('click', (e) => {
+                setTab('.tab-btn', stylesheets[i]);
+            });
+            setTab('.tab-btn', stylesheets[i]);
         }
     }
 }
 
 function updateCurProjectDetails(data) {
     let pages = data.pages;
+    let stylesheets = data.stylesheets;
     for (let i = 0; i < pages.length; i++) {
         if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
             curProjectDetails.pages.push(pages[i]);
+        }
+    }
+    for (let i = 0; i < stylesheets.length; i++) {
+        if (curProjectDetails.stylesheets.indexOf(stylesheets[i]) === -1) {
+            curProjectDetails.stylesheets.push(stylesheets[i]);
         }
     }
 }
@@ -525,12 +657,69 @@ function saveChanges(currentProject) {
     let changes = editors[currentEditor].getValue();
     let data = {
         name: currentProject,
-        file: currentPage+'.'+editorMode,//this is hardcoded for now (will be context based later)
+        file: currentPage,
         content: changes
     }
     ipcRenderer.send('save:file', data)
     toggleDisplay('dropdown__menu--file');
 }
 
+function rendererDestroyPage(data) {
+    // Remove page from renderer/window and all links to it (tabs, variables etc.)
 
+    // Parse file details
+    let delFileDetails = data.split('.');
+    let delFileName = delFileDetails[0];
+    let delFileExt = delFileDetails[1];
 
+    
+    if (delFileExt === 'html') {
+        //Remove Container
+        let container = document.getElementById('page-container-'+delFileName);
+        container.parentNode.removeChild(container);
+        
+        //Remove tab
+        let tab = document.getElementById(delFileName+'-tab__item');
+        tab.parentNode.removeChild(tab);
+
+        //Remove page from current project index
+        let cpdPageIndex = curProjectDetails.pages.indexOf(data)
+        curProjectDetails.pages.splice(cpdPageIndex,1);
+    } else {
+        //Remove Container
+        let container = document.getElementById('page-container-css-'+delFileName);
+        container.parentNode.removeChild(container);
+        
+        //Remove tab
+        let tab = document.getElementById(delFileName+'-css-tab__item');
+        tab.parentNode.removeChild(tab);
+
+        //Remove page from current project index
+        let cpdPageIndex = curProjectDetails.stylesheets.indexOf(data)
+        curProjectDetails.stylesheets.splice(cpdPageIndex,1);
+    }
+    // Remove page from editors instances
+    delete editors[data];
+}
+
+function firstTab() {
+    let pageCount = curProjectDetails.pages.length;
+    let stylesCount = curProjectDetails.stylesheets.length;
+    if (pageCount === 0 && stylesCount === 0) return; //if no tabs 
+
+    //If an html tab (usually shown first on the tabs list) exists
+    if (pageCount > 0) {
+        return curProjectDetails.pages[0];
+    }
+    //If there's no html tabs but a css tab exists
+    if (pageCount === 0 && stylesCount > 0) {
+        return curProjectDetails.stylesheets[0];
+    }
+
+}
+
+function noPages() {
+    if (curProjectDetails.pages.length === 0 && curProjectDetails.stylesheets.length === 0) {
+        toggleDisplay('no-files');
+    }
+}
