@@ -1,13 +1,48 @@
 // Initiate dictate button/function on target i.e. text editor or general UI input
 // If in text editor then pass through to a different function that processes the text
 let dictateMode = 'default';
+
+function initInputListners() {
+    let textInputs = document.querySelectorAll('input[type=text]');
+    for (let i = 0; i < textInputs.length; i++) {
+        textInputs[i].addEventListener('focus', () => {
+            /* toggleDisplay('dictate-btn'); */
+            addClass('#dictate-btn', 'ready');
+        });
+
+        textInputs[i].addEventListener('blur', () => {
+            /* toggleDisplay('dictate-btn'); */
+            removeClass('#dictate-btn', 'ready');
+            stopRecording();
+        });
+
+    }
+    
+    let textAreas = document.getElementsByTagName('textarea');
+    console.log(textAreas.length)
+    for (let i = 0; i < textAreas.length; i++) {
+        console.log('bap')
+        textAreas[i].addEventListener('focus', () => {
+            /* toggleDisplay('dictate-btn'); */
+            addClass('#dictate-btn', 'ready');
+        });
+
+        textAreas[i].addEventListener('blur', () => {
+            /* toggleDisplay('dictate-btn'); */
+            removeClass('#dictate-btn', 'ready');
+            stopRecording();
+        });
+    }
+}
+
+
 function initDictate(target) {
     const speechPath = path.join(app.getPath('documents'),'Voice Developer Projects','/speech/test.wav');
     let active = false;
 
     const dictate = document.getElementById('dictate-btn');
-    let frame = document.getElementsByClassName('CodeMirror')[0];
-    let gutter = document.getElementsByClassName('CodeMirror-gutters')[0];
+    let frame = '.CodeMirror'/* document.getElementsByClassName('CodeMirror')[0] */;
+    let gutter = '.gutter'/* document.getElementsByClassName('CodeMirror-gutters')[0] */;
     let main = document.getElementsByTagName('main')[0];
     
 
@@ -73,36 +108,7 @@ function initDictate(target) {
         !active ? active = true : active = false;
     });
 
-    let textInputs = document.querySelectorAll('input[type=text]');
-    for (let i = 0; i < textInputs.length; i++) {
-        textInputs[i].addEventListener('focus', () => {
-            /* toggleDisplay('dictate-btn'); */
-            toggleClass('#dictate-btn','ready');
-        });
-
-        textInputs[i].addEventListener('blur', () => {
-            /* toggleDisplay('dictate-btn'); */
-            toggleClass('#dictate-btn','ready');
-            stopRecording();
-        });
-
-    }
-    
-    let textAreas = document.getElementsByTagName('textarea');
-    console.log(textAreas.length)
-    for (let i = 0; i < textAreas.length; i++) {
-        console.log('bap')
-        textAreas[i].addEventListener('focus', () => {
-            /* toggleDisplay('dictate-btn'); */
-            toggleClass('#dictate-btn','ready');
-        });
-
-        textAreas[i].addEventListener('blur', () => {
-            /* toggleDisplay('dictate-btn'); */
-            toggleClass('#dictate-btn','ready');
-            stopRecording();
-        });
-    }
+    initInputListners();
 }
 
 
@@ -225,11 +231,10 @@ function speechToCode(data) {
     // Might need to track modes i.e. Text entry | html | css/styles (html or css could be set by active editor) text entry can be triggered by command or alternative click/right click?
     let cursorPos = editors[currentEditor].getCursor();
     let words = data.toLowerCase().split(" ");
-    const codeEditor = document.getElementsByClassName('CodeMirror')[0];
     // Get elements for "working..." indication/feedback    
 
-    let frame = document.getElementsByClassName('CodeMirror')[0];
-    let gutter = document.getElementsByClassName('CodeMirror-gutters')[0];
+    let frame = '.CodeMirror' /* document.getElementsByClassName('CodeMirror')[0] */;
+    let gutter = '.gutter'/* document.getElementsByClassName('CodeMirror-gutters')[0] */;
 
     if (dictateMode === 'markup') {
         for (let word in words) {
