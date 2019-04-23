@@ -43,6 +43,32 @@ function toggleClass(el, className) {
     } else return;
 }
 
+function addClass(el, className) {
+    if (!el) return;
+    if (typeof el === 'object') {
+        el.classList.contains(className) === false ? el.classList.add(className) : null;
+    } else if (typeof el === 'string') {
+        el = document.querySelectorAll(el);
+        for (let i = 0; i < el.length; i++) {
+            console.log(el[i],el[i].classList)
+            console.log(el[i].classList.contains(className) === false)
+            el[i].classList.contains(className) === false ? el[i].classList.add(className) : console.log('nope');
+        }
+    } else return;
+}
+
+function removeClass(el, className) {
+    if (!el) return;
+    if (typeof el === 'object') {
+        el.classList.contains(className) === true ? el.classList.remove(className) : null;
+    } else if (typeof el === 'string') {
+        el = document.querySelectorAll(el);
+        for (let i = 0; i < el.length; i++) {
+            console.log(el[i].classList.contains(className))
+            el[i].classList.contains(className) === true ? el[i].classList.remove(className) : null;
+        }
+    } else return;
+}
 
 function hideAll(elements) {
     let els = document.querySelectorAll(elements);
