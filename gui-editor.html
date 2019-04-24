@@ -16,25 +16,66 @@
                     <img src="img/app-icon-64x64.png" alt="Voice Developer Icon">
                 </div>
                 <div class="app-toolbar__menu">
-                    <ul class="dropdown__menu">
+                    <ul id="menu">
                         <li class="dropdown__item">
-                            <button class="dropdown__filebtn" onclick="toggleDisplay('dropdown__filemenu')">File</button>
-                            <div id="dropdown__filemenu" style="display: none">
+                            <button class="dropdown__btn dropdown__btn--file">File</button>
+                            <div class="dropdown__menu" id="dropdown__menu--file"  style="display: none">
                                 <ul class="submenu">
                                     <li>
-                                        <button id="savebtn">
-                                            <span class="submenu__item-title">Save</span>
-                                            <span class="submenu__item-shortcut">Shortcut</span>
+                                        <button id="newfilebtn" class="submenu__btn">
+                                            <span class="submenu__item-title">New File</span>
                                         </button>
                                     </li>
                                     <li>
-                                        <button>Other</button>
+                                        <button id="deletefilebtn" class="submenu__btn">
+                                            <span class="submenu__item-title">Delete File</span>
+                                        </button>
+                                    </li>
+                                    <hr>
+                                    <li>
+                                        <button id="savebtn" class="submenu__btn">
+                                            <span class="submenu__item-title">Save</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button id="saveallbtn" class="submenu__btn">
+                                            <span class="submenu__item-title">Save All</span>
+                                        </button>
+                                    </li>
+                                    <hr>
+                                    <li>
+                                        <button id="exitbtn" class="submenu__btn">
+                                            <span class="submenu__item-title">Exit</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="dropdown__item">
+                            <button class="dropdown__btn dropdown__btn--mode">Mode</button>
+                            <div class="dropdown__menu" id="dropdown__menu--mode"  style="display: none">
+                                <ul class="submenu">
+                                    <li>
+                                        <button id="switchmodebtn" class="submenu__btn">
+                                            <span class="submenu__item-title">Text Editor</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="dropdown__item">
+                            <button class="dropdown__btn dropdown__btn--preview">Preview</button>
+                            <div class="dropdown__menu" id="dropdown__menu--preview"  style="display: none">
+                                <ul class="submenu">
+                                    <li>
+                                        <button id="previewbtn" class="submenu__btn">
+                                            <span class="submenu__item-title">Open in Browser</span>
+                                        </button>
                                     </li>
                                 </ul>
                             </div>
                         </li>
                     </ul>
-                    
                 </div>
                 <div class="app-toolbar__title">
                     <span>Voice Developer</span>
@@ -65,6 +106,17 @@
             <div id="editor">
                 <iframe></iframe>
             </div>
+            <div id="modeswitch__container" class="dialogue" style="display:none">
+                <h1>Text Editor Mode</h1>
+                <form id="modeswitch__form">
+                    <div class="warning">
+                            <h2>CAUTION</h2>
+                        <p>Switching to text Editor mode is non-reversable!</p>
+                    </div>
+                    <button type="button" onclick="resetForms('modeswitch__container')">Cancel</button>
+                    <button type="submit" class="negative">Confirm</button>
+                </form>
+            </div>
         </main>
         
     </body>
@@ -77,42 +129,35 @@
         const path = require('path');
         const fs = require('file-system');
         const savesPath = path.join(app.getPath('documents'),'Voice Developer Projects','/saves/');
-        ipcRenderer.send('ready:gui-window');
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
-        
-        setTimeout(() => {
-            const iframe = document.getElementsByTagName('iframe')[0];
-            const iframeDoc = iframe.contentWindow.document;
+        ipcRenderer.send('ready:gui-window');
 
-            const iframeDocEl = iframe.contentWindow.document.documentElement;
-            const iframeBody = iframeDoc.getElementsByTagName('body');
+        let curProjectDetails;
+        
+        
+        initMenu('menu','.dropdown__btn', '.submenu__btn');
+        initIframeStyles();
 
-            let styleTag = iframeDoc.createElement('style');
-            styleTag.innerHTML = `
-                ::-webkit-scrollbar {
-                    width: 10px;
-                }
-                
-                ::-webkit-scrollbar-track {
-                    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-                    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-                    background-color:rgba(255, 255, 255, 0.24);
-                }
-                
-                ::-webkit-scrollbar-thumb {
-                background-color: #d1d1d19d;
-                background: linear-gradient(#d1d1d149, #ffffff94, #d1d1d149);
-                outline: 1px solid #e87400;
-                }
-            `
-            iframeDocEl.appendChild(styleTag);
-            console.log(iframeDoc)
-        }, 100);
-        
-        /*  */
-        
+        //Process Forms
+        const switchModeForm = document.getElementById('modeswitch__form');
+        switchModeForm.addEventListener('submit', switchMode);
+
+        function switchMode(e) {
+            e.preventDefault();
+            let confirmation = confirm('Are you sure?')
+            if (confirmation) {
+                ipcRenderer.send('switch:mode', curProjectDetails);
+                toggleDisplay('modeswitch__form');
+                let window = remote.getCurrentWindow();
+                window.close();
+            } else {
+                toggleDisplay('modeswitch__form');
+            }
+        }
+
         //Recieve
         ipcRenderer.on('load:data', (e, data) => {
+            curProjectDetails = data;
             fs.readFile(savesPath+data.name+'/index.html','utf-8',(err, fileData) => {
                 if (err) return console.log(err);
                 /* console.log(fileData); */
