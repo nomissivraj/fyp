@@ -2,7 +2,7 @@
 // If in text editor then pass through to a different function that processes the text
 let dictateMode = 'default';
 
-function initInputListners() {
+function initInputListeners() {
     let textInputs = document.querySelectorAll('input[type=text]');
     for (let i = 0; i < textInputs.length; i++) {
         textInputs[i].addEventListener('focus', () => {
@@ -19,9 +19,7 @@ function initInputListners() {
     }
     
     let textAreas = document.getElementsByTagName('textarea');
-    console.log(textAreas.length)
     for (let i = 0; i < textAreas.length; i++) {
-        console.log('bap')
         textAreas[i].addEventListener('focus', () => {
             /* toggleDisplay('dictate-btn'); */
             addClass('#dictate-btn', 'ready');
@@ -108,7 +106,7 @@ function initDictate(target) {
         !active ? active = true : active = false;
     });
 
-    initInputListners();
+    initInputListeners();
 }
 
 
