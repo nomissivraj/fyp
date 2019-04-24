@@ -179,7 +179,9 @@ let commands = [
     {'redo':['redo','radio', 'redial','forward']},
     {'tab':['tab','tampa','tam','tap']},
     {'enter':['enter','line']},
-    {'preview':['preview', 'previous']}
+    {'preview':['preview', 'previous']},
+    {'period':['period']},
+    {'hash': ['hash']}
 ]
 
 //Might need to set keyword such as 'tag' first and then evaluate all other words together as one string for phrases rather than single inputs?
@@ -342,6 +344,14 @@ function speechToCode(data) {
                         break;
                     case 'preview':
                         pagePreview();
+                        break;
+                    case 'period':
+                        cursorPos = editors[currentEditor].getCursor();
+                        editors[currentEditor].replaceRange(".",{line: cursorPos.line, ch: cursorPos.ch});
+                        break;
+                    case 'hash':
+                        cursorPos = editors[currentEditor].getCursor();
+                        editors[currentEditor].replaceRange("#",{line: cursorPos.line, ch: cursorPos.ch});
                         break;
                     default:
                         break;
