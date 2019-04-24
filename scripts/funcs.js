@@ -168,6 +168,7 @@ function initMenu(menuEl, btn, subBtns) {
         let saveBtn = document.getElementById('savebtn');
         saveBtn.addEventListener('click', () => {
             saveChanges(currentProject);
+            toggleDisplay('dropdown__menu--file');
         });
         //      - File menu - exit
         let exitBtn = document.getElementById('exitbtn');
@@ -687,7 +688,6 @@ function saveChanges(currentProject) {
         content: changes
     }
     ipcRenderer.send('save:file', data)
-    toggleDisplay('dropdown__menu--file');
 }
 
 function rendererDestroyPage(data) {
