@@ -108,6 +108,7 @@ function createGuiWindow() {
     
 
     guiWindow.on('closed', () => {
+        mainWindow.show();
         guiWindow = null
     });
 }
@@ -142,6 +143,7 @@ function createTextEditorWindow() {
 
     textWindow.on('closed', () => {
         textWindow = null
+        mainWindow.show();
     });
 }
   
@@ -420,15 +422,16 @@ function loadProject(projectId) {
         log.info("data:",data)
         if (data.mode === 'gui') {
             createGuiWindow();
-            mainWindow.close();
-            ipcMain.on('ready:gui-window', () => {
+            mainWindow.hide();
+            ipcMain.once('ready:gui-window', () => {
                 guiWindow.webContents.send('load:data', data);
             })
         }
         if (data.mode === 'text') {
+            
             createTextEditorWindow();
-            mainWindow.close();
-            ipcMain.on('ready:text-window', () => {
+            mainWindow.hide();
+            ipcMain.once('ready:text-window', () => {
                 textWindow.webContents.send('load:data', data);
             })
         }
