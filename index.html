@@ -134,6 +134,11 @@
             fetchProjects();
         });
 
+        ipcRenderer.on('project:updated', () => {
+            fetchProjects();
+            resetForms('#loadproject')
+        });
+
         //Get forms to proccess
         const createProjForm = document.getElementById('create-project-form');
         createProjForm.addEventListener('submit', submitProject); //Add listener to form to handle processing
