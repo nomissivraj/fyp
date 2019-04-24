@@ -631,7 +631,7 @@ function createFile(details) {
     
 }
 
-// Function to save entire project
+// Function to save file
 function saveFile(project) {
     let file = project.file;
     let extension = file.split(".");
@@ -640,14 +640,6 @@ function saveFile(project) {
     fs.writeFile(path.join(savesPath,project.name,filePath), project.content);
 }
 
-function checkChanges() {
-
-}
-
-//Auto save function?
-function autoSave() {
-    // save every 10mins?
-}
 
 /*
    //////////////////////// END MAIN APP FUNCTIONS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
