@@ -165,7 +165,13 @@ function initMenu(menuEl, btn, subBtns) {
         //      - File menu - save
         let saveBtn = document.getElementById('savebtn');
         saveBtn.addEventListener('click', () => {
-            saveChanges(currentProject);
+            saveChanges(currentPage);
+            toggleDisplay('dropdown__menu--file');
+        });
+        //      - File menu - save all
+        let saveAllBtn = document.getElementById('saveallbtn');
+        saveAllBtn.addEventListener('click', () => {
+            saveAll();
             toggleDisplay('dropdown__menu--file');
         });
         //      - File menu - exit
@@ -681,20 +687,31 @@ function updateCurProjectDetails(data) {
     }
 }
 
-function saveChanges(currentProject) {
+function saveAll() {
+    let pages = curProjectDetails.pages;
+    let stylesheets = curProjectDetails.stylesheets;
+    for (let i = 0; i < pages.length; i++ ) {
+        saveChanges(pages[i]);
+    }
+    for (let i = 0; i < stylesheets.length; i++ ) {
+        saveChanges(stylesheets[i]);
+    }
+}
+
+function saveChanges(file) {
     console.log('saving')
-    let changes = editors[currentEditor].getValue();
+    let changes = editors[file].getValue();
     let data = {
         name: currentProject,
-        file: currentPage,
+        file: file,
         content: changes
     }
     ipcRenderer.send('save:file', data);
 
     //Update page content for change tracking and remove class that indicates changes made
-    pageContent[currentPage] = editors[currentEditor].getValue();
+    pageContent[file] = editors[currentEditor].getValue();
 
-    let fileDetails = currentPage.split('.');
+    let fileDetails = file.split('.');
     let fileExt = fileDetails[1];
     let tabName = fileExt === 'css' ? '#'+fileDetails[0]+'-css-tab-btn' : '#'+fileDetails[0]+'-tab-btn';
     removeClass(tabName, 'changed');
