@@ -170,7 +170,6 @@ ipcMain.on('load:project', (e, data) => {
     let winPos = mainWindow.getPosition();
     winX = winPos[0];
     winY = winPos[1];
-    console.log('HAPPENING?')
     winSize = mainWindow.getSize();
     loadProject(data);
 });
@@ -191,6 +190,10 @@ ipcMain.on('create:file', (e, data) =>{
 ipcMain.on('delete:page', (e, data) => {
     deletePage(data);
 });
+
+ipcMain.on('switch:mode', (e, data) => {
+    switchToTextEditor(data);
+})
 
 //send items
 
@@ -524,7 +527,7 @@ function deletePage(details) {
 
 function removeFromJSON(savesPath, projectName) {
     promiseReadFile(path.join(savesPath,'projects.json')).then((data) => {
-        let json = JSON.parse(data)
+        let json = JSON.parse(data);
         for (let i = 0; i < json.length; i++) {
             console.log(json[i])
             if (json[i].name === projectName) {
@@ -697,6 +700,22 @@ function createUserStructure() {
     });
 }
 
+function switchToTextEditor(project) {
+    promiseReadFile(path.join(savesPath,'projects.json')).then((data) => {
+        let json = JSON.parse(data);
+        for (let i = 0; i < json.length; i++) {
+            if (json[i].name === project.name) {
+                json[i].mode = 'text';
+                fs.writeFile(path.join(savesPath,'projects.json'),JSON.stringify(json, null, 2), (err) => {
+                    if (err) return log.error(err);
+                    log.info('Edit Mode for',project.name,'switched to text');
+                    mainWindow.webContents.send('project:updated',project); 
+                    loadProject(project.name);
+                });
+            }
+        }
+    });
+}
 
 // On ready call window function
 app.on('ready', () => {
