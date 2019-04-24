@@ -631,3 +631,14 @@ main.error {
     background: #ebebeb;
 }
 
+.warning {
+    background: rgba(161, 58, 58, 0.9);
+    color: #fff;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.warning p {
+    color: #fff;
+}
