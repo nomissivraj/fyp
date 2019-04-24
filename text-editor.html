@@ -281,7 +281,8 @@
                 switch(extension) {
                     case 'html':
                         if (pages.length > 0) {
-                            if (pages.indexOf(fileDetails[0]) > -1) {
+                            console.log(pages.indexOf(fileName) > -1);
+                            if (pages.indexOf(fileName) > -1) {
                                 alert('A file with that name already exists, try again');
                                 return
                             } else {
@@ -295,7 +296,7 @@
                         break;
                     case 'css':
                         if (stylesheets.length > 0) {
-                            if (stylesheets.indexOf(fileDetails[0]) > -1) {
+                            if (stylesheets.indexOf(fileName) > -1) {
                                 alert('A file with that name already exists, try again');
                                 return
                             } else {
@@ -346,6 +347,7 @@
         let editors = {};
         let currentEditor;
         let currentPage;
+        let pageContent = {};
           
         // Recieve
         ipcRenderer.on('load:data', (e, data) => {
@@ -355,7 +357,6 @@
             let projectTitle = document.createTextNode(' - '+currentProject);
             titleCont.style = 'text-transform:capitalize';
             titleCont.appendChild(projectTitle);
-            console.log(titleCont)
             // Load html containers for CM instances
             initCMcontainers(curProjectDetails);
             // Load CM instances
@@ -364,6 +365,7 @@
             initTabs(curProjectDetails);
             // Load file content into page editors 
             loadPageContent(curProjectDetails);
+            
             initDictate('textEditor');
             initMenu('menu','.dropdown__btn', '.submenu__btn');
             if (data.pages.length === 0 && data.stylesheets.length === 0) {
@@ -386,8 +388,8 @@
             loadNewPageContent(data);
             
             updateCurProjectDetails(data);
-            //FINALLY UPDATE curProjectDetails with new stuff
-            //'''''''''''''''==========>>>>>>>>><<<<<<<<<<<<<
+
+            initInputListeners();
         });
 
         ipcRenderer.on('remove:page', (e, data) => {
