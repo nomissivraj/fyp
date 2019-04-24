@@ -243,8 +243,9 @@
         const fs = require('file-system');
         const savesPath = path.join(app.getPath('documents'),'Voice Developer Projects','/saves/');
         const shell = require('electron').shell;
-        ipcRenderer.send('ready:text-window');
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
+
+        ipcRenderer.send('ready:text-window');
         
         //Process Forms
         const newFileForm = document.getElementById('newfile__form');
