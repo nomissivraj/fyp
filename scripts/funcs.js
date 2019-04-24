@@ -135,6 +135,7 @@ function initMenu(menuEl, btn, subBtns) {
         menuBtn[i].addEventListener('mousedown', (e) => {
             if (!menu.classList.contains('active')) {
                 let currentMenu = e.target.innerHTML.toLowerCase();
+                console.log(currentMenu);
                 let currentDrpDwn = document.getElementById('dropdown__menu--'+currentMenu);
 
                 //show current hovered, hide all others
@@ -146,147 +147,209 @@ function initMenu(menuEl, btn, subBtns) {
     //  File menu
         //      - File menu - New Page
         let newFileBtn = document.getElementById('newfilebtn');
-        newFileBtn.addEventListener('click', () => {
-            hideOthers('.dialogue','#newfileform__container');
-            toggleDisplay('newfileform__container');
-            toggleDisplay('dropdown__menu--file');
-            
-        });
+        if (newFileBtn) {
+            newFileBtn.addEventListener('click', () => {
+                hideOthers('.dialogue','#newfileform__container');
+                toggleDisplay('newfileform__container');
+                toggleDisplay('dropdown__menu--file');
+                
+            });
+        }
+        
         //      - File menu - Delete Page
         let delFileBtn = document.getElementById('deletefilebtn');
-        delFileBtn.addEventListener('click', () => {
-            hideOthers('.dialogue','#deletefileform__container');
-            let input = document.getElementById('file-to-delete');
-            input.value = currentPage;
-            toggleDisplay('deletefileform__container')
-            toggleDisplay('dropdown__menu--file');
-        });
+        if (delFileBtn) {
+            delFileBtn.addEventListener('click', () => {
+                hideOthers('.dialogue','#deletefileform__container');
+                let input = document.getElementById('file-to-delete');
+                input.value = currentPage;
+                toggleDisplay('deletefileform__container')
+                toggleDisplay('dropdown__menu--file');
+            });
+        }
+        
 
         //      - File menu - save
         let saveBtn = document.getElementById('savebtn');
-        saveBtn.addEventListener('click', () => {
-            saveChanges(currentPage);
-            toggleDisplay('dropdown__menu--file');
-        });
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                saveChanges(currentPage);
+                toggleDisplay('dropdown__menu--file');
+            });
+        }
+        
         //      - File menu - save all
         let saveAllBtn = document.getElementById('saveallbtn');
-        saveAllBtn.addEventListener('click', () => {
-            saveAll();
-            toggleDisplay('dropdown__menu--file');
-        });
+        if (saveAllBtn) {
+            saveAllBtn.addEventListener('click', () => {
+                saveAll();
+                toggleDisplay('dropdown__menu--file');
+            });
+        }
+        
         //      - File menu - exit
         let exitBtn = document.getElementById('exitbtn');
-        exitBtn.addEventListener('click', () => {
-            let window = remote.getCurrentWindow();
-            window.close();
-        });
+        if (exitBtn) {
+            exitBtn.addEventListener('click', () => {
+                let window = remote.getCurrentWindow();
+                window.close();
+            });
+        }
+        
         // Edit Menu
         //      - Edit menu 
         let undoBtn = document.getElementById('undobtn');
-        undoBtn.addEventListener('click', () => {
-            editors[currentEditor].doc.undo();
-            toggleDisplay('dropdown__menu--edit');
-        });
-
+        if (undoBtn) {
+            undoBtn.addEventListener('click', () => {
+                editors[currentEditor].doc.undo();
+                toggleDisplay('dropdown__menu--edit');
+            });    
+        }
+        
         let redoBtn = document.getElementById('redobtn');
-        redoBtn.addEventListener('click', () => {
-            editors[currentEditor].doc.redo();
-            toggleDisplay('dropdown__menu--edit');
-        });
+        if (redoBtn) {
+            redoBtn.addEventListener('click', () => {
+                editors[currentEditor].doc.redo();
+                toggleDisplay('dropdown__menu--edit');
+            });
+        }
+        
 
         //cut copy paste
         let cutBtn = document.getElementById('cutbtn');
-        cutBtn.addEventListener('click', () => {
-            document.execCommand('cut');
-            toggleDisplay('dropdown__menu--edit');
-        });
+        if (cutBtn) {
+            cutBtn.addEventListener('click', () => {
+                document.execCommand('cut');
+                toggleDisplay('dropdown__menu--edit');
+            });
+        }
 
         let copyBtn = document.getElementById('copybtn');
-        copyBtn.addEventListener('click', () => {
-            document.execCommand('copy');
-            toggleDisplay('dropdown__menu--edit');
-        });
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                document.execCommand('copy');
+                toggleDisplay('dropdown__menu--edit');
+            });
+        }
+        
 
         let pasteBtn = document.getElementById('pastebtn');
-        pasteBtn.addEventListener('click', () => {
-            document.execCommand('paste');
-            toggleDisplay('dropdown__menu--edit');
-        });
+        if (pasteBtn) {
+            pasteBtn.addEventListener('click', () => {
+                document.execCommand('paste');
+                toggleDisplay('dropdown__menu--edit');
+            });
+        }
 
         let deleteBtn = document.getElementById('deletebtn');
-        deleteBtn.addEventListener('click', () => {
-            document.execCommand('delete');
-            toggleDisplay('dropdown__menu--edit');
-        });
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', () => {
+                document.execCommand('delete');
+                toggleDisplay('dropdown__menu--edit');
+            });
+        }
 
         let enterBtn = document.getElementById('enterbtn');
-        enterBtn.addEventListener('click', () => {
-            CodeMirror.commands.newlineAndIndent(editors[currentEditor]);
-            toggleDisplay('dropdown__menu--edit');
-        });
-
+        if (enterBtn) {
+            enterBtn.addEventListener('click', () => {
+                CodeMirror.commands.newlineAndIndent(editors[currentEditor]);
+                toggleDisplay('dropdown__menu--edit');
+            });
+        }
+        
         let tabBtn = document.getElementById('tabbtn');
-        tabBtn.addEventListener('click', () => {
-            CodeMirror.commands.defaultTab(editors[currentEditor]);
-            toggleDisplay('dropdown__menu--edit');
-        });
-
+        if (tabBtn) {
+            tabBtn.addEventListener('click', () => {
+                CodeMirror.commands.defaultTab(editors[currentEditor]);
+                toggleDisplay('dropdown__menu--edit');
+            });
+        }
+        
         let spaceBtn = document.getElementById('spacebtn');
-        spaceBtn.addEventListener('click', () => {
-            let cursorPos = editors[currentEditor].getCursor();
-            editors[currentEditor].replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
-            toggleDisplay('dropdown__menu--edit');
-        });
-
+        if (spaceBtn) {
+            spaceBtn.addEventListener('click', () => {
+                let cursorPos = editors[currentEditor].getCursor();
+                editors[currentEditor].replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
+                toggleDisplay('dropdown__menu--edit');
+            });
+        }
+        
         //Preview Menu
         let previewBtn = document.getElementById('previewbtn');
-        previewBtn.addEventListener('click', () => {
-            pagePreview();
-            toggleDisplay('dropdown__menu--preview');
-        })
-
+        if (previewBtn) {
+            previewBtn.addEventListener('click', () => {
+                pagePreview();
+                toggleDisplay('dropdown__menu--preview');
+            });
+        }
+        
         //Tags Menu
         let heading1 = document.getElementById('heading1btn');
-        heading1.addEventListener('click', () => {
-            let cursorPos = editors[currentEditor].getCursor();
-            editors[currentEditor].replaceRange("<h1></h1>",{line: cursorPos.line, ch: cursorPos.ch});
-            toggleDisplay('dropdown__menu--tags');
-        });
+        if (heading1) {
+            heading1.addEventListener('click', () => {
+                let cursorPos = editors[currentEditor].getCursor();
+                editors[currentEditor].replaceRange("<h1></h1>",{line: cursorPos.line, ch: cursorPos.ch});
+                toggleDisplay('dropdown__menu--tags');
+            });
+        }
 
         let heading2 = document.getElementById('heading2btn');
-        heading2.addEventListener('click', () => {
-            let cursorPos = editors[currentEditor].getCursor();
-            editors[currentEditor].replaceRange("<h2></h2>",{line: cursorPos.line, ch: cursorPos.ch});
-            toggleDisplay('dropdown__menu--tags');
-        });
+        if (heading2) {
+            heading2.addEventListener('click', () => {
+                let cursorPos = editors[currentEditor].getCursor();
+                editors[currentEditor].replaceRange("<h2></h2>",{line: cursorPos.line, ch: cursorPos.ch});
+                toggleDisplay('dropdown__menu--tags');
+            });
+        }
+        
 
         let heading3 = document.getElementById('heading3btn');
-        heading3.addEventListener('click', () => {
-            let cursorPos = editors[currentEditor].getCursor();
-            editors[currentEditor].replaceRange("<h3></h3>",{line: cursorPos.line, ch: cursorPos.ch});
-            toggleDisplay('dropdown__menu--tags');
-        });
+        if (heading3) {
+            heading3.addEventListener('click', () => {
+                let cursorPos = editors[currentEditor].getCursor();
+                editors[currentEditor].replaceRange("<h3></h3>",{line: cursorPos.line, ch: cursorPos.ch});
+                toggleDisplay('dropdown__menu--tags');
+            }); 
+        }
+        
 
         let heading4 = document.getElementById('heading4btn');
-        heading4.addEventListener('click', () => {
-            let cursorPos = editors[currentEditor].getCursor();
-            editors[currentEditor].replaceRange("<h4></h4>",{line: cursorPos.line, ch: cursorPos.ch});
-            toggleDisplay('dropdown__menu--tags');
-        });
+        if (heading4) {
+            heading4.addEventListener('click', () => {
+                let cursorPos = editors[currentEditor].getCursor();
+                editors[currentEditor].replaceRange("<h4></h4>",{line: cursorPos.line, ch: cursorPos.ch});
+                toggleDisplay('dropdown__menu--tags');
+            });  
+        }
+       
 
         let heading5 = document.getElementById('heading5btn');
-        heading5.addEventListener('click', () => {
-            let cursorPos = editors[currentEditor].getCursor();
-            editors[currentEditor].replaceRange("<h5></h5>",{line: cursorPos.line, ch: cursorPos.ch});
-            toggleDisplay('dropdown__menu--tags');
-        });
+        if (heading5) {
+            heading5.addEventListener('click', () => {
+                let cursorPos = editors[currentEditor].getCursor();
+                editors[currentEditor].replaceRange("<h5></h5>",{line: cursorPos.line, ch: cursorPos.ch});
+                toggleDisplay('dropdown__menu--tags');
+            }); 
+        }
+        
 
         let heading6 = document.getElementById('heading6btn');
-        heading6.addEventListener('click', () => {
-            let cursorPos = editors[currentEditor].getCursor();
-            editors[currentEditor].replaceRange("<h6></h6>",{line: cursorPos.line, ch: cursorPos.ch});
-            toggleDisplay('dropdown__menu--tags');
-        });
+        if (heading6) {
+            heading6.addEventListener('click', () => {
+                let cursorPos = editors[currentEditor].getCursor();
+                editors[currentEditor].replaceRange("<h6></h6>",{line: cursorPos.line, ch: cursorPos.ch});
+                toggleDisplay('dropdown__menu--tags');
+            });
+        }
+        // Mode menu
+        let modebtn = document.getElementById('switchmodebtn');
+        if (modebtn) {
+            modebtn.addEventListener('click', () => {
+                toggleDisplay('modeswitch__container');
+                toggleDisplay('dropdown__menu--switchmode');
+            });
+        }
+        
 }
 
 function pagePreview() {
@@ -799,4 +862,35 @@ function noPages() {
     if (curProjectDetails.pages.length === 0 && curProjectDetails.stylesheets.length === 0) {
         toggleDisplay('no-files');
     }
+}
+
+function initIframeStyles() {
+    setTimeout(() => {
+        const iframe = document.getElementsByTagName('iframe')[0];
+        const iframeDoc = iframe.contentWindow.document;
+
+        const iframeDocEl = iframe.contentWindow.document.documentElement;
+        const iframeBody = iframeDoc.getElementsByTagName('body');
+
+        let styleTag = iframeDoc.createElement('style');
+        styleTag.innerHTML = `
+            ::-webkit-scrollbar {
+                width: 10px;
+            }
+            
+            ::-webkit-scrollbar-track {
+                -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+                box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+                background-color:rgba(255, 255, 255, 0.24);
+            }
+            
+            ::-webkit-scrollbar-thumb {
+            background-color: #d1d1d19d;
+            background: linear-gradient(#d1d1d149, #ffffff94, #d1d1d149);
+            outline: 1px solid #e87400;
+            }
+        `
+        iframeDocEl.appendChild(styleTag);
+        console.log(iframeDoc)
+    }, 100);
 }
