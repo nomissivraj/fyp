@@ -582,10 +582,15 @@ main.error {
 }
 
 .tab__item button {
+    position: relative;
     border-radius: 0;
     background: #444;
     color: #8f8f8f;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tab__item button.changed {
+    padding-right: 24px;
 }
 
 .tab__item button span {
@@ -601,11 +606,28 @@ main.error {
 }
 
 .tab__item button.active {
+    color: #bbbbbb;
     background: #2a3d4f;
     border-bottom: 1px solid #2a3d4f;
 }
 
-.tab__item button.changes::after {
-    content: '*';
+.tab__item button.active span {
+    color: #ebebeb;
+}
+
+.tab__item button.changed::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    background: #d6d5d5;
+}
+
+.tab__item button.changed.active::after {
+    background: #ebebeb;
 }
 
