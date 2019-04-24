@@ -7,7 +7,7 @@ const htmlSpec = {
     theme: 'lucario',
     lineWrapping: true,
     autoCloseTags: true,
-    matchTags: true,
+    matchTags: true
 }
 
 const cssSpec = {
@@ -16,7 +16,7 @@ const cssSpec = {
     theme: 'lucario',
     lineWrapping: true,
     autoCloseTags: true,
-    matchTags: true,
+    matchTags: true
 }
 
 function toggleDisplay(el) {
@@ -50,9 +50,8 @@ function addClass(el, className) {
     } else if (typeof el === 'string') {
         el = document.querySelectorAll(el);
         for (let i = 0; i < el.length; i++) {
-            console.log(el[i],el[i].classList)
-            console.log(el[i].classList.contains(className) === false)
-            el[i].classList.contains(className) === false ? el[i].classList.add(className) : console.log('nope');
+
+            el[i].classList.contains(className) === false ? el[i].classList.add(className) : null;
         }
     } else return;
 }
@@ -64,7 +63,6 @@ function removeClass(el, className) {
     } else if (typeof el === 'string') {
         el = document.querySelectorAll(el);
         for (let i = 0; i < el.length; i++) {
-            console.log(el[i].classList.contains(className))
             el[i].classList.contains(className) === true ? el[i].classList.remove(className) : null;
         }
     } else return;
@@ -408,7 +406,6 @@ function initCMInstances(details) {
         let newCssName = newCssDetails[0];
 
         let cssEditorCont = document.getElementById('editor-css-'+newCssName);
-        console.log(cssEditorCont)
         let cssEditor = CodeMirror.fromTextArea(cssEditorCont, cssSpec);
         cssEditor.setSize("100%", "calc(100vh - 70px)");
         editors[stylesheets[i]] = cssEditor;
@@ -453,6 +450,7 @@ function loadPageContent(details) {
   /*           console.log(editors[pages[i]]); */
             editors[pages[i]].setValue(fileData)
             editors[pages[i]].clearHistory();
+            pageContent[pages[i]] = editors[pages[i]].getValue();
         });
     }
     for (let i = 0; i < stylesheets.length; i++) {
@@ -461,8 +459,10 @@ function loadPageContent(details) {
             /* console.log(fileData) */
             editors[stylesheets[i]].setValue(fileData)
             editors[stylesheets[i]].clearHistory();
+            pageContent[stylesheets[i]] = editors[stylesheets[i]].getValue();
         });
     }
+    trackChanges();
 }
 
 function loadNewPageContent(details) {
@@ -476,6 +476,7 @@ function loadNewPageContent(details) {
                 console.log('new page:',pages[i]);
                 editors[pages[i]].setValue(fileData)
                 editors[pages[i]].clearHistory();
+                pageContent[pages[i]] = editors[pages[i]].getValue();
             });
         }
     }
@@ -487,10 +488,11 @@ function loadNewPageContent(details) {
                 console.log('new stylesheet:',stylesheets[i]);
                 editors[stylesheets[i]].setValue(fileData)
                 editors[stylesheets[i]].clearHistory();
+                pageContent[stylesheets[i]] = editors[stylesheets[i]].getValue();
             });
         }
     }
-
+    trackChanges();
 }
 
 function setTab(tabEls, pageId/* tabEls, currentTabId, pageId, curPage */) {
@@ -687,7 +689,39 @@ function saveChanges(currentProject) {
         file: currentPage,
         content: changes
     }
-    ipcRenderer.send('save:file', data)
+    ipcRenderer.send('save:file', data);
+
+    //Update page content for change tracking and remove class that indicates changes made
+    pageContent[currentPage] = editors[currentEditor].getValue();
+
+    let fileDetails = currentPage.split('.');
+    let fileExt = fileDetails[1];
+    let tabName = fileExt === 'css' ? '#'+fileDetails[0]+'-css-tab-btn' : '#'+fileDetails[0]+'-tab-btn';
+    removeClass(tabName, 'changed');
+}
+
+function trackChanges() {
+        Object.entries(editors).forEach(([key, value]) => {
+                let curDetails = key.split('.');
+                let curExt = curDetails[1];
+                let elName = curExt === 'css' ? '#'+curDetails[0]+'-css-tab-btn' : '#'+curDetails[0]+'-tab-btn';
+                let newContent;
+                
+                setTimeout(()=> {
+                    value.on("change", () => {
+                        newContent = value.getValue();
+                        if (newContent === pageContent[key]) {
+                            removeClass(elName,'changed');
+                        } else if (newContent !== pageContent[key]) {
+                            addClass(elName,'changed');
+
+                        }
+                    });
+                },50)
+                
+            }
+        );  
+    
 }
 
 function rendererDestroyPage(data) {
