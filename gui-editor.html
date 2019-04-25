@@ -99,9 +99,7 @@
 
         <main>
             <div id="gui-sidebar">
-                <div id="step one">step one</div>
-                <div id="step one">step two</div>
-                <div id="step one">step three</div>
+                
             </div>
             <div id="editor">
                 <iframe></iframe>
@@ -129,16 +127,20 @@
         const path = require('path');
         const fs = require('file-system');
         const savesPath = path.join(app.getPath('documents'),'Voice Developer Projects','/saves/');
+        const appPath = __dirname;
+        const partials = appPath+'/templates/partials/';
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
         ipcRenderer.send('ready:gui-window');
 
-        let curProjectDetails;
+        let curProjectDetails,
+            curStep;
         
         
         initMenu('menu','.dropdown__btn', '.submenu__btn');
         initIframeStyles();
 
-        //Process Forms
+
+                //Process Forms
         const switchModeForm = document.getElementById('modeswitch__form');
         switchModeForm.addEventListener('submit', switchMode);
 
@@ -153,7 +155,7 @@
             } else {
                 toggleDisplay('modeswitch__form');
             }
-        }
+        };
 
         //Recieve
         ipcRenderer.on('load:data', (e, data) => {
@@ -163,9 +165,48 @@
                 /* console.log(fileData); */
                 
             });
-            /* console.log(data); */
+
+            // Load Partials
+            let sideBar = document.getElementById('gui-sidebar');
+            if (curProjectDetails.layout === 'layout1') {
+                fs.readFile(path.join(partials,'layout1-steps.html'), 'utf-8', (err, fileData) => {
+                    sideBar.innerHTML = fileData;
+
+                    let steps = document.querySelectorAll('.gui-step');
+                    for (let i = 0; i < steps.length; i++) {
+                        steps[i].addEventListener('click', (e) => {
+                            addClass(e.target,'active');
+                            curStep = steps[i].id;
+                            for (let j = 0; j < steps.length; j++) {
+                                if (e.target !== steps[j]) {
+                                    removeClass(steps[j], 'active');
+                                }
+                            }
+                        });
+                    }
+                });
+
+            } else if (curProjectDetails.layout === 'layout2') {
+                fs.readFile(path.join(partials,'layout2-steps.html'), 'utf-8', (err, fileData) => {
+                    sideBar.innerHTML = fileData;
+
+                    let steps = document.querySelectorAll('.gui-step');
+                    for (let i = 0; i < steps.length; i++) {
+                        steps[i].addEventListener('click', (e) => {
+                            
+                            addClass(steps[i], 'active');
+                        });
+                    }
+                });
+            }
+
+            // Add Listeners
+           
+            
+
+            /* Load iframe */
             let iframe = document.querySelector('iframe');
                 iframe.src = savesPath+data.name+'/index.html';
-        })
+        });
     </script>
 </html>
