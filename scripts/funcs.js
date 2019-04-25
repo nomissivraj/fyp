@@ -900,6 +900,5 @@ function initIframeStyles() {
             }
         `
         iframeDocEl.appendChild(styleTag);
-        console.log(iframeDoc)
     }, 100);
 }
