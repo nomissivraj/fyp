@@ -74,8 +74,19 @@
                     </select>
                     <br><br>
                     <label id="projectlayout-opts" for="projectlayout" style="display: none">Layout:<br>
-                        <input type="radio" name="projectlayout" value="layout1">layout 1<br>
-                        <input type="radio" name="projectlayout" value="layout2">layout 2<br>
+                        <button class="layout-option" type="button" onclick="layoutSelection('layout1')">
+                            <div class="mode-gui">
+                                <img src="img/layout1.svg" alt="default">
+                                <span class="project-title">Layout1</span>
+                            </div>
+                        </button>
+                        <button class="layout-option" type="button" onclick="layoutSelection('layout2')">
+                            <div class="mode-gui">
+                                <img src="img/layout2.svg" alt="default">
+                                <span class="project-title">Layout2</span>
+                            </div>
+                        </button>
+                        <input id="selected-layout" type="hidden" name="selected-layout" value="" required>
                     </label><br>
                     <button type="button" onclick="resetForms('newproject-form')">Cancel</button>
                     <button type="submit" class="positive">Create</button>
@@ -142,7 +153,14 @@
         //Get forms to proccess
         const createProjForm = document.getElementById('create-project-form');
         createProjForm.addEventListener('submit', submitProject); //Add listener to form to handle processing
-
+        
+        // Layout select buttons
+        const layoutSelect = document.querySelectorAll('.layout-option');
+        for (let i = 0; i < layoutSelect.length; i++) {
+            layoutSelect[i].addEventListener('click', () => {
+                buttonSelect(layoutSelect[i], '.layout-option');
+            });
+        }
     
         const loadProjForm = document.getElementById('load-project-form');
         loadProjForm.addEventListener("submit", loadProject); //Add listener to form to handle processing
@@ -178,7 +196,6 @@
             let alertContainer = document.createElement('div');
             let alertTextContainer = document.createElement('span');
             let alertText = document.createTextNode(alertText);
-            
         }
 
         var projectList = [];
@@ -186,9 +203,11 @@
             e.preventDefault();
             const projectName = document.querySelector('#projectname').value;
             const projectMode = document.querySelector('#modeselect').value;
+            const selectedLayout = document.getElementById('selected-layout');
+            const layoutOptions = document.getElementById('projectlayout-opts');
             let projectLayout;
             if (projectMode === 'gui') {
-                projectLayout = document.querySelector('input[name="projectlayout"]:checked').value;
+                projectLayout = selectedLayout.value;
             } else projectLayout = 'default';
             //READ PROJECTS.JSON TO CHECK PROJECTNAME DOESN'T ALREADY EXIST BEFORE SUBMITTING FORM
             //IF project name is in projects.json already send alert that project already exists and to try a different name
@@ -208,15 +227,20 @@
                     return
                 } else {
                     ipcRenderer.send('create:project', projectDetails);
-                    toggleDisplay('newproject-form'); 
+                    selectedLayout.value = null;
+                    layoutOptions.style = 'display: none';
+                    resetForms('newproject-form');
                     return    
                 }
             } else if (projectList.length === 0) {
                 ipcRenderer.send('create:project', projectDetails); 
-                toggleDisplay('newproject-form');    
+                selectedLayout.value = null;
+                layoutOptions.style = 'display: none';
+                resetForms('newproject-form');
+
                 return
             } 
-                
+            
         }
 
         function loadProject(e) {
@@ -316,6 +340,22 @@
             el.classList.add('active');
         }
         
+        function buttonSelect(btn, btnGroup) {
+            let btns = document.querySelectorAll(btnGroup);
+            for (let i = 0; i < btns.length; i++) {
+                if (btns[i] === btn) {
+                   addClass(btns[i], 'active');
+                } else {
+                    removeClass(btns[i], 'active');
+                }
+            }
+        }
+
+        function layoutSelection(selection) {
+            let input = document.getElementById('selected-layout');
+            input.value = selection;
+        }
+
         function deleteProject(e) {
             e.preventDefault();
             //if project matching input doesn't exist warn user
