@@ -45,6 +45,7 @@ textarea {
 h1, h2, h3, h4, h5, h6 {
     -webkit-user-select: none;
     user-select: none;
+    text-transform: capitalize;
 }
 
 p {
@@ -63,9 +64,9 @@ hr {
 
 main {
     position: relative;
-    padding: 50px 20px 20px 20px;
+    padding: 30px 10px 0px 0px;
     margin-top: 40px;
-    height: calc(100% - 39px); 
+    height: calc(100% - 50px); 
     overflow-y: auto;
 }
 
@@ -386,12 +387,12 @@ button.positive:hover {
 
 iframe {
     width: 100%;
-    height: calc(100vh - 120px);
+    height: calc(100vh - 85px);
 }
 
 .gui-editor #editor {
     float: left;
-    width: calc(100% - 80px);
+    width: calc(100% - 250px);
 }
 
 #editor__text {
@@ -410,7 +411,7 @@ iframe {
 
 #gui-sidebar {
     float:left;
-    width: 80px;
+    width: 250px;
 }
 
 input[type="text"] {
@@ -641,4 +642,22 @@ main.error {
 
 .warning p {
     color: #fff;
+}
+
+.gui-step {
+    padding: 10px 20px;
+    background: #686868;
+    border-top: 1px solid #848484;
+    display: block;
+    width: 100%;
+    text-align: left;
+    border-radius: 0;
+}
+
+.gui-step > * {
+    pointer-events: none;
+}
+
+.gui-step.active {
+    background: #969696;
 }
