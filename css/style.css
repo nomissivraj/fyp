@@ -273,7 +273,7 @@ button:hover {
     width: 40px;
     padding: 5px;
     position: absolute;
-    bottom: 20px;
+    bottom: 10px;
     right: 20px;
 }
 
@@ -353,13 +353,13 @@ button.positive:hover {
     display: block;
 }
 
-.project-result {
+.project-result, .layout-option {
     margin: 10px;
     background: rgba(165, 165, 165, 0.5);
 }
 
-.project-result.active {
-    background: rgba(165, 165, 165, 0.9);
+.project-result.active, .layout-option.active {
+    background: rgba(192, 192, 192, 0.9);
 }
 
 .mode-text, .mode-gui {
