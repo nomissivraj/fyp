@@ -86,9 +86,18 @@ function hideOthers(elements, dontHide) {
 
 function resetForms(el) {    
     let forms = document.querySelectorAll('form');
+    if (!forms) return;
+    let buttons = document.querySelectorAll('button');
+
     for (let i = 0; i < forms.length; i++) {
         forms[i].reset();
     }
+    if (buttons){
+        for (let i = 0; i < buttons.length; i++) {
+            removeClass('button', 'active');
+        }
+    }
+    
     toggleDisplay(el);
 }
 
