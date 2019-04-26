@@ -709,3 +709,8 @@ main.error {
 .gui-step.active:hover {
     background: linear-gradient( #48ac7d 0%, #76f7ce 45%, #76f7ce 55%, #48ac7d 100%);
 }
+
+
+.gui-step .option__value {
+    opacity: .7;
+}
