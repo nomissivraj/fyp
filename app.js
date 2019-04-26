@@ -244,6 +244,7 @@ function newProject(projectDetails) {
                     let promiseUpdate = updateJson(projectDetails);
                     Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data)=>{
                         loadProject(projectDetails.name);
+                        mainWindow.webContents.send('fetch:projects');
                     });
                 });                
             }
@@ -257,12 +258,11 @@ function newProject(projectDetails) {
                     let promiseUpdate = updateJson(projectDetails);
                     Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data)=>{
                         loadProject(projectDetails.name);
+                        mainWindow.webContents.send('fetch:projects');
                     });
                 });
                 
-            }
-            // AFTER ABOVE IS RESOLVED OPEN NEW WINDOW AND loadProject()
-            
+            }            
         }    
     });
 }
