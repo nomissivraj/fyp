@@ -222,8 +222,10 @@ function findMatchingValue(array, string) {
 }
 
 const commands = [
-    {"text color": ["text color", "test"]},
+    {"text color": ["text color"]},
     {"text size": ["text size"]},
+    {"title color": ["title color"]},
+    {"title size": ["itle size"]},
     {"background color": ["background color", "background colour"]},
     {"image size": ["image size"]},
     {"select image": ["select image"]}
@@ -279,7 +281,7 @@ function speechToGui(data) {
         switch(curStep) {
             case 'step-header':
                 let newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-                processCommand(newCommand, string, 'header')
+                processCommand(newCommand, string);
                 break;
             case 'step-navigation':
                 for (let word in words) {
@@ -306,11 +308,12 @@ function speechToGui(data) {
         }
     }
     
-    function processCommand(command, string, element) {
+    function processCommand(command, string) {
         const iframe = document.querySelectorAll('iframe')[0];
         const iframeDoc = iframe.contentWindow.document;
 
-        let textEls = ['p','h1','h2','h3','h4','h5','h6',];
+        let textEls = ['p','h1','h2','h3','h4','h5','h6'];
+        let titleEls = ['h1','h2','h3','h4','h5','h6'];
         
         /* let process = command.replace(' ', '-');
         console.log(process); */
@@ -325,7 +328,6 @@ function speechToGui(data) {
                     for (let j = 0; j < text.length; j++) {
                         text[j].style = 'color:'+newString+';';
                     }
-                    
                 }
                 // Change in actual Document
 
