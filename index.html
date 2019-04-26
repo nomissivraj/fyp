@@ -372,7 +372,7 @@
 
                 if (confirmation) {
                     ipcRenderer.send('delete:project', projectName)
-                    toggleDisplay('deleteproject')
+                    resetForms('deleteproject');
                 } else toggleDisplay('deleteproject');
             }
             //on second confirmation through alert, send project deletion to app.js
