@@ -806,7 +806,7 @@ function trackChanges() {
 
                         }
                     });
-                },50)
+                },150)
                 
             }
         );  
@@ -897,6 +897,15 @@ function initIframeStyles() {
             background-color: #d1d1d19d;
             background: linear-gradient(#d1d1d149, #ffffff94, #d1d1d149);
             outline: 1px solid #e87400;
+            }
+
+            html {
+                cursor: crosshair;
+            }
+
+            html > * {
+                pointer-events: none;
+                user-select: none;
             }
         `
         iframeDocEl.appendChild(styleTag);
