@@ -48,7 +48,9 @@ nav.mainnav {
 }
 
 .col-3 {
+    width: calc(100% - 40px);
     padding: 20px;
+    overflow: hidden;
 }
 
 .col-3 article {
