@@ -8,6 +8,7 @@
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <script src="node_modules/jquery/dist/jquery.min.js"></script>
         <script src="scripts/funcs.js"></script>
+        <script src="scripts/stt.js"></script>
         <script src="scripts/guispeech.js"></script>
         <script src="scripts/jscolor.js"></script>
     </head>
@@ -117,6 +118,7 @@
                     <button type="submit" class="negative">Confirm</button>
                 </form>
             </div>
+            <button type="button" id="dictate-btn"></button>
         </main>
         
     </body>
@@ -137,6 +139,11 @@
         let curProjectDetails,
             curStep;
         
+        //Load json files
+        let colors;
+        fs.readFile(path.join(appPath,'/scripts/colors.json'), (err, data) => {
+            colors = JSON.parse(data);
+        });
         
         initMenu('menu','.dropdown__btn', '.submenu__btn');
         initIframeStyles();
@@ -174,15 +181,17 @@
                 fs.readFile(path.join(partials,'layout1-steps.html'), 'utf-8', (err, fileData) => {
                     sideBar.innerHTML = fileData;
                     initSteps();
+                    initGuiDictate();
                 });
 
             } else if (curProjectDetails.layout === 'layout2') {
                 fs.readFile(path.join(partials,'layout2-steps.html'), 'utf-8', (err, fileData) => {
                     sideBar.innerHTML = fileData;
                     initSteps();
+                    initGuiDictate();
                 });
             }
-
+            
             // Add Listeners
 
             /* Load iframe */
