@@ -39,8 +39,8 @@ function initDictate(target) {
     let active = false;
 
     const dictate = document.getElementById('dictate-btn');
-    let frame = '.CodeMirror'/* document.getElementsByClassName('CodeMirror')[0] */;
-    let gutter = '.gutter'/* document.getElementsByClassName('CodeMirror-gutters')[0] */;
+    let frame = '.CodeMirror';
+    let gutter = '.gutter';
     let main = document.getElementsByTagName('main')[0];
     
 
@@ -62,18 +62,23 @@ function initDictate(target) {
             default: 
              dictateMode = 'default';
         } 
+        // If not already recording, set to active on mousedown
         if (!active) {
             toggleClass(dictate, 'active');
             if (document.getElementsByTagName('body')[0].classList.contains('text-editor')) {
+                // Handle visual indication
                 toggleClass(frame, 'shadow-positive');
             } else {
+                // Handle visual indication
                 toggleClass(main, 'shadow-positive');
             }
-            
+            // Start recording
             startRecording(speechPath);
         } else {
+            // If already recording, stop recording on mousedown and remove active state
             stopRecording();
             toggleClass(dictate, 'active');
+            // Handle visual indication of recording stopped
             if (document.getElementsByTagName('body')[0].classList.contains('text-editor')) {
                 toggleClass(frame, 'shadow-positive');
                 toggleClass(frame, 'working');
@@ -81,7 +86,7 @@ function initDictate(target) {
                 toggleClass(main, 'shadow-positive');
                 toggleClass(main, 'working');
             }
-            
+            // Now that recording has finished send data from speechPath file to speech to text promise which will return the text as 'data'
             toText(speechPath).then((data) => {
                 if (target === 'textEditor') {
                     speechToCode(data);
@@ -233,8 +238,8 @@ function speechToCode(data) {
     let words = data.toLowerCase().split(" ");
     // Get elements for "working..." indication/feedback    
 
-    let frame = '.CodeMirror' /* document.getElementsByClassName('CodeMirror')[0] */;
-    let gutter = '.gutter'/* document.getElementsByClassName('CodeMirror-gutters')[0] */;
+    let frame = '.CodeMirror';
+    let gutter = '.gutter';
 
     if (dictateMode === 'markup') {
         for (let word in words) {
@@ -300,9 +305,7 @@ function speechToCode(data) {
     if (dictateMode === 'command') {
         
         for (let word in words) {
-            /* console.log(words[word],findKeyNameOfValue(commands, words[word]))
-            if (words[word] === findKeyNameOfValue(commands, words[word])) {
-                // Search tags for a match of other words */
+            
                 let command = findKeyNameOfValue(commands,words[word]);
                 console.log(command)
                 if (command !== undefined) stcSuccess = true;
