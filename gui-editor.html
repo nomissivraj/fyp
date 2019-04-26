@@ -8,6 +8,8 @@
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <script src="node_modules/jquery/dist/jquery.min.js"></script>
         <script src="scripts/funcs.js"></script>
+        <script src="scripts/guispeech.js"></script>
+        <script src="scripts/jscolor.js"></script>
     </head>
     <body class="gui-editor">
         <header class="app-header">
@@ -171,38 +173,17 @@
             if (curProjectDetails.layout === 'layout1') {
                 fs.readFile(path.join(partials,'layout1-steps.html'), 'utf-8', (err, fileData) => {
                     sideBar.innerHTML = fileData;
-
-                    let steps = document.querySelectorAll('.gui-step');
-                    for (let i = 0; i < steps.length; i++) {
-                        steps[i].addEventListener('click', (e) => {
-                            addClass(e.target,'active');
-                            curStep = steps[i].id;
-                            for (let j = 0; j < steps.length; j++) {
-                                if (e.target !== steps[j]) {
-                                    removeClass(steps[j], 'active');
-                                }
-                            }
-                        });
-                    }
+                    initSteps();
                 });
 
             } else if (curProjectDetails.layout === 'layout2') {
                 fs.readFile(path.join(partials,'layout2-steps.html'), 'utf-8', (err, fileData) => {
                     sideBar.innerHTML = fileData;
-
-                    let steps = document.querySelectorAll('.gui-step');
-                    for (let i = 0; i < steps.length; i++) {
-                        steps[i].addEventListener('click', (e) => {
-                            
-                            addClass(steps[i], 'active');
-                        });
-                    }
+                    initSteps();
                 });
             }
 
             // Add Listeners
-           
-            
 
             /* Load iframe */
             let iframe = document.querySelector('iframe');
