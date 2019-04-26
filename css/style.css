@@ -64,9 +64,9 @@ hr {
 
 main {
     position: relative;
-    padding: 30px 10px 0px 0px;
+    padding: 0;
     margin-top: 40px;
-    height: calc(100% - 50px); 
+    height: calc(100% - 39px);
     overflow-y: auto;
 }
 
@@ -387,7 +387,15 @@ button.positive:hover {
 
 iframe {
     width: 100%;
-    height: calc(100vh - 85px);
+    height: calc(100vh - 40px);
+    margin-bottom: -4px;
+    padding: 5px;
+    box-shadow: inset 0px 0px 200px #224654;
+    background: #ffffffb8;
+}
+
+iframe > * {
+    user-select: none;
 }
 
 .gui-editor #editor {
@@ -410,8 +418,11 @@ iframe {
 }
 
 #gui-sidebar {
-    float:left;
+    float: left;
     width: 250px;
+    max-height: calc(100vh - 40px);
+    overflow: hidden;
+    overflow-y: auto;
 }
 
 input[type="text"] {
@@ -645,13 +656,43 @@ main.error {
 }
 
 .gui-step {
+    position: relative;
+    color: #fff;
     padding: 10px 20px;
-    background: #686868;
-    border-top: 1px solid #848484;
+    background: linear-gradient( #284050 0%, #305165 45%, #305165 55%, #284050 100%);
     display: block;
     width: 100%;
     text-align: left;
     border-radius: 0;
+    border-top: 5px solid #d8d8d840;
+    border-right: 5px solid #dedede40;
+    border-left: 5px solid #eaeaea40;
+}
+
+.gui-step h3 {
+    opacity: .7;
+    font-weight: normal;
+}
+
+.gui-step:after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    border-top: 10px solid transparent;
+    border-right: 10px solid #e3e7ff;
+    right: 5px;
+}
+
+.gui-step.active:after {
+    border-right: 10px solid #6effa6;
+}
+
+.gui-step:focus {
+    outline: none;
+}
+
+.gui-step:last-of-type {
+    border-bottom: 5px solid #dedede40;
 }
 
 .gui-step > * {
@@ -659,5 +700,12 @@ main.error {
 }
 
 .gui-step.active {
-    background: #969696;
+    background: linear-gradient( #419c72 0%, #55dcb1 45%, #55dcb1 55%, #419c72 100%);
+}
+
+.gui-step:hover {
+    background: linear-gradient( #3c6077  0%, #447492 45%, #447492 45%, #3c6077 100%);
+}
+.gui-step.active:hover {
+    background: linear-gradient( #48ac7d 0%, #76f7ce 45%, #76f7ce 55%, #48ac7d 100%);
 }
