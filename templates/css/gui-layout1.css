@@ -31,37 +31,37 @@ header {
     width: calc(100% - 40px);
 }
 
-header .l1-container {
+header .container {
     padding: 0;
 }
 
-.l1-container {
+.container {
     max-width: 1060px;
     margin: 0 auto;
     padding: 20px;
 }
 
-nav.l1-headernav {
+nav.headernav {
     background: lightgray;
     overflow: hidden;
 }
 
-nav.l1-headernav ul li {
+nav.headernav ul li {
     float: left;
     padding: 10px 20px;
 }
 
-.l1-1col {
+.col-1 {
     width: 100%;
     clear:both;
 }
 
-.l1-3col {
+.col-3 {
     background: rgb(192, 192, 192);
     overflow: hidden;
 }
 
-.l1-3col article {
+.col-3 article {
     width: calc(33.333% - 40px);
     float: left;
     padding: 20px;

@@ -33,7 +33,7 @@ header {
     width: calc(100% - 40px);
 }
 
-nav.l2-mainnav {
+nav.mainnav {
     float: left;
     min-height: 100%;
     width: 200px;
@@ -41,12 +41,17 @@ nav.l2-mainnav {
     padding: 20px;
 }
 
-.l2-1col {
-    width: 100%;
+.col-1 {
+    width: calc(100% - 40px);
     clear:both;
+    padding: 20px;
 }
 
-.l2-3col article {
+.col-3 {
+    padding: 20px;
+}
+
+.col-3 article {
     width: calc(33.333% - 40px);
     float: left;
     padding: 20px;
@@ -54,10 +59,10 @@ nav.l2-mainnav {
 
 main {
     float: left;
-    width: calc(100% - 280px);
+    width: calc(100% - 240px);
     max-width: 1000px;
     background: lightcyan;
-    padding: 20px;
+    padding: 0;
     min-height: 100%;
 }
 
