@@ -231,6 +231,9 @@ const commands = [
     {"select image": ["select image"]}
 ];
 
+
+
+
 function speechToGui(data) {
     let guiSpeechSuccess = false;
 
@@ -275,7 +278,7 @@ function speechToGui(data) {
                 break;
         }
     }
-
+    
     if (curProjectDetails.layout === 'layout2') {
         console.log(curStep);
         switch(curStep) {
@@ -307,7 +310,7 @@ function speechToGui(data) {
                 break;
         }
     }
-    
+
     function processCommand(command, string) {
         const iframe = document.querySelectorAll('iframe')[0];
         const iframeDoc = iframe.contentWindow.document;
@@ -330,7 +333,7 @@ function speechToGui(data) {
                     }
                 }
                 // Change in actual Document
-
+                console.log(iframeDoc.styleSheets[0]);
                 break;
             default:
                 break;
