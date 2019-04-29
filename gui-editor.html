@@ -139,11 +139,10 @@
         let curProjectDetails,
             curStep;
         
-        //Load json files
-        let colors;
-        fs.readFile(path.join(appPath,'/scripts/colors.json'), (err, data) => {
-            colors = JSON.parse(data);
-        });
+        // Json files
+        let colors,
+            css;
+        
         
         initMenu('menu','.dropdown__btn', '.submenu__btn');
         initIframeStyles();
@@ -174,6 +173,12 @@
                 /* console.log(fileData); */
                 
             });
+            
+
+            // Load JSON files
+            fs.readFile(path.join(appPath,'/scripts/colors.json'), (err, data) => {
+                colors = JSON.parse(data);
+            });
 
             // Load Partials
             let sideBar = document.getElementById('gui-sidebar');
@@ -197,6 +202,35 @@
             /* Load iframe */
             let iframe = document.querySelector('iframe');
                 iframe.src = savesPath+data.name+'/index.html';
+
+            function insertCSS() {
+                let iframe = document.querySelectorAll('iframe')[0];
+                let iframeDoc = iframe.contentWindow.document;
+                console.log(iframeDoc.styleSheets[0])
+                iframeDoc.styleSheets[0].insertRule('header p {color: pink}', 0);
+            }
+
+            function saveComputedCSS() {
+                let iframe = document.querySelectorAll('iframe')[0];
+                let iframeDoc = iframe.contentWindow.document;
+                
+                let styleRules = iframeDoc.styleSheets[0].cssRules;
+                
+                let cssCont = '';
+
+                for (let i = 0; i < styleRules.length; i++) {
+                    cssCont = cssCont.concat(styleRules[i].cssText+'\n\n');
+
+                }
+                console.log(cssCont)
+            }
+
+            setTimeout(() => {
+                saveComputedCSS();
+            }, 1000);
+            
+
         });
+
     </script>
 </html>
