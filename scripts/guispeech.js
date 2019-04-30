@@ -222,9 +222,9 @@ function findMatchingValue(array, string) {
 }
 
 const commands = [
-    {"text color": ["text color"]},
+    {"text color": ["text color", "text colour"]},
     {"text size": ["text size"]},
-    {"title color": ["title color"]},
+    {"title color": ["title color", "title colour"]},
     {"title size": ["itle size"]},
     {"background color": ["background color", "background colour"]},
     {"image size": ["image size"]},
@@ -284,7 +284,7 @@ function speechToGui(data) {
         switch(curStep) {
             case 'step-header':
                 let newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-                processCommand(newCommand, string);
+                processCommand(newCommand, string, 'header');
                 break;
             case 'step-navigation':
                 for (let word in words) {
@@ -311,36 +311,6 @@ function speechToGui(data) {
         }
     }
 
-    function processCommand(command, string) {
-        const iframe = document.querySelectorAll('iframe')[0];
-        const iframeDoc = iframe.contentWindow.document;
-
-        let textEls = ['p','h1','h2','h3','h4','h5','h6'];
-        let titleEls = ['h1','h2','h3','h4','h5','h6'];
-        
-        /* let process = command.replace(' ', '-');
-        console.log(process); */
-        switch(command) {
-            case 'text color':
-                // Get command parameters
-                let newString = findKeyNameOfValue(colors, findMatchingValue(colors, string));
-                console.log(newString);
-                // Change in DOM
-                for (let i = 0; i < textEls.length; i++) {
-                    let text = iframeDoc.querySelectorAll('header '+textEls[i]);
-                    for (let j = 0; j < text.length; j++) {
-                        text[j].style = 'color:'+newString+';';
-                    }
-                }
-                // Change in actual Document
-                console.log(iframeDoc.styleSheets[0]);
-                break;
-            default:
-                break;
-        }
-    }
-
-
     // If command matches are made set 'guiSpeechSuccess' to 'true'
 
     // Confirmation of finished
@@ -360,4 +330,79 @@ function speechToGui(data) {
             toggleClass(gutter, 'error');
         },1000);    
     }
+}
+
+function processCommand(command, string, rule) {
+    const iframe = document.querySelectorAll('iframe')[0];
+    const iframeDoc = iframe.contentWindow.document;
+
+    let textEls = ['p','h1','h2','h3','h4','h5','h6'];
+    let titleEls = ['h1','h2','h3','h4','h5','h6'];
+    
+    /* let process = command.replace(' ', '-');
+    console.log(process); */
+    switch(command) {
+        case 'text color':
+            // Get command parameters
+            let newString = findKeyNameOfValue(colors, findMatchingValue(colors, string));
+            console.log(newString);
+            // Change in DOM
+            for (let i = 0; i < textEls.length; i++) {
+                let text = iframeDoc.querySelectorAll('header '+textEls[i]);
+                for (let j = 0; j < text.length; j++) {
+                    let prop = 'color';
+                    let propVal = newString;
+                    insertCSS(rule, prop, propVal);
+                }
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+function cssContains(string, list) {
+    // Look through all strings in the given list
+    for (let i = 0; i < list.length; i++) {
+        console.log(list[i].cssText, string);
+        if (list[i].cssText.indexOf(string) !== -1) {
+            return list[i]; // If string input found in a list item's string return that list item
+        }
+    }
+}
+
+
+function insertCSS(rule, prop, propVal) {
+    let iframe = document.querySelectorAll('iframe')[0];
+    let iframeDoc = iframe.contentWindow.document;
+    let stylesheet = iframeDoc.styleSheets[0];
+    let rules = stylesheet.cssRules;
+
+    if (cssContains(rule, rules)) {
+        // If rule exists in list of rules return that rule as 'index' and update that rule with the given property and values
+        let index = cssContains(rule, rules)
+        index.style[prop] = propVal;
+    } else {
+        // If rule doesn't exist in list of rules, create a new rule and set property and property value, appending to the bottom of the stylesheet
+        stylesheet.insertRule(rule +'{'+prop+':'+propVal+';}', rules.length);
+    }
+}
+
+
+function saveComputedCSS() {
+    let iframe = document.querySelectorAll('iframe')[0];
+    let iframeDoc = iframe.contentWindow.document;
+    let styleRules = iframeDoc.styleSheets[0].cssRules;
+    
+    let cssCont = '';
+
+    for (let i = 0; i < styleRules.length; i++) {
+        cssCont = cssCont.concat(styleRules[i].cssText+'\n\n');
+
+    }
+    
+    fs.writeFile(path.join(savesPath+currentProject+'/css/'+curProjectDetails.mode+'-'+curProjectDetails.layout+'.css'), cssBeauty(cssCont), (err) => {
+        if (err) console.log(err);
+    });
+    toggleDisplay('dropdown__menu--file');
 }
