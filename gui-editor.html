@@ -6,7 +6,6 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Voice Developer</title>
         <link rel="stylesheet" type="text/css" href="css/style.css">
-        <script src="node_modules/jquery/dist/jquery.min.js"></script>
         <script src="scripts/funcs.js"></script>
         <script src="scripts/stt.js"></script>
         <script src="scripts/guispeech.js"></script>
@@ -25,7 +24,7 @@
                             <div class="dropdown__menu" id="dropdown__menu--file"  style="display: none">
                                 <ul class="submenu">
                                     <li>
-                                        <button id="savebtn" class="submenu__btn">
+                                        <button id="guisavebtn" class="submenu__btn" onclick="saveComputedCSS()">
                                             <span class="submenu__item-title">Save</span>
                                         </button>
                                     </li>
@@ -116,6 +115,7 @@
         const path = require('path');
         const fs = require('file-system');
         const savesPath = path.join(app.getPath('documents'),'Voice Developer Projects','/saves/');
+        const shell = require('electron').shell;
         const appPath = __dirname;
         const partials = appPath+'/templates/partials/';
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
@@ -193,12 +193,11 @@
 
             /* Load iframe */
             let iframe = document.querySelector('iframe');
-                iframe.src = savesPath+data.name+'/index.html';
-
+                iframe.src = savesPath+data.name+'/index.html';         
             
-
             
         });
+        
 
     </script>
 </html>
