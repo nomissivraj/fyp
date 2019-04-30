@@ -25,26 +25,11 @@
                             <div class="dropdown__menu" id="dropdown__menu--file"  style="display: none">
                                 <ul class="submenu">
                                     <li>
-                                        <button id="newfilebtn" class="submenu__btn">
-                                            <span class="submenu__item-title">New File</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button id="deletefilebtn" class="submenu__btn">
-                                            <span class="submenu__item-title">Delete File</span>
-                                        </button>
-                                    </li>
-                                    <hr>
-                                    <li>
                                         <button id="savebtn" class="submenu__btn">
                                             <span class="submenu__item-title">Save</span>
                                         </button>
                                     </li>
-                                    <li>
-                                        <button id="saveallbtn" class="submenu__btn">
-                                            <span class="submenu__item-title">Save All</span>
-                                        </button>
-                                    </li>
+                                    
                                     <hr>
                                     <li>
                                         <button id="exitbtn" class="submenu__btn">
@@ -135,8 +120,12 @@
         const partials = appPath+'/templates/partials/';
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
         ipcRenderer.send('ready:gui-window');
+        const cssBeauty = require('cssbeautify');
 
         let curProjectDetails,
+            currentProject,
+            currentPage,
+            editorMode,
             curStep;
         
         // Json files
@@ -168,6 +157,9 @@
         //Recieve
         ipcRenderer.on('load:data', (e, data) => {
             curProjectDetails = data;
+            currentProject = data.name;
+            currentPage = 'index.html';
+            editorMode = curProjectDetails.mode;
             fs.readFile(savesPath+data.name+'/index.html','utf-8',(err, fileData) => {
                 if (err) return console.log(err);
                 /* console.log(fileData); */
@@ -203,33 +195,9 @@
             let iframe = document.querySelector('iframe');
                 iframe.src = savesPath+data.name+'/index.html';
 
-            function insertCSS() {
-                let iframe = document.querySelectorAll('iframe')[0];
-                let iframeDoc = iframe.contentWindow.document;
-                console.log(iframeDoc.styleSheets[0])
-                iframeDoc.styleSheets[0].insertRule('header p {color: pink}', 0);
-            }
-
-            function saveComputedCSS() {
-                let iframe = document.querySelectorAll('iframe')[0];
-                let iframeDoc = iframe.contentWindow.document;
-                
-                let styleRules = iframeDoc.styleSheets[0].cssRules;
-                
-                let cssCont = '';
-
-                for (let i = 0; i < styleRules.length; i++) {
-                    cssCont = cssCont.concat(styleRules[i].cssText+'\n\n');
-
-                }
-                console.log(cssCont)
-            }
-
-            setTimeout(() => {
-                saveComputedCSS();
-            }, 1000);
             
 
+            
         });
 
     </script>
