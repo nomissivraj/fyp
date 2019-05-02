@@ -160,6 +160,12 @@
             currentProject = data.name;
             currentPage = 'index.html';
             editorMode = curProjectDetails.mode;
+            currentProject = data.name;
+            curProjectDetails = data;
+            let titleCont = document.querySelectorAll('.app-toolbar__title span')[0];
+            let projectTitle = document.createTextNode(' - '+currentProject);
+            titleCont.style = 'text-transform:capitalize';
+            titleCont.appendChild(projectTitle);
             fs.readFile(savesPath+data.name+'/index.html','utf-8',(err, fileData) => {
                 if (err) return console.log(err);
                 /* console.log(fileData); */
