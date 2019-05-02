@@ -22,7 +22,10 @@ console.log("recording");
     });
 }
 function stopRecording() {
-    if (child) child.kill();
+    setTimeout(() => {
+        if (child) child.kill();
+    }, 500);
+    
 }
 
 // SPEECH TO TEXT
@@ -64,9 +67,10 @@ function toText(path) {
             console.log(name);
             if (name === "Data:") {
                 text.push(event.trim());
-                console.log("EVENT: ", event);
+                
             } else if (name === "Close:") {
                 var result = text.join(', ');
+                console.log("SPEECH RESULT: ", result);
                 resolve(result);
             } else if (name === "Error:") {
                 reject(event)
