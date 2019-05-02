@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="100px" height="100px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
+<g>
+	<g>
+		<polygon fill="#202021" points="43.014,61.101 30.119,61.101 56.771,7.368 69.667,7.368 		"/>
+	</g>
+	<g>
+		<polygon fill="#202021" points="30.119,61.101 43.014,61.101 16.363,7.368 3.467,7.368 		"/>
+	</g>
+	<g>
+		<path fill="#202021" d="M69.667,7.368H56.771v11.605h12.896v0.005c8.426,0,15.255,6.831,15.255,15.256S78.092,49.49,69.667,49.49
+			h-7.141l-5.761,11.61h12.901c14.838,0,26.866-12.029,26.866-26.866S84.505,7.368,69.667,7.368z"/>
+	</g>
+</g>
+<g>
+	<path fill="#010202" d="M-22,42.477"/>
+</g>
+<text transform="matrix(1 0 0 1 9.9565 76.168)"><tspan x="0" y="0" fill="#202021" font-family="'Fonarto'" font-size="12">PLACEHOLDER</tspan><tspan x="23.01" y="14.4" fill="#202021" font-family="'Fonarto'" font-size="12">LOGO</tspan></text>
+</svg>
