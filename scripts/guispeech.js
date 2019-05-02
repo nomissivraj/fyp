@@ -199,6 +199,7 @@ function findKeyNameOfValue(array, data) {
                 // For every value in the current key check against data input value
                 if (array[i][key][j] === data) {
                     // If a value matches the data given then return the name of the key as a string
+                    console.log('command/key',key);
                     return key;
                 }
             }
@@ -214,6 +215,7 @@ function findMatchingValue(array, string) {
             for (let j = 0; j < array[i][key].length; j++) {
                 // If the current key value exists in the data string return key using findKeyNameOfValue?
                 if (string.indexOf(array[i][key][j]) !== -1) {
+                    console.log('matched value',array[i][key][j]);
                     return array[i][key][j];                    
                 }
             }
@@ -223,15 +225,20 @@ function findMatchingValue(array, string) {
 
 const commands = [
     {"text color": ["text color", "text colour"]},
-    {"text size": ["text size"]},
+    {"text size": ["text size", "font size"]},
     {"title color": ["title color", "title colour"]},
-    {"title size": ["itle size"]},
+    {"link color": ["link color", "link colour"]},
+    {"title size": ["title size", "total size"]},
     {"background color": ["background color", "background colour"]},
     {"image size": ["image size"]},
     {"select image": ["select image"]}
 ];
 
-
+const sizes = [
+    {"large": ["large"]},
+    {"normal": ["normal","medium"]},
+    {"small": ["small"]}
+]
 
 
 function speechToGui(data) {
@@ -247,32 +254,19 @@ function speechToGui(data) {
         console.log(curStep);
         switch(curStep) {
             case 'step-header':
-                for (let word in words) {
-                    console.log('header-step words:', words[word]);
-                    
-                }
-                console.log(string);
-                console.log(string.indexOf("color"));
+                
                 break;
             case 'step-navigation':
-                for (let word in words) {
-                    console.log('navigation-step words:', words[word]);
-                }
+                
                 break;
             case 'step-main':
-                for (let word in words) {
-                    console.log('main-step words:', words[word]);
-                }
+                
                 break;
             case 'step-column':
-                for (let word in words) {
-                    console.log('column-step words:', words[word]);
-                }
+               
                 break;
             case 'step-footer':
-                for (let word in words) {
-                    console.log('footer-step words:', words[word]);
-                }
+                
                 break;
             default:
                 break;
@@ -280,31 +274,28 @@ function speechToGui(data) {
     }
     
     if (curProjectDetails.layout === 'layout2') {
+        let newCommand;
         console.log(curStep);
         switch(curStep) {
             case 'step-header':
-                let newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
                 processCommand(newCommand, string, 'header');
                 break;
             case 'step-navigation':
-                for (let word in words) {
-                    console.log('navigation-step words:', words[word]);
-                }
+                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+                processCommand(newCommand, string, '.mainnav');
                 break;
             case 'step-main':
-                for (let word in words) {
-                    console.log('main-step words:', words[word]);
-                }
+                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+                processCommand(newCommand, string, '#main-article');
                 break;
             case 'step-column':
-                for (let word in words) {
-                    console.log('column-step words:', words[word]);
-                }
+                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+                processCommand(newCommand, string, '#columns');
                 break;
             case 'step-footer':
-                for (let word in words) {
-                    console.log('footer-step words:', words[word]);
-                }
+                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+                processCommand(newCommand, string, 'footer');
                 break;
             default:
                 break;
@@ -336,38 +327,121 @@ function processCommand(command, string, rule) {
     const iframe = document.querySelectorAll('iframe')[0];
     const iframeDoc = iframe.contentWindow.document;
 
-    let textEls = ['p','h1','h2','h3','h4','h5','h6'];
-    let titleEls = ['h1','h2','h3','h4','h5','h6'];
-    
     /* let process = command.replace(' ', '-');
     console.log(process); */
+    let newString;
+    let headings = ['h1', 'h2', 'h3', 'h4', 'h6'];
     switch(command) {
+        case 'background color':
+            // Get command parameters
+            newString = findKeyNameOfValue(colors, findMatchingValue(colors, string));
+            // Change in DOM
+            applyCSS(rule, 'background-color', newString);
+            
+            break;
         case 'text color':
             // Get command parameters
-            let newString = findKeyNameOfValue(colors, findMatchingValue(colors, string));
-            console.log(newString);
+            newString = findKeyNameOfValue(colors, findMatchingValue(colors, string));
             // Change in DOM
-            for (let i = 0; i < textEls.length; i++) {
-                let text = iframeDoc.querySelectorAll('header '+textEls[i]);
-                for (let j = 0; j < text.length; j++) {
-                    let prop = 'color';
-                    let propVal = newString;
-                    insertCSS(rule, prop, propVal);
-                }
-            }
+            applyCSS(rule + ' p', 'color', newString);
+            
             break;
+        case 'link color':
+            // Get command parameters
+            newString = findKeyNameOfValue(colors, findMatchingValue(colors, string));
+            // Change in DOM
+            applyCSS(rule + ' a', 'color', newString);
+        break;
+        case 'title color':
+            // Get command parameters
+            newString = findKeyNameOfValue(colors, findMatchingValue(colors, string));
+            // Change in DOM
+            for (let i = 0; i < headings.length; i++){
+                applyCSS(rule + ' ' + headings[i], 'color', newString);
+            }
+        break;
+        case 'title size':
+            // Get command parameters
+            newString = findKeyNameOfValue(sizes, findMatchingValue(sizes, string));
+            // Change in DOM
+            switch(newString) {
+                case 'large':
+                    let container = iframeDoc.querySelectorAll(rule)[0];
+                    console.log(container.children)
+                    newString = "3em";
+                    break;
+                case 'normal':
+                    newString = "2em";
+                    break;
+                case 'small':
+                    newString = "1.5em";
+                    break;
+                default:
+                    break;
+            }
+            for (let i = 0; i < headings.length; i++){
+                applyCSS(rule + ' ' + headings[i], 'font-size', newString);
+            }
+        break;
+        case 'text size':
+            // Get command parameters
+            newString = findKeyNameOfValue(sizes, findMatchingValue(sizes, string));
+            // Change in DOM
+            switch(newString) {
+                case 'large':
+                    newString = "1.25em";
+                    break;
+                case 'normal':
+                    newString = "1em";
+                    break;
+                case 'small':
+                    newString = "0.8em";
+                    break;
+                default:
+                    break;
+            }
+            applyCSS(rule + ' p', 'font-size', newString);
+            
+        break;
         default:
             break;
+    }
+}
+
+function applyCSS(rule, prop, propVal) {
+    console.log(rule);
+    if (propVal === undefined) {
+        let main = document.getElementsByTagName('main')[0];
+        toggleClass(main, 'working');
+        toggleClass(main, 'error');
+        setTimeout(()=>{
+            toggleClass(main, 'error');
+        },1000);  
+        return;
+    }
+
+    const iframe = document.querySelectorAll('iframe')[0];
+    const iframeDoc = iframe.contentWindow.document;
+    let text = iframeDoc.querySelectorAll(rule);
+    console.log(rule, text[0])
+    for (let j = 0; j < text.length; j++) {
+        insertCSS(rule, prop, propVal);
     }
 }
 
 function cssContains(string, list) {
     // Look through all strings in the given list
     for (let i = 0; i < list.length; i++) {
-        console.log(list[i].cssText, string);
-        if (list[i].cssText.indexOf(string) !== -1) {
-            return list[i]; // If string input found in a list item's string return that list item
+        let getrule = list[i].cssText.split('{');
+        let existingRule = getrule[0];
+        //console.log('existingrule',existingRule, 'string',string);
+        if (existingRule.replace(/\s/g, '') === string.replace(/\s/g, '')) {
+            console.log('rule exists')
+            return list[i];
         }
+        /* if (list[i].cssText.indexOf(string) !== -1) {
+            return list[i]; // If string input found in a list item's string return that list item
+        } */
     }
 }
 
@@ -377,14 +451,29 @@ function insertCSS(rule, prop, propVal) {
     let iframeDoc = iframe.contentWindow.document;
     let stylesheet = iframeDoc.styleSheets[0];
     let rules = stylesheet.cssRules;
-
+    let main = document.getElementsByTagName('main')[0];
+    console.log(rule);
     if (cssContains(rule, rules)) {
+        console.log('fudge')
         // If rule exists in list of rules return that rule as 'index' and update that rule with the given property and values
         let index = cssContains(rule, rules)
+        console.log(index);
+        console.log(prop, propVal)
         index.style[prop] = propVal;
+        toggleClass(main, 'working');
+        toggleClass(main, 'finished');
+        setTimeout(()=>{
+            toggleClass(main, 'finished');
+        },1000);  
     } else {
+        console.log('muffin')
         // If rule doesn't exist in list of rules, create a new rule and set property and property value, appending to the bottom of the stylesheet
         stylesheet.insertRule(rule +'{'+prop+':'+propVal+';}', rules.length);
+        toggleClass(main, 'working');
+        toggleClass(main, 'finished');
+        setTimeout(()=>{
+            toggleClass(main, 'finished');
+        },1000);  
     }
 }
 
