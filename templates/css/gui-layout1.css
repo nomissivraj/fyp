@@ -41,12 +41,12 @@ header .container {
     padding: 20px;
 }
 
-nav.headernav {
+.mainnav {
     background: lightgray;
     overflow: hidden;
 }
 
-nav.headernav ul li {
+.mainnav ul li {
     float: left;
     padding: 10px 20px;
 }
