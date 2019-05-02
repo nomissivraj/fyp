@@ -909,5 +909,5 @@ function initIframeStyles() {
             }
         `
         iframeDocEl.appendChild(styleTag);
-    }, 100);
+    }, 200);
 }
