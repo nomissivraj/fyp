@@ -215,6 +215,15 @@
                 <h1>New Page</h1>
                 <form id="newfile__form">
                     <input type="text" id="file-to-create" placeholder="file.html / file.css" required>
+                    <label class="radio-container">HTML
+                        <input type="radio" name="ext-radio" value="html">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="radio-container">CSS
+                        <input type="radio" name="ext-radio" value="css">
+                        <span class="checkmark"></span>
+                    </label>
+                    <br><br>
                     <button type="button" onclick="resetForms('newfileform__container')">Cancel</button>
                     <button type="submit" class="positive">Create</button>
                 </form>
@@ -261,11 +270,17 @@
             let fileName = document.querySelectorAll('#file-to-create')[0].value;
             fileName = fileName.replace(' ', '-');
             let supportedExts = ['css', 'html'];
+            let radio = document.querySelectorAll('input[name=ext-radio]:checked')[0].value;
             
             let fileDetails = fileName.split('.');
             if (fileDetails.length === 1) {
-                //IF no extension .html or .css is given assume html file
-                fileName = fileName+'.html';
+                // Check Radio's for which is selected
+                if (radio === "css") {
+                    fileName = fileName+'.css';
+                } else {
+                    // If no extension .html or .css is given assume html file
+                    fileName = fileName+'.html';
+                }
             }
             let projectDetails = {
                 'name' : currentProject,
