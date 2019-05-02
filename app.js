@@ -235,14 +235,20 @@ function newProject(projectDetails) {
                         console.log('no layout match')
                     
                 }
-                
+                // read template files as promises
                 let promiseHtml = promiseReadFile(path.join(appPath+templateHtmlPath), 'utf-8');
                 let promiseCss = promiseReadFile(path.join(appPath+templateCssPath));
+                // Once all template files have been read and resolved proceed to create new files
                 Promise.all([promiseHtml, promiseCss]).then((data) => {
+                    // create files as promises
                     let promiseCreateHtml = createHtmlFile(projectDetails, data[0], 'index');
                     let promiseCreateCss = createCssFile(projectDetails, data[1], projectDetails.mode+'-'+projectDetails.layout); 
+                    /* let promiseImg = promiseImages(projectDetails.name); */
+                    copyImage(path.join(appPath+'/templates/img/logo.svg'), path.join(savesPath,projectDetails.name,'/img/logo.svg'));
+                    copyImage(path.join(appPath+'/templates/img/logo-footer.svg'), path.join(savesPath,projectDetails.name,'/img/logo-footer.svg'));
                     let promiseUpdate = updateJson(projectDetails);
-                    Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data)=>{
+                    // Once all files have been created and resolved load the project
+                    Promise.all([promiseCreateHtml, promiseCreateCss, promiseUpdate]).then((data) => {
                         loadProject(projectDetails.name);
                         mainWindow.webContents.send('fetch:projects');
                     });
@@ -261,11 +267,40 @@ function newProject(projectDetails) {
                         mainWindow.webContents.send('fetch:projects');
                     });
                 });
-                
-            }            
+            }      
         }    
     });
 }
+
+function copyImage(filePath, newFilePath) {
+    
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, (err, data) => {
+            if (err) throw err;
+            fs.writeFile(newFilePath, data, 'binary', err => {
+                if (err) reject(err);
+                resolve()
+            });
+        });
+    });
+}
+
+/* function promiseImages(projectName) {
+    
+    return new Promise((resolve, reject) => {
+        console.log('trying to promise images');
+        let imgPath = '/templates/img/';
+        let image1 = copyImage(path.join(appPath+imgPath+'logo.svg'), path.join(savesPath,projectName,'/img/logo.svg'));
+        let image2 = copyImage(path.join(appPath+imgPath+'logo-footer.svg'), path.join(savesPath,projectName,'/img/logo-footer.svg'));
+
+        Promise.all([image1, image2]).then((data) => {
+            
+            log.info('all files copied');
+            resolve();
+        });
+
+    });
+} */
 
 function createHtmlFile(project, data, pageName) {
     //write HTML file
@@ -479,8 +514,9 @@ function deleteProject(projectName) {
 
     //Cannot delete a directory that has files, so need to delete files of sub directories then delete those directories before deleting files from main directory and the main directory itself
     let promiseDeleteCSS = deleteSubDirFiles(directory+'/css/');
+    let promiseDeleteImg = deleteSubDirFiles(directory+'/img/');
 
-    Promise.all([promiseDeleteCSS/* , promiseImg etc. */]).then((data)=>{
+    Promise.all([promiseDeleteCSS, promiseDeleteImg]).then((data)=>{
         //Promise deletion of all files in directory, to enable directory deletion then delete directory if promise resolved
         deleteAllDirFiles(directory).then((data) =>{
             fs.rmdirSync(directory);
