@@ -372,7 +372,11 @@ function pagePreview() {
     let filePath = editorMode === 'css' ? '/index.html' : '/'+currentPage;
     console.log(path2+currentProject+filePath)
     shell.openExternal('file:///'+path2+currentProject+filePath);
-    toggleDisplay('dropdown__menu--preview');
+
+    let previewMenu = document.getElementById('dropdown__menu--preview');
+    if (previewMenu.style.display === 'block') {
+        previewMenu.style.display = 'none';
+    }
 }
 
 // TABS AND PAGES - INITIALISATION
