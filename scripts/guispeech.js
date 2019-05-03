@@ -2,12 +2,13 @@ const commands = [
     {"text color": ["text color", "text colour"]},
     {"text size": ["text size", "font size"]},
     {"title color": ["title color", "title colour"]},
-    {"link color": ["link color", "link colour"]},
+    {"link color": ["link color", "link colour", "lynn color", "links color"]},
     {"title size": ["title size", "total size"]},
     {"background color": ["background color", "background colour"]},
     {"image size": ["image size"]},
     {"select image": ["select image", "select an image", "select the image"]},
-    {"save": ["save"]}
+    {"save": ["save"]},
+    {"preview": ["preview"]}
 ];
 
 const sizes = [
@@ -119,6 +120,12 @@ function removeShadow(keep) {
             removeEls[i].style = "box-shadow: 0;";
         }
     }
+}
+
+function loadHtmlText() {
+    fs.readFile(path.join(savesPath, curProjectDetails.name,'/index.html'), (err, data) => {
+        html = data;
+    });
 }
 
 function initSteps() {
@@ -397,10 +404,12 @@ function processCommand(command, string, rule) {
                     { name: 'Images', extensions: ['jpg', 'png', 'gif', 'svg'] }
                 ]
             }
-
+            let page = document.getElementsByTagName('html')[0];
+            page.classList.add("disabled");
             dialog.showOpenDialog(dialogOptionsImg, (data)=>{
                 if (data === undefined) {
                     console.log('Error, path not found');
+                    page.classList.remove("disabled");
                     successFail('error');
                 };
                 let image = iframeDoc.querySelectorAll(rule + ' img')[0];
@@ -416,6 +425,7 @@ function processCommand(command, string, rule) {
                     console.log('checking for file exist');
                     if (fs.existsSync(newPath)) {
                         image.src = path.join(newPath);
+                        page.classList.remove("disabled");
                         clearInterval(checkExists);
                     }
                 }, 100);
@@ -435,6 +445,10 @@ function processCommand(command, string, rule) {
             break;
         case "save":
             saveProject();
+            break;
+        case "preview":
+            saveProject();
+            pagePreview();
             break;
         default:
             successFail('error');
@@ -532,6 +546,8 @@ function saveComputedCSS() {
     let iframe = document.querySelectorAll('iframe')[0];
     let iframeDoc = iframe.contentWindow.document;
     let styleRules = iframeDoc.styleSheets[0].cssRules;
+    let fileMenu = document.getElementById('dropdown__menu--file');
+    let previewMenu = document.getElementById('dropdown__menu--preview');
     
     let cssCont = '';
 
@@ -543,5 +559,11 @@ function saveComputedCSS() {
     fs.writeFile(path.join(savesPath+currentProject+'/css/'+curProjectDetails.mode+'-'+curProjectDetails.layout+'.css'), cssBeauty(cssCont), (err) => {
         if (err) console.log(err);
     });
-    toggleDisplay('dropdown__menu--file');
+    
+    if (fileMenu.style.display === 'block') {
+        fileMenu.style.display = 'none';
+    }
+    if (previewMenu.style.display === 'block') {
+        previewMenu.style.display = 'none';
+    }
 }
