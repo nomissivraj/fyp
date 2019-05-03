@@ -43,6 +43,10 @@ header {
     max-height: 100px;
 }
 
+footer img {
+    max-height: 150px;
+}
+
 .mainnav {
     float: left;
     min-height: 100%;

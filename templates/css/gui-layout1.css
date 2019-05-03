@@ -42,6 +42,10 @@ header {
     max-height: 100px;
 }
 
+footer img {
+    max-height: 150px;
+}
+
 header .container {
     padding: 0;
 }
