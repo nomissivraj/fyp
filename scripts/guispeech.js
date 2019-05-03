@@ -255,56 +255,33 @@ function speechToGui(data) {
     // Logic to evaluate data and work out which command to process
     let words = data.toLowerCase().split(" ");
     let string = data.toLowerCase();
-    if (curProjectDetails.layout === 'layout1') {
-        console.log(curStep);
-        switch(curStep) {
-            case 'step-header':
-                
-                break;
-            case 'step-navigation':
-                
-                break;
-            case 'step-main':
-                
-                break;
-            case 'step-column':
-               
-                break;
-            case 'step-footer':
-                
-                break;
-            default:
-                break;
-        }
-    }
     
-    if (curProjectDetails.layout === 'layout2') {
-        let newCommand;
-        console.log(curStep);
-        switch(curStep) {
-            case 'step-header':
-                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-                processCommand(newCommand, string, 'header');
-                break;
-            case 'step-navigation':
-                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-                processCommand(newCommand, string, '.mainnav');
-                break;
-            case 'step-main':
-                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-                processCommand(newCommand, string, '#main-article');
-                break;
-            case 'step-column':
-                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-                processCommand(newCommand, string, '#columns');
-                break;
-            case 'step-footer':
-                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-                processCommand(newCommand, string, 'footer');
-                break;
-            default:
-                break;
-        }
+    
+    let newCommand;
+    console.log(curStep);
+    switch(curStep) {
+        case 'step-header':
+            newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+            processCommand(newCommand, string, 'header');
+            break;
+        case 'step-navigation':
+            newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+            processCommand(newCommand, string, '.mainnav');
+            break;
+        case 'step-main':
+            newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+            processCommand(newCommand, string, '#main-article');
+            break;
+        case 'step-column':
+            newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+            processCommand(newCommand, string, '#columns');
+            break;
+        case 'step-footer':
+            newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+            processCommand(newCommand, string, 'footer');
+            break;
+        default:
+            break;
     }
 
     // If command matches are made set 'guiSpeechSuccess' to 'true'
