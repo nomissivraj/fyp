@@ -1,3 +1,23 @@
+const commands = [
+    {"text color": ["text color", "text colour"]},
+    {"text size": ["text size", "font size"]},
+    {"title color": ["title color", "title colour"]},
+    {"link color": ["link color", "link colour"]},
+    {"title size": ["title size", "total size"]},
+    {"background color": ["background color", "background colour"]},
+    {"image size": ["image size"]},
+    {"select image": ["select image", "select an image", "select the image"]},
+    {"save": ["save"]}
+];
+
+const sizes = [
+    {"large": ["large"]},
+    {"normal": ["normal","medium"]},
+    {"small": ["small"]}
+]
+
+let html;
+
 function highlighter(step) {
     const iframe = document.querySelectorAll('iframe')[0];
     const iframeDoc = iframe.contentWindow.document;
@@ -223,22 +243,7 @@ function findMatchingValue(array, string) {
     }
 }
 
-const commands = [
-    {"text color": ["text color", "text colour"]},
-    {"text size": ["text size", "font size"]},
-    {"title color": ["title color", "title colour"]},
-    {"link color": ["link color", "link colour"]},
-    {"title size": ["title size", "total size"]},
-    {"background color": ["background color", "background colour"]},
-    {"image size": ["image size"]},
-    {"select image": ["select image"]}
-];
 
-const sizes = [
-    {"large": ["large"]},
-    {"normal": ["normal","medium"]},
-    {"small": ["small"]}
-]
 
 
 function speechToGui(data) {
@@ -403,9 +408,53 @@ function processCommand(command, string, rule) {
             applyCSS(rule + ' p', 'font-size', newString);
             
         break;
+        case "select image":
+            console.log('select image ahahahha');
+
+            // Options for image selection dialoge
+            let dialogOptionsImg = {
+                defaultPath: path.join(savesPath,curProjectDetails.name),
+                properties: ['openFile'],
+                filters: [
+                    { name: 'Images', extensions: ['jpg', 'png', 'gif', 'svg'] }
+                ]
+            }
+            dialog.showOpenDialog(dialogOptionsImg, (data)=>{
+                if (data === undefined) console.log('Error, path not found');
+                let image = iframeDoc.querySelectorAll(rule + ' img')[0];
+                console.log(image.src)
+                let imageSrc = fileNameFromPath(image.src, 'src');
+                let file = fileNameFromPath(data[0]);
+                let newPath = path.join(savesPath,curProjectDetails.name,'/img/',file);
+                // Copy selected image to project save location
+                copyImage(data[0], newPath);
+                // Set image src to new copied image
+                image.src = path.join(newPath);
+
+                // Update html with new src
+                fs.readFile(path.join(savesPath, curProjectDetails.name, 'index.html'), 'utf-8', (err, data) => {
+                    if (err) console.log(err);
+                    console.log(imageSrc, file);
+                    html = data.replace(imageSrc, file);
+                }); 
+
+                
+            });
+            break;
+        case "save":
+            saveProject();
+            break;
         default:
             break;
     }
+}
+
+function fileNameFromPath(path, type) {
+    console.log(path, type);
+    let dataArray = type === "src" ? path.split('/') : path.split("\\");
+    console.log(dataArray);
+    let file = dataArray[dataArray.length - 1];
+    return file;
 }
 
 function applyCSS(rule, prop, propVal) {
@@ -477,6 +526,17 @@ function insertCSS(rule, prop, propVal) {
     }
 }
 
+function saveProject() {
+    saveComputedCSS();
+    saveHtml(html);
+}
+
+function saveHtml(html) {
+    fs.writeFile(path.join(savesPath,curProjectDetails.name,'/index.html'), html, (err) => {
+        if (err) console.log(err);
+        console.log('html updated');
+    });
+}
 
 function saveComputedCSS() {
     let iframe = document.querySelectorAll('iframe')[0];

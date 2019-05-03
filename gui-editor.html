@@ -24,7 +24,7 @@
                             <div class="dropdown__menu" id="dropdown__menu--file"  style="display: none">
                                 <ul class="submenu">
                                     <li>
-                                        <button id="guisavebtn" class="submenu__btn" onclick="saveComputedCSS()">
+                                        <button id="guisavebtn" class="submenu__btn" onclick="saveProject()">
                                             <span class="submenu__item-title">Save</span>
                                         </button>
                                     </li>
@@ -111,6 +111,7 @@
         const electron = require('electron');
         const {ipcRenderer} = electron;
         const remote = require('electron').remote;
+        const dialog = remote.dialog;
         const app = remote.app;
         const path = require('path');
         const fs = require('file-system');
