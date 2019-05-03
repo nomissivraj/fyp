@@ -55,7 +55,7 @@
                             <div class="dropdown__menu" id="dropdown__menu--preview"  style="display: none">
                                 <ul class="submenu">
                                     <li>
-                                        <button id="previewbtn" class="submenu__btn">
+                                        <button id="previewbtn" class="submenu__btn" onclick="saveProject()">
                                             <span class="submenu__item-title">Open in Browser</span>
                                         </button>
                                     </li>
@@ -178,6 +178,8 @@
             fs.readFile(path.join(appPath,'/scripts/colors.json'), (err, data) => {
                 colors = JSON.parse(data);
             });
+
+            loadHtmlText();
 
             // Load Partials
             let sideBar = document.getElementById('gui-sidebar');
