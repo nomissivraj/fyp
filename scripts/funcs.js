@@ -20,6 +20,7 @@ const cssSpec = {
 }
 
 function toggleDisplay(el) {
+    console.log("toggle display")
     el = document.getElementById(el);
     if (!el) return; 
     
@@ -69,6 +70,7 @@ function removeClass(el, className) {
 }
 
 function hideAll(elements) {
+    console.log("hideall")
     let els = document.querySelectorAll(elements);
     for (let i = 0; i < els.length; i++) {
         els[i].style = 'display:none';
@@ -76,6 +78,7 @@ function hideAll(elements) {
 }
 
 function hideOthers(elements, dontHide) {
+    console.log('hideothers')
     let els = document.querySelectorAll(elements);
     for (let i = 0; i < els.length; i++) {
         if (els[i] !== dontHide) {
@@ -871,6 +874,19 @@ function noPages() {
     if (curProjectDetails.pages.length === 0 && curProjectDetails.stylesheets.length === 0) {
         toggleDisplay('no-files');
     }
+}
+
+function copyImage(filePath, newFilePath) {
+    
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, (err, data) => {
+            if (err) throw err;
+            fs.writeFile(newFilePath, data, 'binary', err => {
+                if (err) reject(err);
+                resolve()
+            });
+        });
+    });
 }
 
 function initIframeStyles() {
