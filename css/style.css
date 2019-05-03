@@ -808,3 +808,7 @@ main.error {
       border-radius: 50%;
       background: white;
   }
+
+  .disabled {
+      pointer-events: none;
+  }
