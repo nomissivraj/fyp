@@ -514,6 +514,10 @@ main.working {
 .CodeMirror.working:before,
 main.working:before {
     color:#fbff00;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 5px 10px;
+    padding-right: 30px;
+    border-radius: 3px;
     content:"working";
     position: absolute;
     bottom: 70px;
@@ -525,8 +529,8 @@ main.working:after {
     color:#fbff00;
     overflow: hidden;
     position: absolute;
-    bottom: 70px;
-    right: 0;
+    bottom: 75px;
+    right: 30px;
     display: inline-block;
     vertical-align: bottom;
     -webkit-animation: ellipsis steps(4,end) 900ms infinite;      
@@ -534,6 +538,7 @@ main.working:after {
     content: "\2026"; /* ascii code for the ellipsis character */
     width: 0px;
   }
+
   
   @keyframes ellipsis {
     to {
@@ -550,11 +555,20 @@ main.working:after {
 .CodeMirror.finished:before,
 main.finished:before {
     color: #d1d1d1;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 5px 10px;
+    padding-right: 30px;
+    border-radius: 3px;
     content:"success";
     position: absolute;
     bottom: 70px;
     right: 20px;
 } 
+
+.CodeMirror.finished:after,
+main.finished:after {
+    color: #d1d1d1;
+}
 .CodeMirror.finished,
 main.finished {
     z-index: 0!important;
@@ -565,12 +579,21 @@ main.finished {
 
 .CodeMirror.error:before,
 main.error:before {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    padding-right: 30px;
+    border-radius: 3px;
     color: #A13A3A;
     content:"failure";
     position: absolute;
     bottom: 70px;
     right: 20px;
 } 
+
+.CodeMirror.error:after,
+main.error:after {
+    color: #A13A3A;
+}
 .CodeMirror.error,
 main.error {
     z-index: 0!important;
