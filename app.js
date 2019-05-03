@@ -581,13 +581,20 @@ function removeFromJSON(savesPath, projectName) {
 
 function deleteSubDirFiles(directory) {
     return new Promise((resolve, reject)=>{
-        deleteAllDirFiles(directory).then((data) => {
-            fs.rmdir(directory,(err) => { 
-                if (err) {
-                    reject()
-                } else resolve();
+        fs.readdir(directory, (err) => {
+            if (err) {
+                console.log(err, directory);
+                resolve();
+            }
+            deleteAllDirFiles(directory).then((data) => {
+                fs.rmdir(directory,(err) => { 
+                    if (err) {
+                        reject()
+                    } else resolve();
+                });
             });
         });
+        
     });
 }
 
