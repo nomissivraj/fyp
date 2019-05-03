@@ -5,6 +5,11 @@ html {
     height: 100%;
 }
 
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
 title {
     text-transform: capitalize;
 }
@@ -27,10 +32,15 @@ h1 {
 }
 
 header {
+    position: relative;
     background: grey;
     height: 100px;
     padding: 20px;
     width: calc(100% - 40px);
+}
+
+#logo img {
+    max-height: 100px;
 }
 
 .mainnav {
