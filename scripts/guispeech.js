@@ -399,7 +399,10 @@ function processCommand(command, string, rule) {
             }
 
             dialog.showOpenDialog(dialogOptionsImg, (data)=>{
-                if (data === undefined) console.log('Error, path not found');
+                if (data === undefined) {
+                    console.log('Error, path not found');
+                    successFail('error');
+                };
                 let image = iframeDoc.querySelectorAll(rule + ' img')[0];
                 console.log(image.src)
                 let imageSrc = fileNameFromPath(image.src, 'src');
@@ -424,11 +427,7 @@ function processCommand(command, string, rule) {
                     console.log(imageSrc, file);
                     html = data.replace(imageSrc, file);
                     
-                    toggleClass(main, 'working');
-                    toggleClass(main, 'finished');
-                    setTimeout(()=>{
-                        toggleClass(main, 'finished');
-                    },1000);  
+                    successFail('finished');
                 }); 
 
                 
@@ -438,11 +437,7 @@ function processCommand(command, string, rule) {
             saveProject();
             break;
         default:
-            toggleClass(main, 'working');
-            toggleClass(main, 'error');
-            setTimeout(()=>{
-                toggleClass(main, 'error');
-            },1000);  
+            successFail('error');
             break;
     }
 }
@@ -459,11 +454,7 @@ function applyCSS(rule, prop, propVal) {
     console.log(rule);
     if (propVal === undefined) {
         let main = document.getElementsByTagName('main')[0];
-        toggleClass(main, 'working');
-        toggleClass(main, 'error');
-        setTimeout(()=>{
-            toggleClass(main, 'error');
-        },1000);  
+        successFail('error'); 
         return;
     }
 
@@ -498,7 +489,7 @@ function insertCSS(rule, prop, propVal) {
     let iframeDoc = iframe.contentWindow.document;
     let stylesheet = iframeDoc.styleSheets[0];
     let rules = stylesheet.cssRules;
-    let main = document.getElementsByTagName('main')[0];
+    
     console.log(rule);
     if (cssContains(rule, rules)) {
         console.log('fudge')
@@ -507,21 +498,22 @@ function insertCSS(rule, prop, propVal) {
         console.log(index);
         console.log(prop, propVal)
         index.style[prop] = propVal;
-        toggleClass(main, 'working');
-        toggleClass(main, 'finished');
-        setTimeout(()=>{
-            toggleClass(main, 'finished');
-        },1000);  
+        successFail('finished');
     } else {
         console.log('muffin')
         // If rule doesn't exist in list of rules, create a new rule and set property and property value, appending to the bottom of the stylesheet
         stylesheet.insertRule(rule +'{'+prop+':'+propVal+';}', rules.length);
-        toggleClass(main, 'working');
-        toggleClass(main, 'finished');
-        setTimeout(()=>{
-            toggleClass(main, 'finished');
-        },1000);  
+        successFail('finished');
     }
+}
+
+function successFail(string) {
+    let main = document.getElementsByTagName('main')[0];
+    toggleClass(main, 'working');
+    toggleClass(main, string);
+    setTimeout(()=>{
+        toggleClass(main, string);
+    },1000);  
 }
 
 function saveProject() {
