@@ -1,3 +1,7 @@
+* {
+    font-family: sans-serif;
+}
+
 html {
     background:#fff;
     margin:0;
@@ -26,16 +30,25 @@ body {
 }
 
 h1 {
-    color: red;
+    color: #333333;
     text-transform: capitalize;
 }
 
 header {
     position: relative;
     background: grey;
-    height: 100px;
-    padding: 20px;
-    width: calc(100% - 40px);
+    width: 100%;
+    border-bottom: 4px solid rgba(0,0,0,0.3);
+}
+
+header a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+#logo {
+    padding: 20px 0;
 }
 
 #logo img {
@@ -61,9 +74,18 @@ header .container {
     overflow: hidden;
 }
 
+.mainnav a {
+    padding: 15px 20px;
+    display: block;
+}
+
+.mainnav a:hover, .mainnav a:focus {
+    background-color: rgba(0,0,0,0.3);
+    background: filter(invert(50%));
+}
+
 .mainnav ul li {
     float: left;
-    padding: 10px 20px;
 }
 
 .col-1 {
@@ -90,6 +112,30 @@ footer {
     padding: 20px;
     width: calc(100% - 40px);
     float: left;
-    background: lightslategray;
+    background: #dedede;
     height: 200px;
+}
+
+.footer__third {
+    width: calc(33.333% - 40px);
+    display: block;
+    float: left;
+    padding: 20px;
+    height: inherit;
+    max-height: 160px;
+}
+
+
+.footer__nav a {
+    color: #333;
+    display: inline-block;
+    padding: 5px 0;
+    font-weight: 600;
+    width: auto;
+    text-decoration: none;
+}
+
+.footer__nav a:hover,
+.footer__nav a:focus {
+    filter: invert(100%);
 }

@@ -1,3 +1,7 @@
+* {
+    font-family: sans-serif;
+}
+
 html {
     background:#fff;
     margin:0;
@@ -26,13 +30,23 @@ body {
     height: 100%;
 }
 
+.container {
+    max-width: 1300px;
+    height: 100%;
+}
+
+p {
+    margin: 0;
+    padding: 5px 0;
+}
+
 h1 {
-    color: gold;
+    color: #333333;
     text-transform: capitalize;
 }
 
 header {
-    position: relative;
+    position: fixed;
     background: grey;
     height: 100px;
     padding: 20px;
@@ -43,16 +57,27 @@ header {
     max-height: 100px;
 }
 
-footer img {
-    max-height: 150px;
+.mainnav {
+    position: fixed;
+    width: 220px;
+    background: lightgray;
+    margin-top: 140px;
+    height: calc(100% - 140px);
 }
 
-.mainnav {
-    float: left;
-    min-height: 100%;
-    width: 200px;
-    background: lightgray;
-    padding: 20px;
+.mainnav a {
+    display: block;
+    width: calc(100% - 60px);
+    padding: 20px 30px;
+    text-decoration: none;
+    text-transform: capitalize;
+    color: #333;
+    font-weight: 600;
+}
+
+.mainnav a:hover,
+.mainnav a:focus {
+    background: rgba(0,0,0,.3);
 }
 
 .col-1 {
@@ -75,17 +100,45 @@ footer img {
 
 main {
     float: left;
-    width: calc(100% - 240px);
-    max-width: 1000px;
-    background: lightcyan;
+    width: calc(100% - 220px);
+    background: #f9f9f9;
     padding: 0;
-    min-height: 100%;
+    margin-left: 220px;
+    margin-top: 140px;
+}
+main .container {
+    max-width: 1100px;
 }
 
 footer {
     padding: 20px;
     width: calc(100% - 40px);
-    float: left;
-    background: lightslategray;
+    background: #ececec;
     height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.footer__third {
+    width: calc(33.333% - 40px);
+    display: block;
+    float: left;
+    padding: 20px;
+    height: inherit;
+    max-height: 160px;
+}
+
+
+.footer__nav a {
+    color: #777;
+    display: inline-block;
+    padding: 5px 0;
+    font-weight: 600;
+    width: auto;
+    text-decoration: none;
+}
+
+.footer__nav a:hover,
+.footer__nav a:focus {
+    color: #333;
 }
