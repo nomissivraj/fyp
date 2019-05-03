@@ -331,6 +331,7 @@ function speechToGui(data) {
 function processCommand(command, string, rule) {
     const iframe = document.querySelectorAll('iframe')[0];
     const iframeDoc = iframe.contentWindow.document;
+    let main = document.getElementsByTagName('main')[0];
 
     /* let process = command.replace(' ', '-');
     console.log(process); */
@@ -419,6 +420,7 @@ function processCommand(command, string, rule) {
                     { name: 'Images', extensions: ['jpg', 'png', 'gif', 'svg'] }
                 ]
             }
+
             dialog.showOpenDialog(dialogOptionsImg, (data)=>{
                 if (data === undefined) console.log('Error, path not found');
                 let image = iframeDoc.querySelectorAll(rule + ' img')[0];
@@ -429,13 +431,27 @@ function processCommand(command, string, rule) {
                 // Copy selected image to project save location
                 copyImage(data[0], newPath);
                 // Set image src to new copied image
-                image.src = path.join(newPath);
+                
+                var checkExists = setInterval(() => {
+                    console.log('checking for file exist');
+                    if (fs.existsSync(newPath)) {
+                        image.src = path.join(newPath);
+                        clearInterval(checkExists);
+                    }
+                }, 100);
+                
 
                 // Update html with new src
                 fs.readFile(path.join(savesPath, curProjectDetails.name, 'index.html'), 'utf-8', (err, data) => {
                     if (err) console.log(err);
                     console.log(imageSrc, file);
                     html = data.replace(imageSrc, file);
+                    
+                    toggleClass(main, 'working');
+                    toggleClass(main, 'finished');
+                    setTimeout(()=>{
+                        toggleClass(main, 'finished');
+                    },1000);  
                 }); 
 
                 
@@ -445,6 +461,11 @@ function processCommand(command, string, rule) {
             saveProject();
             break;
         default:
+            toggleClass(main, 'working');
+            toggleClass(main, 'error');
+            setTimeout(()=>{
+                toggleClass(main, 'error');
+            },1000);  
             break;
     }
 }
