@@ -2,6 +2,13 @@
     font-family: sans-serif;
 }
 
+@media (max-width:900px) {
+    .footer__third, .col-3 article {
+        width: calc(100% - 40px)!important;
+    }
+}
+
+
 html {
     background:#fff;
     margin:0;
@@ -80,8 +87,8 @@ header .container {
 }
 
 .mainnav a:hover, .mainnav a:focus {
-    background-color: rgba(0,0,0,0.3);
-    background: filter(invert(50%));
+    background: rgba(0, 0, 0, 0.60);
+    filter: invert(100%);
 }
 
 .mainnav ul li {
@@ -113,7 +120,6 @@ footer {
     width: calc(100% - 40px);
     float: left;
     background: #dedede;
-    height: 200px;
 }
 
 .footer__third {
@@ -122,7 +128,6 @@ footer {
     float: left;
     padding: 20px;
     height: inherit;
-    max-height: 160px;
 }
 
 
