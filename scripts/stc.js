@@ -131,7 +131,6 @@ let couldBeAttr = [
 ]
 
 let attributes = [
-    //haven't tested any of these yet
     {'alt':['alt', 'out', 'alternative','ought']},
     {'src':['src', 'source']},
     {'type':['type']},
@@ -172,7 +171,6 @@ let tags = [
 
 //might need to make commands to make '<' and '>'
 let commands = [
-    //none of these have been tested yet
     {'space':['space']},
     {'cut':['cut','scott']},
     {'delete':['delete']},
@@ -186,7 +184,9 @@ let commands = [
     {'enter':['enter','line']},
     {'preview':['preview', 'previous']},
     {'period':['period']},
-    {'hash': ['hash']}
+    {'hash': ['hash']},
+    {'source': ['source']}
+
 ]
 
 //Might need to set keyword such as 'tag' first and then evaluate all other words together as one string for phrases rather than single inputs?
