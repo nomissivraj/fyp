@@ -162,6 +162,21 @@ function initStepInputListener() {
         });
 
     }
+
+    let textareas = document.querySelectorAll('textarea');
+    console.log(textareas[0]);
+    for (let i = 0; i < textareas.length; i++) {
+        textareas[i].addEventListener('focus', () => {
+            addClass('#dictate-btn', 'ready');
+            dictateMode = 'plaintext';
+        });
+
+        textareas[i].addEventListener('blur', () => {
+            removeClass('#dictate-btn', 'ready');
+            dictateMode = 'default';
+            stopRecording();
+        });
+    }
 }
 
 
@@ -202,9 +217,11 @@ function initGuiDictate() {
                 toggleClass(main, 'working');
             }
             // Now that recording has finished send data from speechPath file to speech to text promise which will return the text as 'data'
-            toText(speechPath).then((data) => {
+            
+                toText(speechPath).then((data) => {
                     speechToGui(data);
-            });
+                });
+            
         }
         !active ? active = true : active = false;
     });
@@ -262,34 +279,43 @@ function speechToGui(data) {
     // Logic to evaluate data and work out which command to process
     let words = data.toLowerCase().split(" ");
     let string = data.toLowerCase();
-    
-    
-    let newCommand;
-    console.log(curStep);
-    switch(curStep) {
-        case 'step-header':
-            newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-            processCommand(newCommand, string, 'header');
-            break;
-        case 'step-navigation':
-            newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-            processCommand(newCommand, string, '.mainnav');
-            break;
-        case 'step-main':
-            newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-            processCommand(newCommand, string, '#main-article');
-            break;
-        case 'step-column':
-            newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-            processCommand(newCommand, string, '#columns');
-            break;
-        case 'step-footer':
-            newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-            processCommand(newCommand, string, 'footer');
-            break;
-        default:
-            break;
+    console.log(dictateMode);
+    if (dictateMode === "plaintext") {
+        if (data.length > 0) {
+            document.activeElement.value = data;
+            successFail('finished');
+
+        }
+    } else {
+        let newCommand;
+        console.log(curStep);
+        switch(curStep) {
+            case 'step-header':
+                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+                processCommand(newCommand, string, 'header');
+                break;
+            case 'step-navigation':
+                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+                processCommand(newCommand, string, '.mainnav');
+                break;
+            case 'step-main':
+                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+                processCommand(newCommand, string, '#main-article');
+                break;
+            case 'step-column':
+                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+                processCommand(newCommand, string, '#columns');
+                break;
+            case 'step-footer':
+                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+                processCommand(newCommand, string, 'footer');
+                break;
+            default:
+                break;
+        }
     }
+    
+    
 
     // If command matches are made set 'guiSpeechSuccess' to 'true'
 
