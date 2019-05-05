@@ -49,15 +49,15 @@ function initDictate(target) {
         switch(e.which) {
             case 1:
                 dictateMode = 'markup';
-                console.log('left mouse',e.which);
+                /* console.log('left mouse',e.which); */
                 break;
             case 2:
                 dictateMode = 'command';
-                console.log('middle mouse',e.which);
+                /* console.log('middle mouse',e.which); */
                 break;
             case 3:
                 dictateMode = 'plaintext';
-                console.log('right mouse',e.which);
+                /* console.log('right mouse',e.which); */
                 break;
             default: 
              dictateMode = 'default';
@@ -122,9 +122,9 @@ let couldBeTag = [
     {'tag':['tag','tags','attack', 'had','tack','tagged','tank','tak','tax','contain','container']}
 ]
 
-let couldBeClass = [
+/* let couldBeClass = [
     {'class':['class', 'close']}
-]
+] */
 
 let couldBeAttr = [
     {'attribute':['attribute', 'attributes','tribute']}
@@ -140,33 +140,40 @@ let attributes = [
     {'title':['title']},
     {'required':['required']},
     {'rel':['rel', 'relationship', 'well', 'relationship']},
-    {'href':['hyperlink','hyperlinked']}
+    {'href':['hyperlink','hyperlinked']},
+    {'class': ['class', 'clasp']},
+    {'id': ['I D', 'idea', 'i the', 'ID','id']}
 ]
 
 let tags = [
-     {'div': ['div', 'dave']},
-     {'main': ['main', 'mane', 'mean']},
-     {'p':['p','p.','he','pee','pea','pay','paragraph','paragraphs','pete']},
-     {'a':['anchor']},
-     {'h1':['h1','heading']},
-     {'article':['article','articles']},
-     {'button':['button', 'buttons','but','martin','barton','bolton']},
-     //Singletons
-     {'area': ['area']},
-     {'base':['base']},
-     {'br':['br', 'break']},
-     {'col':['col', 'call', 'cole']},
-     {'embed':['embed']},
-     {'hr':['hr','horizontal']},
-     {'img':['img', 'image']},
-     {'input':['input', 'put', 'part']},
-     {'keygen':['keygen', 'keygens']},
-     {'link':['link']},
-     {'meta':['meta', 'matt', 'mat']},
-     {'param':['parameter', 'haram', 'perimeter']},
-     {'source':['source','sauce']}, // this one could cause issues with src attribute... need to test
-     {'track':['track']}/* ,
+    {"div": ["div", "dave","they've"]},
+    {"main": ["main", "mane", "mean"]},
+    {"p":["p","p.","he","pee","pea","pay","paragraph","paragraphs","pete"]},
+    {"a":["anchor", "hyperlink", "hyper link"]},
+    {"h1":["heading one","h1"," H. one", "eight one","each one"]},
+    {"h2":["h2","heading two","heading to","eight to","AH two","each to"," H. two"]},
+    {"h3":["h3","heading three","eight three","AH three","each three"," H. three"]},
+    {"h4":["h4","heading four","heading for","AH four"," H. four", "eight four", "each for", "each. for."]},
+    {"h5":["h5","heading five","heading five"," H. five", "eight five", "AH five"]},
+    {"h6":["h6","heading six","having sex","heading sex"," H. six", "eight six", "AH sex", "each sex", "he just sex"]},
+    {"article":["article","articles"]},
+    {"button":["button", "buttons","but","martin","barton","bolton"]},
+    {"area": ["area"]},
+    {"base":["base"]},
+    {"br":["br", "break"]},
+    {"col":["col", "call", "cole"]},
+    {"embed":["embed"]},
+    {"hr":["hr","horizontal", "horizontal rule"]},
+    {"img":["img", "image"]},
+    {"input":["input", "put", "part", "in put"]},
+    {"keygen":["keygen", "keygens"]},
+    {"link":["link"]},
+    {"meta":["meta", "matt", "mat"]},
+    {"param":["parameter", "haram", "perimeter"]},
+    {"source":["source","sauce"]}, 
+    {"track":["track"]}/* ,
      {'wbr':['wbr']} This one might not be workable */
+     // Once tags all finished, add all tabs to cssprops.json
 ]
 
 //might need to make commands to make '<' and '>'
@@ -178,18 +185,17 @@ let commands = [
     {'paste':['paste','post']},
     {'save':['save']},
     {'exit':['exit','close','closed','except']},
-    {'undo':['undo', 'reverse', 'reversed']},
-    {'redo':['redo','radio', 'redial','forward']},
+    {'undo':['undo', 'reverse', 'reversed', 'un do', 'one do', 'one two', 'and do', 'on to', 'scratch that']},
+    {'redo':['redo','radio', 'redial','forward', 're do', 'we do']},
     {'tab':['tab','tampa','tam','tap']},
-    {'enter':['enter','line']},
+    {'enter':['enter','line', 'new line']},
     {'preview':['preview', 'previous']},
     {'period':['period']},
     {'hash': ['hash']},
-    {'source': ['source']}
+    {'source': ['source', 'file path','file past', 'file location']}
 
 ]
 
-//Might need to set keyword such as 'tag' first and then evaluate all other words together as one string for phrases rather than single inputs?
 
 // List of HTML tags that don't need a closing tag
 // Compare the keys in tags list against this list of singletons
@@ -207,6 +213,24 @@ function findKeyNameOfValue(array, data) {
                 if (array[i][key][j] === data) {
                     // If a value matches the data given then return the name of the key as a string
                     return key;
+                }
+            }
+        }
+    }
+}
+
+function findMatchingValue(array, string) {
+    console.log(string)
+    string = string.toLowerCase();
+    for (let i = 0; i < array.length; i ++) {
+        // Loop through command objects
+        for (let key in array[i]) {
+            // For each key in current command object look through keys values
+            for (let j = 0; j < array[i][key].length; j++) {
+                // If the current key value exists in the data string return key using findKeyNameOfValue?
+                if (string.search('\\b'+array[i][key][j]+'\\b') !== -1) {
+                    console.log('matched value',array[i][key][j]);
+                    return array[i][key][j];                    
                 }
             }
         }
@@ -235,19 +259,20 @@ function speechToCode(data) {
     let stcSuccess = false;
     // Might need to track modes i.e. Text entry | html | css/styles (html or css could be set by active editor) text entry can be triggered by command or alternative click/right click?
     let cursorPos = editors[currentEditor].getCursor();
-    let words = data.toLowerCase().split(" ");
+    /* let words = data.toLowerCase().split(" "); */
     // Get elements for "working..." indication/feedback    
 
     let frame = '.CodeMirror';
     let gutter = '.gutter';
-
-    if (dictateMode === 'markup') {
-        for (let word in words) {
+    if (editorMode === 'css') {
+        //DO CSS functions here
+    } else if (editorMode === "html") {
+        if (dictateMode === 'markup') {
             // If word in words contains something equivalent to 'tags' then proceed
-            if ('tag' === findKeyNameOfValue(couldBeTag, words[word])) {
+            if ('tag' === findKeyNameOfValue(couldBeTag, findMatchingValue(couldBeTag, data))) {
                 console.log('istag')
                 // Search tags for a match of other words
-                let tag = findKeyNameOfValue(tags, words[0]);
+                let tag = findKeyNameOfValue(tags, findMatchingValue(tags, data));
                 console.log(tag);
                 /* if (tag === undefined) {console.log('undefined'); return}; */
                 if (tag !== undefined) {
@@ -264,106 +289,128 @@ function speechToCode(data) {
             }
 
             // If attribute
-            if ('attribute' === findKeyNameOfValue(couldBeAttr, words[word])) {
+            if ('attribute' === findKeyNameOfValue(couldBeAttr, findMatchingValue(couldBeAttr, data))) {
                 console.log('is attribute')
-                let tag = findKeyNameOfValue(attributes, words[0]);
-                console.log(tag);
+                let attr = findKeyNameOfValue(attributes, findMatchingValue(attributes, data));
+                console.log(attr);
                 /* if (tag === undefined) {console.log('undefined'); return}; */
-                if (tag !== undefined) {
+                if (attr !== undefined) {
                     stcSuccess = true;
                     let content;
-                    if (tag === 'href') {
-                        content = ' '+tag+'="http://"';
-                    } else content = ' '+tag+'=""' ;
+                        content = ' '+attr+'=" "';
                     editors[currentEditor].replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
                 
                 }
             }
+        }
 
-            // If class
-            if ('class' === findKeyNameOfValue(couldBeClass, words[word])) { //IF CLASS
+        if (dictateMode === 'plaintext') {
+            if (data.length > 0) {
                 stcSuccess = true;
-                let content = " class='"+words[0]+"'";
-                editors[currentEditor].replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
+                editors[currentEditor].replaceRange(data,{line: cursorPos.line, ch: cursorPos.ch});
             } 
-
-            
         }
-    }
 
-    if (dictateMode === 'plaintext') {
-        if (data.length > 0) {
-            stcSuccess = true;
-            editors[currentEditor].replaceRange(data,{line: cursorPos.line, ch: cursorPos.ch});
-        } 
-    }
-
-    if (dictateMode === 'css') {
-        //DO CSS functions here
-    }
-
-    if (dictateMode === 'command') {
         
-        for (let word in words) {
-            
-                let command = findKeyNameOfValue(commands,words[word]);
-                console.log(command)
-                if (command !== undefined) stcSuccess = true;
-                switch(command) {
-                    case 'space':
-                        cursorPos = editors[currentEditor].getCursor();
-                        editors[currentEditor].replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
-                        break;
-                    case 'save':
-                        saveChanges(currentProject);
-                        break;
-                    case 'exit':
-                        let window = remote.getCurrentWindow();
-                        window.close();
-                        break;
-                    case 'tab':
-                        CodeMirror.commands.defaultTab(editors[currentEditor]);
-                        break;
-                    case 'enter':
-                        CodeMirror.commands.newlineAndIndent(editors[currentEditor]);
-                        break;
-                    case 'undo':
-                        editors[currentEditor].doc.undo();
-                        break;
-                    case 'redo':
-                        editors[currentEditor].doc.redo();
-                        break;
-                    case 'cut':
-                        document.execCommand('cut');
-                        break;
-                    case 'copy':
-                        document.execCommand('copy');
-                        break;
-                    case 'paste':
-                        document.execCommand('paste');
-                        break;
-                    case 'delete':
-                        document.execCommand('delete');
-                        break;
-                    case 'preview':
-                        pagePreview();
-                        break;
-                    case 'period':
-                        cursorPos = editors[currentEditor].getCursor();
-                        editors[currentEditor].replaceRange(".",{line: cursorPos.line, ch: cursorPos.ch});
-                        break;
-                    case 'hash':
-                        cursorPos = editors[currentEditor].getCursor();
-                        editors[currentEditor].replaceRange("#",{line: cursorPos.line, ch: cursorPos.ch});
-                        break;
-                    default:
-                        break;
-                    
-                }
+
+        if (dictateMode === 'command') {
+        
+            let command = findKeyNameOfValue(commands, findMatchingValue(commands, data));
+            console.log(command)
+            if (command !== undefined) stcSuccess = true;
+            switch(command) {
+                case 'space':
+                    cursorPos = editors[currentEditor].getCursor();
+                    editors[currentEditor].replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
+                    break;
+                case 'save':
+                    saveChanges(currentProject);
+                    break;
+                case 'exit':
+                    let window = remote.getCurrentWindow();
+                    if (unsavedChanges) {
+                        let confirmation = confirm('Warning! You have unsaved changes.');
+                        if (confirmation) {
+                            window.close();
+                        }
+                    } else window.close();
+                    break;
+                case 'tab':
+                    CodeMirror.commands.defaultTab(editors[currentEditor]);
+                    break;
+                case 'enter':
+                    CodeMirror.commands.newlineAndIndent(editors[currentEditor]);
+                    break;
+                case 'undo':
+                    editors[currentEditor].doc.undo();
+                    break;
+                case 'redo':
+                    editors[currentEditor].doc.redo();
+                    break;
+                case 'cut':
+                    document.execCommand('cut');
+                    break;
+                case 'copy':
+                    document.execCommand('copy');
+                    break;
+                case 'paste':
+                    document.execCommand('paste');
+                    break;
+                case 'delete':
+                    document.execCommand('delete');
+                    break;
+                case 'preview':
+                    pagePreview();
+                    break;
+                case 'period':
+                    cursorPos = editors[currentEditor].getCursor();
+                    editors[currentEditor].replaceRange(".",{line: cursorPos.line, ch: cursorPos.ch});
+                    break;
+                case 'hash':
+                    cursorPos = editors[currentEditor].getCursor();
+                    editors[currentEditor].replaceRange("#",{line: cursorPos.line, ch: cursorPos.ch});
+                    break;
+                case 'source':
+                    let dialogOptionsFiles = {
+                        defaultPath: path.join(savesPath,curProjectDetails.name),
+                        properties: ['openFile'],
+                        filters: [
+                            { name: 'All Files', extensions: ['*'] }
+                        ]
+                    }
+                    let page = document.getElementsByTagName('html')[0];
+                    page.classList.add("disabled");
+                    dialog.showOpenDialog(dialogOptionsFiles, filePath => {
+                        filePath = filePath[0];
+                        if (path === undefined) {
+                            page.classList.remove("disabled");
+                        } else {
+                            //logic to determine locale of file and make path relative to project
+                            fileInSavePath = filePath.search('\\b'+'saves'+'\\b') !== -1 ? true: false;
+                            fileInNamePath = filePath.search('\\b'+curProjectDetails.name+'\\b')!== -1 ? true: false;
+                            console.log(fileInNamePath, fileInSavePath)
+                            if (fileInSavePath && fileInNamePath) {
+                                console.log('local file')
+                                if (editorMode === 'html') {
+                                    //set path to relative path
+                                    let splitPath = filePath.split('\\saves\\'+curProjectDetails.name+'\\');
+                                    relPath = splitPath[1];
+                                    filePath = relPath;
+                                } else if (editorMode === 'css') {
+                                    //make css relative path here
+                                }
+                            }
+                            document.activeElement.value = filePath;
+                        }
+                        page.classList.remove("disabled");
+                    })
+                    break;
+                default:
+                    break;
                 
-            /* } */ 
+            }
+                    
         }
-        
     }
     //confirmation of finished
         toggleClass(frame, 'working');
