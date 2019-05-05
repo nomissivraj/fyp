@@ -70,7 +70,7 @@ function removeClass(el, className) {
 }
 
 function hideAll(elements) {
-    console.log("hideall")
+    /* console.log("hideall") */
     let els = document.querySelectorAll(elements);
     for (let i = 0; i < els.length; i++) {
         els[i].style = 'display:none';
@@ -78,7 +78,7 @@ function hideAll(elements) {
 }
 
 function hideOthers(elements, dontHide) {
-    console.log('hideothers')
+    /* console.log('hideothers') */
     let els = document.querySelectorAll(elements);
     for (let i = 0; i < els.length; i++) {
         if (els[i] !== dontHide) {
@@ -204,7 +204,14 @@ function initMenu(menuEl, btn, subBtns) {
         if (exitBtn) {
             exitBtn.addEventListener('click', () => {
                 let window = remote.getCurrentWindow();
-                window.close();
+                if (editorMode !== "gui") {
+                    if (unsavedChanges) {
+                        let confirmation = confirm('Warning! You have unsaved changes.');
+                        if (confirmation) {
+                            window.close();
+                        }
+                    } else window.close();
+                } else window.close();
             });
         }
         
@@ -797,28 +804,29 @@ function saveChanges(file) {
 }
 
 function trackChanges() {
-        Object.entries(editors).forEach(([key, value]) => {
-                let curDetails = key.split('.');
-                let curExt = curDetails[1];
-                let elName = curExt === 'css' ? '#'+curDetails[0]+'-css-tab-btn' : '#'+curDetails[0]+'-tab-btn';
-                let newContent;
-                
-                setTimeout(()=> {
-                    value.on("change", () => {
-                        newContent = value.getValue();
-                        if (newContent === pageContent[key]) {
-                            removeClass(elName,'changed');
-                        } else if (newContent !== pageContent[key]) {
-                            addClass(elName,'changed');
-
-                        }
-                    });
-                },150)
-                
-            }
-        );  
-    
+    Object.entries(editors).forEach(([key, value]) => {
+            let curDetails = key.split('.');
+            let curExt = curDetails[1];
+            let elName = curExt === 'css' ? '#'+curDetails[0]+'-css-tab-btn' : '#'+curDetails[0]+'-tab-btn';
+            let newContent;
+            
+            setTimeout(()=> {
+                value.on("change", () => {
+                    newContent = value.getValue();
+                    if (newContent === pageContent[key]) {
+                        unsavedChanges = false;
+                        removeClass(elName,'changed');
+                    } else if (newContent !== pageContent[key]) {
+                        addClass(elName,'changed');
+                        unsavedChanges = true;
+                    }
+                });
+            },150)
+            
+        }
+    );  
 }
+
 
 function rendererDestroyPage(data) {
     // Remove page from renderer/window and all links to it (tabs, variables etc.)
