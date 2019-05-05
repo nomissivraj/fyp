@@ -258,7 +258,7 @@ function findMatchingValue(array, string) {
             // For each key in current command object look through keys values
             for (let j = 0; j < array[i][key].length; j++) {
                 // If the current key value exists in the data string return key using findKeyNameOfValue?
-                if (string.indexOf(array[i][key][j]) !== -1) {
+                if (string.search('\\b'+array[i][key][j]+'\\b') !== -1) {
                     console.log('matched value',array[i][key][j]);
                     return array[i][key][j];                    
                 }
