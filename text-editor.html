@@ -252,6 +252,8 @@
         const fs = require('file-system');
         const savesPath = path.join(app.getPath('documents'),'Voice Developer Projects','/saves/');
         const shell = require('electron').shell;
+        const appPath = __dirname;
+        const dialog = remote.dialog;
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
         ipcRenderer.send('ready:text-window');
@@ -369,6 +371,10 @@
         let currentEditor;
         let currentPage;
         let pageContent = {};
+        let unsavedChanges = false;
+
+        let cssProps,
+            cssPropVals;
           
         // Recieve
         ipcRenderer.on('load:data', (e, data) => {
@@ -392,7 +398,14 @@
             if (data.pages.length === 0 && data.stylesheets.length === 0) {
                 toggleDisplay('no-files');
             }
-            
+
+            // Load JSON files
+            fs.readFile(path.join(appPath,'/scripts/cssprops.json'), (err, data) => {
+                cssProps = JSON.parse(data);
+            });
+            fs.readFile(path.join(appPath,'/scripts/csspropvals.json'), (err, data) => {
+                cssPropVals = JSON.parse(data);
+            });
         })
 
         ipcRenderer.on('insert:page', (e, data) => {
