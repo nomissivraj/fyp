@@ -514,7 +514,7 @@ main.working {
 .CodeMirror.working:before,
 main.working:before {
     color:#fbff00;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.5);
     padding: 5px 10px;
     padding-right: 30px;
     border-radius: 3px;
@@ -555,7 +555,7 @@ main.working:after {
 .CodeMirror.finished:before,
 main.finished:before {
     color: #d1d1d1;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.5);
     padding: 5px 10px;
     padding-right: 30px;
     border-radius: 3px;
@@ -579,7 +579,7 @@ main.finished {
 
 .CodeMirror.error:before,
 main.error:before {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(0, 0, 0, 0.5);
     padding: 5px 10px;
     padding-right: 30px;
     border-radius: 3px;
