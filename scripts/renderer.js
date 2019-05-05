@@ -47,7 +47,15 @@ const remote = require('electron').remote;
         // Add listener for close button to close window on click
         closeBtn.addEventListener("click", (event) => {
             window = remote.getCurrentWindow();
-            window.close();
+            if (editorMode !== "gui") {
+                if (unsavedChanges) {
+                    let confirmation = confirm('Warning! You have unsaved changes.');
+                    if (confirmation) {
+                        window.close();
+                    }
+                } else window.close();
+            } else window.close();
+                        
         });
 
         // Function to handle min and max button visibility toggling
