@@ -374,7 +374,9 @@
         let unsavedChanges = false;
 
         let cssProps,
-            cssPropVals;
+            cssPropVals,
+            tags,
+            attributes;
           
         // Recieve
         ipcRenderer.on('load:data', (e, data) => {
@@ -405,6 +407,12 @@
             });
             fs.readFile(path.join(appPath,'/scripts/csspropvals.json'), (err, data) => {
                 cssPropVals = JSON.parse(data);
+            });
+            fs.readFile(path.join(appPath,'/scripts/tags.json'), (err, data) => {
+                tags = JSON.parse(data);
+            });
+            fs.readFile(path.join(appPath,'/scripts/attributes.json'), (err, data) => {
+                attributes = JSON.parse(data);
             });
         })
 
