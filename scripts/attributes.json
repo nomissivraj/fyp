@@ -1,0 +1,14 @@
+[
+    {"alt":["alt", "out", "alternative","ought"]},
+    {"src":["src", "source"]},
+    {"type":["type"]},
+    {"width":["width", "with", "which"]},
+    {"height":["height"]},
+    {"lang":["lang", "language"]},
+    {"title":["title"]},
+    {"required":["required"]},
+    {"rel":["rel", "relationship", "well", "relationship"]},
+    {"href":["hyperlink","hyperlinked"]},
+    {"class": ["class", "clasp"]},
+    {"id": ["I D", "idea", "i the", "ID","id"]}
+]
