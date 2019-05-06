@@ -47,6 +47,7 @@ const remote = require('electron').remote;
         // Add listener for close button to close window on click
         closeBtn.addEventListener("click", (event) => {
             window = remote.getCurrentWindow();
+            if (editorMode === null) window.close();
             if (editorMode !== "gui") {
                 if (unsavedChanges) {
                     let confirmation = confirm('Warning! You have unsaved changes.');
