@@ -119,7 +119,26 @@ function initDictate(target) {
 
 // possible words that could be intended as 'tag'
 let couldBeTag = [
-    {'tag':['tag','tags','attack', 'had','tack','tagged','tank','tak','tax','contain','container']}
+    {'tag':['tag',
+        'tags',
+        'attack',
+        'had',
+        'tack',
+        'pack',
+        'tagged',
+        'thank',
+        'tank',
+        'tak',
+        'tax',
+        'contain',
+        'container',
+        "containing",
+        "contender",
+        "compiler",
+        "taco",
+        "taylor",
+        'tach'
+    ]}
 ]
 
 /* let couldBeClass = [
@@ -130,51 +149,6 @@ let couldBeAttr = [
     {'attribute':['attribute', 'attributes','tribute']}
 ]
 
-let attributes = [
-    {'alt':['alt', 'out', 'alternative','ought']},
-    {'src':['src', 'source']},
-    {'type':['type']},
-    {'width':['width', 'with', 'which']},
-    {'height':['height']},
-    {'lang':['lang', 'language']},
-    {'title':['title']},
-    {'required':['required']},
-    {'rel':['rel', 'relationship', 'well', 'relationship']},
-    {'href':['hyperlink','hyperlinked']},
-    {'class': ['class', 'clasp']},
-    {'id': ['I D', 'idea', 'i the', 'ID','id']}
-]
-
-let tags = [
-    {"div": ["div", "dave","they've"]},
-    {"main": ["main", "mane", "mean"]},
-    {"p":["p","p.","he","pee","pea","pay","paragraph","paragraphs","pete"]},
-    {"a":["anchor", "hyperlink", "hyper link"]},
-    {"h1":["heading one","h1"," H. one", "eight one","each one"]},
-    {"h2":["h2","heading two","heading to","eight to","AH two","each to"," H. two"]},
-    {"h3":["h3","heading three","eight three","AH three","each three"," H. three"]},
-    {"h4":["h4","heading four","heading for","AH four"," H. four", "eight four", "each for", "each. for."]},
-    {"h5":["h5","heading five","heading five"," H. five", "eight five", "AH five"]},
-    {"h6":["h6","heading six","having sex","heading sex"," H. six", "eight six", "AH sex", "each sex", "he just sex"]},
-    {"article":["article","articles"]},
-    {"button":["button", "buttons","but","martin","barton","bolton"]},
-    {"area": ["area"]},
-    {"base":["base"]},
-    {"br":["br", "break"]},
-    {"col":["col", "call", "cole"]},
-    {"embed":["embed"]},
-    {"hr":["hr","horizontal", "horizontal rule"]},
-    {"img":["img", "image"]},
-    {"input":["input", "put", "part", "in put"]},
-    {"keygen":["keygen", "keygens"]},
-    {"link":["link"]},
-    {"meta":["meta", "matt", "mat"]},
-    {"param":["parameter", "haram", "perimeter"]},
-    {"source":["source","sauce"]}, 
-    {"track":["track"]}/* ,
-     {'wbr':['wbr']} This one might not be workable */
-     // Once tags all finished, add all tabs to cssprops.json
-]
 
 //might need to make commands to make '<' and '>'
 let commands = [
@@ -192,14 +166,36 @@ let commands = [
     {'preview':['preview', 'previous']},
     {'period':['period']},
     {'hash': ['hash']},
-    {'source': ['source', 'file path','file past', 'file location']}
+    {'source': ['source', 'file path', 'file perth','file past', 'file location']}
 
 ]
 
 
 // List of HTML tags that don't need a closing tag
 // Compare the keys in tags list against this list of singletons
-let singletons = ['area','base','br','col','embed','hr','img','input','keygen','link','meta','param','source','track'];
+let singletons = [
+    'area',
+    'base',
+    'br',
+    'col',
+    'embed',
+    'hr',
+    'img',
+    'input',
+    'keygen',
+    'link',
+    'meta',
+    'param',
+    'source',
+    'track',
+    '!-- --',
+    'area'
+];
+
+let booleanAttribute = [
+    'required',
+    'controls',
+]
 
 function findKeyNameOfValue(array, data) {
     // This only works for [{key:['value','value1']},{['value','value1']}] data structure
@@ -265,7 +261,15 @@ function speechToCode(data) {
     let frame = '.CodeMirror';
     let gutter = '.gutter';
     if (editorMode === 'css') {
+        let cssproperties = cssProps.concat(tags);
         //DO CSS functions here
+        /*
+            ////////////////////////////////////////////////////////////////////
+            //////////////////????????????????????????????????????????????
+            ///////////////////////////
+        */
+        
+        //
     } else if (editorMode === "html") {
         if (dictateMode === 'markup') {
             // If word in words contains something equivalent to 'tags' then proceed
