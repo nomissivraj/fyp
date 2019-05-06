@@ -139,7 +139,7 @@
         const log = require('electron-log');
         initDictate();
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
-        
+        let editorMode = null;
         ipcRenderer.on('fetch:projects', () => {
             fetchProjects();
         });
