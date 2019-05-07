@@ -70,15 +70,15 @@ function removeClass(el, className) {
 }
 
 function hideAll(elements) {
-    /* console.log("hideall") */
+    console.log("hideall")
     let els = document.querySelectorAll(elements);
     for (let i = 0; i < els.length; i++) {
-        els[i].style = 'display:none';
+        els[i].style = 'display: none';
     }
 }
 
 function hideOthers(elements, dontHide) {
-    /* console.log('hideothers') */
+    console.log('hideothers')
     let els = document.querySelectorAll(elements);
     for (let i = 0; i < els.length; i++) {
         if (els[i] !== dontHide) {
@@ -88,6 +88,7 @@ function hideOthers(elements, dontHide) {
 }
 
 function resetForms(el) {    
+    console.log('reset forms')
     let forms = document.querySelectorAll('form');
     if (!forms) return;
     let buttons = document.querySelectorAll('button');
@@ -119,9 +120,11 @@ function initMenu(menuEl, btn, subBtns) {
 
     // Ensure that when an element that isn't the menu is clicked the menu will hide
     document.addEventListener('mousedown', (e) => {
-        if (!targetInEl(menu, e.target)) {
-            hideAll('.dropdown__menu');
-            menu.classList.remove('active')
+        if (menu.classList.contains('active')) {
+            if (!targetInEl(menu, e.target)) {
+                hideAll('.dropdown__menu');
+                menu.classList.remove('active')
+            }
         }
     });
 
@@ -999,6 +1002,11 @@ function initValuesTool() {
     for (let i = 0; i < submit.length; i++) {
         submit[i].addEventListener("mousedown", (e) => {
             e.preventDefault();
+            let result = inputs[0].value;
+            document.activeElement = result;      
+            setTimeout(()=>{
+                resetForms("valuetool__container");
+            },250)
             
         });
     }
@@ -1006,20 +1014,51 @@ function initValuesTool() {
 
 
 function initColorPicker() {
-    let pickerSubmit = document.getElementById('picker-submit');
+    let pickerSubmit = document.getElementById('hex-submit');
+    let rgbPickerSubmit = document.getElementById('rgb-submit');
+    let pickerInput = document.getElementsByClassName('jscolor')[0];
+    pickerInput.addEventListener('mousedown',(e) => {
+        e.preventDefault();
+    });
+
+    rgbPickerSubmit.addEventListener("mousedown",(e) => {
+        e.preventDefault();
+        let styleString = window.getComputedStyle(pickerInput).backgroundColor;
+        document.activeElement.value = styleString;
+        resetForms("colorpicker__container");
+    });
 
     pickerSubmit.addEventListener("mousedown",(e) => {
-        e.preventDefault;
-        let pickerVal = document.getElementsByClassName("jscolor")[0].value;
-        document.activeElement.value = '#'+pickerVal;
-        resetForms("colorpicker__container")
+        e.preventDefault();
+        let picker = document.getElementsByClassName("jscolor")[0];
+        document.activeElement.value = '#'+picker.value;
+        resetForms("colorpicker__container");
     });
 }
 
-
+function initResize() {
+    // Add listener for window resize
+    let timeout;
+    window.addEventListener('resize',(e) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() =>{
+            console.log("WINHEIGHT",window.innerHeight)
+            let tools = document.getElementsByClassName('dialogue--tool');
+            console.log(window.innerHeight)
+            for (let i = 0; i < tools.length; i++) {
+                console.log(tools[i], tools[i].style.top)
+                
+                tools[i].style.top = window.innerHeight / 2+"px";
+                tools[i].style.left = window.innerWidth / 2+"px";
+            }
+        },200);
+        
+    });
+}
 
 function dragElement(elmnt) {
   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
   if (document.getElementById(elmnt.id + "header")) {
     // if present, the header is where you move the DIV from:
     document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
@@ -1027,6 +1066,7 @@ function dragElement(elmnt) {
     // otherwise, move the DIV from anywhere inside the DIV: 
     elmnt.onmousedown = dragMouseDown;
   }
+
 
   function dragMouseDown(e) {
     e.preventDefault();
