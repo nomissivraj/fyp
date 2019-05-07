@@ -246,39 +246,53 @@
         <div id="valuetool__container" class="dialogue dialogue--tool"  style="display: none;">
             <form id="valuetool__form">
                 <input type="text" id="value-to-insert" placeholder="10px">
-                <button class="numbtn" type="button" value="1">1</button>
-                <button class="numbtn" type="button" value="2">2</button>
-                <button class="numbtn" type="button" value="3">3</button>
-                <button class="numbtn" type="button" value="4">4</button>
-                <button class="numbtn" type="button" value="5">5</button>
-                <button class="numbtn" type="button" value="6">6</button>
-                <button class="numbtn" type="button" value="7">7</button>
-                <button class="numbtn" type="button" value="8">8</button>
-                <button class="numbtn" type="button" value="9">9</button>
-                <button class="numbtn" type="button" value="0">0</button>
-                <button class="numbtn" type="button" value="/">/</button>
-                <button class="numbtn" type="button" value="*">*</button>
-                <button class="numbtn" type="button" value="-">-</button>
-                <button class="numbtn" type="button" value="+">+</button>
-                <button class="numbtn" type="button" value="%">%</button>
-                <button class="numbtn" type="button" value=".">.</button>
-                <button class="numbtn" type="button" value=", ">,</button>
-                <button class="numbtn" type="button" value="()">()</button>
-                <button class="numbtn" type="button" value="px">px</button>
-                <button class="numbtn" type="button" value="em">em</button>
-                <button class="numbtn" type="button" value="rem">rem</button>
-                <button class="numbtn" type="button" value="rgba()">rgba</button>
-                <button class="numbtn" type="button" value="url('')">url</button>
-                <button class="numbtn" type="button" value=" ">space</button>
-                <button class="numbtn" type="button" value=": ">:</button>
-                <button class="numbtn" type="button" value=";">;</button>
-                <button class="numbtn" type="button" value="clear">clear</button>
-                <button class="numbtn" type="submit" class="positive">insert</button>
+                <div class="valuetool__numbers">
+                    <button class="valuebtn" type="button" value="1">1</button>
+                    <button class="valuebtn" type="button" value="2">2</button>
+                    <button class="valuebtn" type="button" value="3">3</button>
+                    <button class="valuebtn" type="button" value="4">4</button>
+                    <button class="valuebtn" type="button" value="5">5</button>
+                    <button class="valuebtn" type="button" value="6">6</button>
+                    <button class="valuebtn" type="button" value="7">7</button>
+                    <button class="valuebtn" type="button" value="8">8</button>
+                    <button class="valuebtn" type="button" value="9">9</button>
+                    <button class="valuebtn" type="button" value="0">0</button>
+                </div>
+                <div class="valuetool__symbols">
+                        <button class="valuebtn" type="button" value="/">/</button>
+                        <button class="valuebtn" type="button" value="*">*</button>
+                        <button class="valuebtn" type="button" value="-">-</button>
+                        <button class="valuebtn" type="button" value="+">+</button>
+                        <button class="valuebtn" type="button" value="%">%</button>
+                        <button class="valuebtn" type="button" value=".">.</button>
+                        <button class="valuebtn" type="button" value=", ">,</button>
+                        <button class="valuebtn" type="button" value=": ">:</button>
+                        <button class="valuebtn" type="button" value=";">;</button>
+                        <button class="valuebtn" type="button" value="()">()</button>
+                </div>
+                
+                <div class="valuetool__entities">
+                    <button class="valuebtn" type="button" value="px">px</button>
+                    <button class="valuebtn" type="button" value="em">em</button>
+                    <button class="valuebtn" type="button" value="rem">rem</button>
+                    <button class="valuebtn" type="button" value="rgba()">rgba</button>
+                    <button class="valuebtn" type="button" value="url(' ')">url</button>
+                    <button class="valuebtn" type="button" value="calc( )">calc</button>
+                    <button class="valuebtn" type="button" value=" ">space</button>
+                </div>
+                
+                
+                <div class="controls">
+                    <button class="valuebtn" type="button" value="clear">clear</button>
+                    <button class="valuebtn positive" type="submit" >insert</button>
+                </div>
+                
             </form>
             <button type="button" class="close-btn" onclick="resetForms('valuetool__container')"><strong>X</strong></button>
         </div>
-        <div id="colorpicker__container" class="dialogue dialogue--colorpicker" style="display: none;">
-            <button id="picker-submit">Insert</button>
+        <div id="colorpicker__container" class="dialogue dialogue--tool dialogue--colorpicker" style="display: none;">
+            <button id="hex-submit">HEX</button>
+            <button id="rgb-submit">RBG</button>
             <input class="jscolor" value="ab2567">
             <button type="button" class="close-btn" onclick="resetForms('colorpicker__container')"><strong>X</strong></button>
         </div>
@@ -473,6 +487,7 @@
             initColorPicker();
             dragElement(document.getElementById("valuetool__container"));
             dragElement(document.getElementById("colorpicker__container"));
+            initResize();
         });
 
         ipcRenderer.on('insert:page', (e, data) => {
