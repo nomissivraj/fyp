@@ -20,6 +20,7 @@
         <script src="scripts/funcs.js"></script>
         <script src="scripts/stt.js"></script>
         <script src="scripts/stc.js"></script>
+        <script src="scripts/jscolor.js"></script>
 
     </head>
     <body class="text-editor">
@@ -238,9 +239,50 @@
                 </form>
             </div>
 
+            
+            
             <button type="button" id="dictate-btn"></button>
         </main>
-        
+        <div id="valuetool__container" class="dialogue dialogue--tool"  style="display: none;">
+            <form id="valuetool__form">
+                <input type="text" id="value-to-insert" placeholder="10px">
+                <button class="numbtn" type="button" value="1">1</button>
+                <button class="numbtn" type="button" value="2">2</button>
+                <button class="numbtn" type="button" value="3">3</button>
+                <button class="numbtn" type="button" value="4">4</button>
+                <button class="numbtn" type="button" value="5">5</button>
+                <button class="numbtn" type="button" value="6">6</button>
+                <button class="numbtn" type="button" value="7">7</button>
+                <button class="numbtn" type="button" value="8">8</button>
+                <button class="numbtn" type="button" value="9">9</button>
+                <button class="numbtn" type="button" value="0">0</button>
+                <button class="numbtn" type="button" value="/">/</button>
+                <button class="numbtn" type="button" value="*">*</button>
+                <button class="numbtn" type="button" value="-">-</button>
+                <button class="numbtn" type="button" value="+">+</button>
+                <button class="numbtn" type="button" value="%">%</button>
+                <button class="numbtn" type="button" value=".">.</button>
+                <button class="numbtn" type="button" value=", ">,</button>
+                <button class="numbtn" type="button" value="()">()</button>
+                <button class="numbtn" type="button" value="px">px</button>
+                <button class="numbtn" type="button" value="em">em</button>
+                <button class="numbtn" type="button" value="rem">rem</button>
+                <button class="numbtn" type="button" value="rgba()">rgba</button>
+                <button class="numbtn" type="button" value="url('')">url</button>
+                <button class="numbtn" type="button" value=" ">space</button>
+                <button class="numbtn" type="button" value=": ">:</button>
+                <button class="numbtn" type="button" value=";">;</button>
+                <button class="numbtn" type="button" value="clear">clear</button>
+                <button class="numbtn" type="submit" class="positive">insert</button>
+            </form>
+            <button type="button" class="close-btn" onclick="resetForms('valuetool__container')"><strong>X</strong></button>
+        </div>
+        <div id="colorpicker__container" class="dialogue dialogue--colorpicker" style="display: none;">
+            <button id="picker-submit">Insert</button>
+            <input class="jscolor" value="ab2567">
+            <button type="button" class="close-btn" onclick="resetForms('colorpicker__container')"><strong>X</strong></button>
+        </div>
+            
     </body>
     <script>
         require('./scripts/renderer.js');
@@ -264,6 +306,9 @@
 
         const deleteFileForm = document.getElementById('deletefile__form');
         deleteFileForm.addEventListener('submit', deleteFile);
+
+        const valueToolForm = document.getElementById('valuetool__form');
+        valueToolForm.addEventListener('submit', insertValue);
 
         function newFile(e) {
             e.preventDefault();
@@ -363,6 +408,15 @@
             }
         }
 
+        function insertValue(e) {
+            e.preventDefault();
+            console.log("clicked")
+            let input = document.getElementById("value-to-insert");
+            let value = input.value;
+            document.activeElement.value = value;
+            input.value = "";
+        }
+
         // Global variables
         let currentProject;
         let curProjectDetails;
@@ -396,6 +450,7 @@
             loadPageContent(curProjectDetails);
             
             initDictate('textEditor');
+            
             initMenu('menu','.dropdown__btn', '.submenu__btn');
             if (data.pages.length === 0 && data.stylesheets.length === 0) {
                 toggleDisplay('no-files');
@@ -414,7 +469,11 @@
             fs.readFile(path.join(appPath,'/scripts/attributes.json'), (err, data) => {
                 attributes = JSON.parse(data);
             });
-        })
+            initValuesTool();
+            initColorPicker();
+            dragElement(document.getElementById("valuetool__container"));
+            dragElement(document.getElementById("colorpicker__container"));
+        });
 
         ipcRenderer.on('insert:page', (e, data) => {
             console.log(data);
