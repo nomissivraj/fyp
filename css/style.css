@@ -254,14 +254,15 @@ main {
     width: 300px;
     height:auto;
     padding-top: 40px;
+    padding-bottom: 40px;
     min-height: auto;
     background: rgba(54, 85, 105, 0.8);
     overflow: hidden;
     box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.5);
 
 }
-.dialogue--colorpicker {
-    width: 100px;
+.dialogue--tool.dialogue--colorpicker {
+    width: 101px;
     height:100px;
     padding: 0;
     min-height: auto;
@@ -270,18 +271,30 @@ main {
     box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.5);
 }
 
-.dialogue--colorpicker .jscolor {
+.dialogue--tool.dialogue--colorpicker .jscolor {
     width: 100%;
     height: calc(100% - 30px);
     cursor: pointer;
     text-align: center;
 }
 
-.dialogue--colorpicker #picker-submit {
-    width: calc(100% - 30px);
-    border-radius: 5px 0 0 0; 
+.dialogue--tool.dialogue--colorpicker #hex-submit,
+.dialogue--tool.dialogue--colorpicker #rgb-submit {
+    width: calc(50% - 16px);
+    padding: 0;
+    
 }
-.dialogue--colorpicker .close-btn {
+
+.dialogue--tool.dialogue--colorpicker #hex-submit {
+    border-radius: 5px 0 0 0; 
+    margin-right: -2px;
+}
+
+.dialogue--tool.dialogue--colorpicker #rgb-submit {
+    border-radius: 0; 
+}
+
+.dialogue--tool.dialogue--colorpicker .close-btn {
     border-radius: 0 5px 0 0; 
 }
 
@@ -322,22 +335,22 @@ button:hover {
     right: 20px;
 }
 
-button.negative {
+button.negative, .negative {
     background: rgb(162, 59, 59);
     color: #fff;
 }
 
-button.negative:hover {
+button.negative:hover, .negative:hover {
     background: rgba(126, 6, 6, 0.5);
     color: #fff;
 }
 
-button.positive {
+button.positive, .positive {
     background: rgb(71, 162, 59);
     color: #fff;
 }
 
-button.positive:hover {
+button.positive:hover, .positive:hover {
     background: rgba(71, 162, 59,0.5);
     color: #fff;
 }
@@ -863,3 +876,27 @@ main.error {
     top: 50%;
     padding: 20px;
   }
+
+
+  .hide {
+      display: none!important;
+  }
+
+  .controls {
+      position: absolute;
+      bottom: 0;
+      right: 5px;
+  }
+
+  .valuetool__numbers button,
+  .valuetool__symbols button {
+    width: calc(10% - 4px);
+    padding: 0px;
+}
+
+.valuetool__entities button {
+    width: calc(20% - 4px);
+    padding: 0px;
+}
+
+
