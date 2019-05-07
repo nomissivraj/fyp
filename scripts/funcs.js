@@ -801,6 +801,7 @@ function saveChanges(file) {
     let fileExt = fileDetails[1];
     let tabName = fileExt === 'css' ? '#'+fileDetails[0]+'-css-tab-btn' : '#'+fileDetails[0]+'-tab-btn';
     removeClass(tabName, 'changed');
+    checkUnsaved();
 }
 
 function trackChanges() {
@@ -826,6 +827,26 @@ function trackChanges() {
         }
     );  
 }
+
+function checkUnsaved() {
+    let unsaved = [];
+    //Function to check files are unsaved
+    Object.entries(editors).forEach(([key, value]) => {
+        let newContent;
+        
+        newContent = value.getValue();
+        if (newContent !== pageContent[key]) {
+            unsaved.push(key);
+        }
+
+    });
+    if (unsaved.length > 0) {
+        unsavedChanges = true;
+    } else if (unsaved.length === 0) {
+        unsavedChanges = false;
+    }
+}  
+
 
 
 function rendererDestroyPage(data) {
@@ -938,4 +959,100 @@ function initIframeStyles() {
         `
         iframeDocEl.appendChild(styleTag);
     }, 200);
+}
+
+function initValuesTool() {
+    let container = document.getElementById("valuetool__container");
+    let form = document.getElementById("valuetool__form");
+    let buttons = document.querySelectorAll("#valuetool__form button");
+    let inputs = document.querySelectorAll("#valuetool__form input");
+    let submit = document.querySelectorAll("#valuetool__form button[type=submit]");
+    container.addEventListener("mousedown", (e)=>{
+        e.preventDefault();
+    });
+    form.addEventListener("mousedown", (e)=>{
+        e.preventDefault();
+    });
+    console.log(container, form, buttons,inputs,submit)
+
+    for (let i = 0; i < buttons.length; i++) {
+        console.log(buttons[i]);
+        buttons[i].addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            console.log(buttons[i].value);
+            if (buttons[i].value === "clear") {
+                inputs[0].value = "";
+            } else {
+                inputs[0].value += buttons[i].value;
+                
+            }
+            
+        });
+    }
+
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].addEventListener("mousedown", (e) => {
+            e.preventDefault();
+        });
+    }
+
+    for (let i = 0; i < submit.length; i++) {
+        submit[i].addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            
+        });
+    }
+}
+
+
+function initColorPicker() {
+    let pickerSubmit = document.getElementById('picker-submit');
+
+    pickerSubmit.addEventListener("mousedown",(e) => {
+        e.preventDefault;
+        let pickerVal = document.getElementsByClassName("jscolor")[0].value;
+        document.activeElement.value = '#'+pickerVal;
+        resetForms("colorpicker__container")
+    });
+}
+
+
+
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    // if present, the header is where you move the DIV from:
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    // otherwise, move the DIV from anywhere inside the DIV: 
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
 }
