@@ -293,6 +293,10 @@
 
                         existingProjects.appendChild(node);
                     }
+                    removeClass('#load-submit', 'hide');
+                    removeClass('#load-cancel', 'hide');
+                    removeClass('#load-delete', 'hide');
+                    removeClass('#selected-project', 'hide');
                 } else {
                     let node = document.createElement('span');
                     let text = document.createTextNode('No existing projects available');
@@ -300,10 +304,11 @@
 
                     node.appendChild(text);
                     existingProjects.appendChild(node);
-                    toggleDisplay('load-submit')
-                    toggleDisplay('load-cancel')
-                    toggleDisplay('load-delete')
-                    toggleDisplay('selected-project')
+                    
+                    addClass('#load-submit', 'hide');
+                    addClass('#load-cancel', 'hide');
+                    addClass('#load-delete', 'hide');
+                    addClass('#selected-project', 'hide');
                 }
 
                 
