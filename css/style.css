@@ -29,6 +29,8 @@
 
 }
 
+body {overflow: hidden;}
+
 input[type="submit"],
 input[type="reset"],
 input[type="button"],
@@ -248,6 +250,47 @@ main {
     box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.5);
 }
 
+.dialogue--tool {
+    width: 300px;
+    height:auto;
+    padding-top: 40px;
+    min-height: auto;
+    background: rgba(54, 85, 105, 0.8);
+    overflow: hidden;
+    box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.5);
+
+}
+.dialogue--colorpicker {
+    width: 100px;
+    height:100px;
+    padding: 0;
+    min-height: auto;
+    background: rgba(54, 85, 105, 0.8);
+    overflow: hidden;
+    box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.5);
+}
+
+.dialogue--colorpicker .jscolor {
+    width: 100%;
+    height: calc(100% - 30px);
+    cursor: pointer;
+    text-align: center;
+}
+
+.dialogue--colorpicker #picker-submit {
+    width: calc(100% - 30px);
+    border-radius: 5px 0 0 0; 
+}
+.dialogue--colorpicker .close-btn {
+    border-radius: 0 5px 0 0; 
+}
+
+
+.dialogue--tool button, .dialogue--tool input {
+    opacity: .85;
+    margin-bottom: 5px;
+}
+
 button {
     padding: 5px 10px;
     border-radius: 3px;
@@ -308,7 +351,6 @@ button.positive:hover {
     opacity: 0;
     bottom: 0px;
     right: 0px;
-    
     transition: opacity .4s ease;
     height:0px;
     width:0px;
