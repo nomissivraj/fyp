@@ -149,6 +149,7 @@ let couldBeAttr = [
     {'attribute':['attribute', 'attributes','tribute']}
 ]
 
+let couldBeCSSProp = [{"cssprop":["property"]}]
 
 //might need to make commands to make '<' and '>'
 let commands = [
@@ -166,7 +167,9 @@ let commands = [
     {'preview':['preview', 'previous']},
     {'period':['period']},
     {'hash': ['hash']},
-    {'source': ['source', 'file path', 'file perth','file past', 'file location']}
+    {'source': ['source', 'file path', 'file perth','file past', 'file location']},
+    {"color-picker":["color picker", "coloca", "coaker"]},
+    {"value-tool":["value tool","value to", "values tool","value to all", "well you could", "value to your", "value to our", "alioto", "valued who", "value cool", "valuable"]}
 
 ]
 
@@ -261,14 +264,26 @@ function speechToCode(data) {
     let frame = '.CodeMirror';
     let gutter = '.gutter';
     if (editorMode === 'css') {
-        let cssproperties = cssProps.concat(tags);
+        let cssProperties = cssProps.concat(tags);
         //DO CSS functions here
         /*
             ////////////////////////////////////////////////////////////////////
             //////////////////????????????????????????????????????????????
             ///////////////////////////
         */
-        
+       if ('cssprop' === findKeyNameOfValue(couldBeCSSProp, findMatchingValue(couldBeCSSProp, data))) {
+            console.log('is css property');
+            // Search cssproperties for a match of other words
+            let prop = findKeyNameOfValue(cssProperties, findMatchingValue(cssProperties, data));
+            console.log(prop);
+            if (prop !== undefined) {
+                stcSuccess = true;
+                property = prop+": ;"
+                editors[currentEditor].replaceRange(property,{line: cursorPos.line, ch: cursorPos.ch});
+                
+            }
+            
+        }
         //
     } else if (editorMode === "html") {
         if (dictateMode === 'markup') {
@@ -315,106 +330,110 @@ function speechToCode(data) {
             } 
         }
 
+    }
+    if (dictateMode === 'command') {
         
-
-        if (dictateMode === 'command') {
-        
-            let command = findKeyNameOfValue(commands, findMatchingValue(commands, data));
-            console.log(command)
-            if (command !== undefined) stcSuccess = true;
-            switch(command) {
-                case 'space':
-                    cursorPos = editors[currentEditor].getCursor();
-                    editors[currentEditor].replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
-                    break;
-                case 'save':
-                    saveChanges(currentProject);
-                    break;
-                case 'exit':
-                    let window = remote.getCurrentWindow();
-                    if (unsavedChanges) {
-                        let confirmation = confirm('Warning! You have unsaved changes.');
-                        if (confirmation) {
-                            window.close();
-                        }
-                    } else window.close();
-                    break;
-                case 'tab':
-                    CodeMirror.commands.defaultTab(editors[currentEditor]);
-                    break;
-                case 'enter':
-                    CodeMirror.commands.newlineAndIndent(editors[currentEditor]);
-                    break;
-                case 'undo':
-                    editors[currentEditor].doc.undo();
-                    break;
-                case 'redo':
-                    editors[currentEditor].doc.redo();
-                    break;
-                case 'cut':
-                    document.execCommand('cut');
-                    break;
-                case 'copy':
-                    document.execCommand('copy');
-                    break;
-                case 'paste':
-                    document.execCommand('paste');
-                    break;
-                case 'delete':
-                    document.execCommand('delete');
-                    break;
-                case 'preview':
-                    pagePreview();
-                    break;
-                case 'period':
-                    cursorPos = editors[currentEditor].getCursor();
-                    editors[currentEditor].replaceRange(".",{line: cursorPos.line, ch: cursorPos.ch});
-                    break;
-                case 'hash':
-                    cursorPos = editors[currentEditor].getCursor();
-                    editors[currentEditor].replaceRange("#",{line: cursorPos.line, ch: cursorPos.ch});
-                    break;
-                case 'source':
-                    let dialogOptionsFiles = {
-                        defaultPath: path.join(savesPath,curProjectDetails.name),
-                        properties: ['openFile'],
-                        filters: [
-                            { name: 'All Files', extensions: ['*'] }
-                        ]
+        let command = findKeyNameOfValue(commands, findMatchingValue(commands, data));
+        console.log(command)
+        if (command !== undefined) stcSuccess = true;
+        switch(command) {
+            case 'space':
+                cursorPos = editors[currentEditor].getCursor();
+                editors[currentEditor].replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
+                break;
+            case 'save':
+                saveChanges(currentPage);
+                break;
+            case 'exit':
+                let window = remote.getCurrentWindow();
+                if (unsavedChanges) {
+                    let confirmation = confirm('Warning! You have unsaved changes.');
+                    if (confirmation) {
+                        window.close();
                     }
-                    let page = document.getElementsByTagName('html')[0];
-                    page.classList.add("disabled");
-                    dialog.showOpenDialog(dialogOptionsFiles, filePath => {
-                        filePath = filePath[0];
-                        if (path === undefined) {
-                            page.classList.remove("disabled");
-                        } else {
-                            //logic to determine locale of file and make path relative to project
-                            fileInSavePath = filePath.search('\\b'+'saves'+'\\b') !== -1 ? true: false;
-                            fileInNamePath = filePath.search('\\b'+curProjectDetails.name+'\\b')!== -1 ? true: false;
-                            console.log(fileInNamePath, fileInSavePath)
-                            if (fileInSavePath && fileInNamePath) {
-                                console.log('local file')
-                                if (editorMode === 'html') {
-                                    //set path to relative path
-                                    let splitPath = filePath.split('\\saves\\'+curProjectDetails.name+'\\');
-                                    relPath = splitPath[1];
-                                    filePath = relPath;
-                                } else if (editorMode === 'css') {
-                                    //make css relative path here
-                                }
-                            }
-                            document.activeElement.value = filePath;
-                        }
+                } else window.close();
+                break;
+            case 'tab':
+                CodeMirror.commands.defaultTab(editors[currentEditor]);
+                break;
+            case 'enter':
+                CodeMirror.commands.newlineAndIndent(editors[currentEditor]);
+                break;
+            case 'undo':
+                editors[currentEditor].doc.undo();
+                break;
+            case 'redo':
+                editors[currentEditor].doc.redo();
+                break;
+            case 'cut':
+                document.execCommand('cut');
+                break;
+            case 'copy':
+                document.execCommand('copy');
+                break;
+            case 'paste':
+                document.execCommand('paste');
+                break;
+            case 'delete':
+                document.execCommand('delete');
+                break;
+            case 'preview':
+                pagePreview();
+                break;
+            case 'period':
+                cursorPos = editors[currentEditor].getCursor();
+                editors[currentEditor].replaceRange(".",{line: cursorPos.line, ch: cursorPos.ch});
+                break;
+            case 'hash':
+                cursorPos = editors[currentEditor].getCursor();
+                editors[currentEditor].replaceRange("#",{line: cursorPos.line, ch: cursorPos.ch});
+                break;
+            case 'color-picker':
+                toggleDisplay('colorpicker__container');
+                break;
+            case 'value-tool':
+                toggleDisplay('valuetool__container');
+                break;
+            case 'source':
+                let dialogOptionsFiles = {
+                    defaultPath: path.join(savesPath,curProjectDetails.name),
+                    properties: ['openFile'],
+                    filters: [
+                        { name: 'All Files', extensions: ['*'] }
+                    ]
+                }
+                let page = document.getElementsByTagName('html')[0];
+                page.classList.add("disabled");
+                dialog.showOpenDialog(dialogOptionsFiles, filePath => {
+                    filePath = filePath[0];
+                    if (path === undefined) {
                         page.classList.remove("disabled");
-                    })
-                    break;
-                default:
-                    break;
-                
-            }
-                    
+                    } else {
+                        //logic to determine locale of file and make path relative to project
+                        fileInSavePath = filePath.search('\\b'+'saves'+'\\b') !== -1 ? true: false;
+                        fileInNamePath = filePath.search('\\b'+curProjectDetails.name+'\\b')!== -1 ? true: false;
+                        console.log(fileInNamePath, fileInSavePath)
+                        if (fileInSavePath && fileInNamePath) {
+                            console.log('local file')
+                            if (editorMode === 'html') {
+                                //set path to relative path
+                                let splitPath = filePath.split('\\saves\\'+curProjectDetails.name+'\\');
+                                relPath = splitPath[1];
+                                filePath = relPath;
+                            } else if (editorMode === 'css') {
+                                //make css relative path here
+                            }
+                        }
+                        document.activeElement.value = filePath;
+                    }
+                    page.classList.remove("disabled");
+                })
+                break;
+            default:
+                break;
+            
         }
+                
     }
     //confirmation of finished
         toggleClass(frame, 'working');
