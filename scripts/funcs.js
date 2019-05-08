@@ -1056,39 +1056,71 @@ function initResize() {
     });
 }
 
-function dragElement(elmnt) {
+function dragElement(el) {
   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  let main = document.getElementById('pages-container');
 
-  if (document.getElementById(elmnt.id + "header")) {
+  if (document.getElementById(el.id + "header")) {
     // if present, the header is where you move the DIV from:
-    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+    document.getElementById(el.id + "header").onmousedown = dragMouseDown;
   } else {
     // otherwise, move the DIV from anywhere inside the DIV: 
-    elmnt.onmousedown = dragMouseDown;
+    el.onmousedown = dragMouseDown;
   }
 
 
   function dragMouseDown(e) {
     e.preventDefault();
-    // get the mouse cursor position at startup:
+    
+    // get initial cursor position:
     pos3 = e.clientX;
     pos4 = e.clientY;
     document.onmouseup = closeDragElement;
-    // call a function whenever the cursor moves:
-    document.onmousemove = elementDrag;
+    
+    document.onmousemove = (e) => {
+        elementDrag(e);
+        elementOverlap(e);
+    }
+    
   }
 
   function elementDrag(e) {
     e.preventDefault();
-    // calculate the new cursor position:
+    
+    // Get new cursor position:
     pos1 = pos3 - e.clientX;
     pos2 = pos4 - e.clientY;
     pos3 = e.clientX;
-    pos4 = e.clientY;
-    // set the element's new position:
-    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    pos4 = e.clientY;  
+
+    // Set element's new position:
+    el.style.top = (el.offsetTop - pos2) + "px";
+    el.style.left = (el.offsetLeft - pos1) + "px";
   }
+
+  function elementOverlap(e) {
+    let box = el.getBoundingClientRect();
+    let xOverlap,
+        yOverlap;
+
+    if (box.x > main.offsetWidth - el.offsetWidth) {
+        xOverlap = box.x + el.offsetWidth - main.offsetWidth;// Get distance overlapped
+        el.style.left = (el.offsetLeft - xOverlap) +'px';// Correct position based on overlap. 
+    }
+    if (box.x < 0) {
+        xOverlap = box.x;
+        el.style.left = (el.offsetLeft - xOverlap) + 'px';
+    }
+    if (box.y < 70) {
+        yOverlap = box.y - 70;
+        el.style.top = (el.offsetTop - yOverlap) + 'px';
+    }
+    if (box.y > main.offsetHeight - el.offsetHeight + 70) {
+        yOverlap = box.y + el.offsetHeight - (main.offsetHeight + 70);
+        el.style.top = (el.offsetTop - yOverlap) +'px';
+    }
+  }
+   
 
   function closeDragElement() {
     // stop moving when mouse button is released:
