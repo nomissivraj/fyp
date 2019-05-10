@@ -146,7 +146,26 @@ let couldBeTag = [
 ] */
 
 let couldBeAttr = [
-    {'attribute':['attribute', 'attributes','tribute']}
+    {'attribute':['attribute', 'attributes','tribute', 'a tribute', 'treatment', 'contribute']}
+]
+
+let couldBeAttrVal = [
+    {'attribute-value':["attribute value"]}
+]
+
+let attrVals = [
+    {'GET':["get"]},
+    {'POST':["post"]},
+    {'background: ;': ["background", "back ground"]},
+    {'background-color: ;': ["background color", "background colour"]},
+    {'multipart/form-data': ["multi part for data", "multi part forms data", "multi part foam data"]},
+    {'true': ["true", "drew"]},
+    {'false': ["false", 'force', 'forced']},
+    {'_blank': ["blank"]},
+    {'UTF-8': ["utf eight", "etf eight"]}, // test from this and down
+    {"viewport": ["viewport", "newport", "the eu court", "view port"]}, 
+    {"text/css": ["text css", "test css"]},
+    {"text/javascript":["text javascript", "text java script", "test javascript", "test java script"]}
 ]
 
 let couldBeCSSProp = [{"cssprop":["property"]}]
@@ -197,7 +216,21 @@ let singletons = [
 
 let booleanAttribute = [
     'required',
+    'async',
+    'autofocus',
+    'autoplay',
+    'checked',
+    'contenteditable',
     'controls',
+    'disabled',
+    'hidden',
+    'ismap',
+    'multiple',
+    'muted',
+    'open',
+    "readonly",
+    "sandbox",
+    'default'
 ]
 
 function findKeyNameOfValue(array, data) {
@@ -307,8 +340,15 @@ function speechToCode(data) {
                 
             }
 
-            // If attribute
-            if ('attribute' === findKeyNameOfValue(couldBeAttr, findMatchingValue(couldBeAttr, data))) {
+            if ('attribute-value' === findKeyNameOfValue(couldBeAttrVal, findMatchingValue(couldBeAttrVal, data))) {
+                console.log('is attribute value');
+                let attrVal = findKeyNameOfValue(attrVals, findMatchingValue(attrVals, data));
+                if (attrVal !== undefined) {
+                    stcSuccess = true;
+                    
+                    editors[currentEditor].replaceRange(attrVal,{line: cursorPos.line, ch: cursorPos.ch});
+                }
+            } else if ('attribute' === findKeyNameOfValue(couldBeAttr, findMatchingValue(couldBeAttr, data))) {
                 console.log('is attribute')
                 let attr = findKeyNameOfValue(attributes, findMatchingValue(attributes, data));
                 console.log(attr);
@@ -316,11 +356,15 @@ function speechToCode(data) {
                 if (attr !== undefined) {
                     stcSuccess = true;
                     let content;
-                        content = ' '+attr+'=" "';
+                    // if content not in boolean attributes list do this else just raw 
+                    content = booleanAttribute.indexOf(attr) !== -1 ? attr : ' '+attr+'=" " ';
+                    
                     editors[currentEditor].replaceRange(content,{line: cursorPos.line, ch: cursorPos.ch});
                 
                 }
             }
+
+            
         }
 
         if (dictateMode === 'plaintext') {
