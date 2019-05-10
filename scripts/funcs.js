@@ -825,7 +825,7 @@ function trackChanges() {
                         unsavedChanges = true;
                     }
                 });
-            },150)
+            },250)
             
         }
     );  
