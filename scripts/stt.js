@@ -30,9 +30,11 @@ function stopRecording() {
 
 // SPEECH TO TEXT
 var speechToText = new Speech({
-    username: '4bab5a29-863d-4d9d-8838-3e2dc3ccdcf1',
+    /* username: '4bab5a29-863d-4d9d-8838-3e2dc3ccdcf1',
     password: 'vnMnoG300QVL',
-    url: 'https://stream.watsonplatform.net/speech-to-text/api'
+    url: 'https://stream.watsonplatform.net/speech-to-text/api' */
+    iam_apikey: '2dYGkFdAtFaqQjgrWYJn-kDvLW9XAhqR2--M1zNI0zf2',
+    url: 'https://gateway-lon.watsonplatform.net/speech-to-text/api'
 });
 
 
