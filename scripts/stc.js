@@ -166,9 +166,88 @@ let attrVals = [
     {"viewport": ["viewport", "newport", "the eu court", "view port"]}, 
     {"text/css": ["text css", "test css"]},
     {"text/javascript":["text javascript", "text java script", "test javascript", "test java script"]}
+];
+
+let couldBeCSSProp = [
+    {"cssprop":["property"]}
+];
+
+let couldBeCSSTag = [{"csstag": [
+    "css tag",
+    "style tag",
+    'style tag',
+    'style tags',
+    'style attack',
+    'style had',
+    'style tack',
+    'style pack',
+    'style tagged',
+    'style thank',
+    'style tank',
+    'style tak',
+    'style tax',
+    'style contain',
+    'style container',
+    "style containing",
+    "style contender",
+    "style compiler",
+    "style taco",
+    "style taylor",
+    'style tach'
+]}];
+
+let couldBeCSSId = [
+    {"cssid":[
+        "css i d",
+        "css id",
+        "style i d",
+        "style id",
+        "css id",
+        "style in the",
+        "css in the",
+        "style i the",
+        "css by the",
+        "c s s i d",
+        "css i the",
+        "style i the",
+        "style like the",
+        "i d",
+        "id",
+        'i the',
+        "in the",
+        "i'd be",
+        "i see",
+        "i need"
+    ]}
+];
+
+let couldBeCSSClass = [
+    {"cssclass":[
+        "css class",
+        "style class",
+        "c s s class",
+        "stoke class",
+        "style and class",
+        "spiral class",
+        "class"
+    ]}
 ]
 
-let couldBeCSSProp = [{"cssprop":["property"]}]
+let couldBeCSSPseudo = [
+    {"pseudo":["pseudo","sudo", "to go"]}
+]
+
+let couldBeCSSValue = [
+    {"cssvalue":[
+        "css value",
+        "style value",
+        "c s s value",
+        "stoke value",
+        "style and value",
+        "spiral value",
+        "value"
+    ]}
+]
 
 //might need to make commands to make '<' and '>'
 let commands = [
@@ -179,16 +258,18 @@ let commands = [
     {'paste':['paste','post']},
     {'save':['save']},
     {'exit':['exit','close','closed','except']},
-    {'undo':['undo', 'reverse', 'reversed', 'un do', 'one do', 'one two', 'and do', 'on to', 'scratch that']},
+    {'undo':['undo', 'reverse', 'reversed', 'un do', 'one do', 'one two', 'and do', 'on to', 'scratch that', 'on the']},
     {'redo':['redo','radio', 'redial','forward', 're do', 'we do']},
     {'tab':['tab','tampa','tam','tap']},
-    {'enter':['enter','line', 'new line']},
+    {'enter':['enter','line', 'new line', "new life"]},
     {'preview':['preview', 'previous']},
     {'period':['period']},
     {'hash': ['hash']},
     {'source': ['source', 'file path', 'file perth','file past', 'file location']},
     {"color-picker":["color picker", "coloca", "coaker"]},
-    {"value-tool":["value tool","value to", "values tool","value to all", "well you could", "value to your", "value to our", "alioto", "valued who", "value cool", "valuable"]}
+    {"value-tool":["value tool","value to", "values tool","value to all", "well you could", "value to your", "value to our", "alioto", "valued who", "value cool", "valuable"]},
+    //CHECK THESE
+    {"select-all":["select all"]}
 
 ]
 
@@ -286,6 +367,18 @@ function insertTagIndent(tag, cursorPos) {
     editors[currentEditor].setCursor(cursorPosfinal.line,cursorPosfinal.ch) // Set cursor back to final position between two tags
 }
 
+function stripStringCSS(data) {
+    //Function to strip a string intended for css
+    data = data.replace(".","");
+    console.log("removed '.'" ,data)
+    data = data.replace(",","");
+    console.log("removed ','" ,data)
+    data = data.trim();
+    console.log("trimmed" ,data)
+    data = data.replace(/\s/g, "-");
+    console.log("replaced spaces with '-'" ,data)
+    return data;
+}
 
 function speechToCode(data) {
     let stcSuccess = false;
@@ -297,27 +390,63 @@ function speechToCode(data) {
     let frame = '.CodeMirror';
     let gutter = '.gutter';
     if (editorMode === 'css') {
-        let cssProperties = cssProps.concat(tags);
-        //DO CSS functions here
-        /*
-            ////////////////////////////////////////////////////////////////////
-            //////////////////????????????????????????????????????????????
-            ///////////////////////////
-        */
-       if ('cssprop' === findKeyNameOfValue(couldBeCSSProp, findMatchingValue(couldBeCSSProp, data))) {
+                
+        if ('cssclass' === findKeyNameOfValue(couldBeCSSClass, findMatchingValue(couldBeCSSClass, data))) {
+            data = data.toLowerCase();
+            data = data.replace(findMatchingValue(couldBeCSSClass, data), "");
+            //strip string of punctuation or spaces
+            data = stripStringCSS(data);
+            stcSuccess = true;
+            editors[currentEditor].replaceRange('.'+data,{line: cursorPos.line, ch: cursorPos.ch});
+
+        } else if ('cssid' === findKeyNameOfValue(couldBeCSSId, findMatchingValue(couldBeCSSId, data))) {
+            //remove command from string
+            data = data.toLowerCase();
+            data = data.replace(findMatchingValue(couldBeCSSId, data), "");
+            //strip string of punctuation or spaces
+            data = stripStringCSS(data);
+            stcSuccess = true;
+            editors[currentEditor].replaceRange('#'+data,{line: cursorPos.line, ch: cursorPos.ch});
+            
+
+        } else if ('csstag' === findKeyNameOfValue(couldBeCSSTag, findMatchingValue(couldBeCSSTag, data))) {
+            let cssName = findKeyNameOfValue(tags, findMatchingValue(tags, data));
+            if (cssName !== undefined) {
+                stcSuccess = true;
+                editors[currentEditor].replaceRange(cssName,{line: cursorPos.line, ch: cursorPos.ch});
+            }
+        }
+        
+        if ('pseudo' === findKeyNameOfValue(couldBeCSSPseudo, findMatchingValue(couldBeCSSPseudo, data))) {
+            let cssPseudo = findKeyNameOfValue(cssPseudos, findMatchingValue(cssPseudos, data));
+            if (cssPseudo !== undefined) {
+                stcSuccess = true;
+                editors[currentEditor].replaceRange(cssPseudo,{line: cursorPos.line, ch: cursorPos.ch});
+            }
+        }
+
+        if ('cssprop' === findKeyNameOfValue(couldBeCSSProp, findMatchingValue(couldBeCSSProp, data))) {
             console.log('is css property');
             // Search cssproperties for a match of other words
-            let prop = findKeyNameOfValue(cssProperties, findMatchingValue(cssProperties, data));
+            let prop = findKeyNameOfValue(cssProps, findMatchingValue(cssProps, data));
             console.log(prop);
             if (prop !== undefined) {
                 stcSuccess = true;
                 property = prop+": ;"
                 editors[currentEditor].replaceRange(property,{line: cursorPos.line, ch: cursorPos.ch});
-                
             }
-            
         }
-        //
+
+        if ('cssvalue' === findKeyNameOfValue(couldBeCSSValue, findMatchingValue(couldBeCSSValue, data))) {
+            let values = cssPropVals.concat(colors);
+            let value = findKeyNameOfValue(values, findMatchingValue(values, data));
+            
+            if (value !== undefined) {
+                stcSuccess = true;
+                // switch case or list checks to see what kind of value it is
+            }
+        }
+
     } else if (editorMode === "html") {
         if (dictateMode === 'markup') {
             // If word in words contains something equivalent to 'tags' then proceed
@@ -367,14 +496,14 @@ function speechToCode(data) {
             
         }
 
-        if (dictateMode === 'plaintext') {
-            if (data.length > 0) {
-                stcSuccess = true;
-                editors[currentEditor].replaceRange(data,{line: cursorPos.line, ch: cursorPos.ch});
-            } 
-        }
-
     }
+    if (dictateMode === 'plaintext') {
+        if (data.length > 0) {
+            stcSuccess = true;
+            editors[currentEditor].replaceRange(data,{line: cursorPos.line, ch: cursorPos.ch});
+        } 
+    }
+
     if (dictateMode === 'command') {
         
         let command = findKeyNameOfValue(commands, findMatchingValue(commands, data));
@@ -449,14 +578,14 @@ function speechToCode(data) {
                 let page = document.getElementsByTagName('html')[0];
                 page.classList.add("disabled");
                 dialog.showOpenDialog(dialogOptionsFiles, filePath => {
-                    filePath = filePath[0];
-                    if (path === undefined) {
+                    if (filePath === undefined) {
                         page.classList.remove("disabled");
                     } else {
+                        filePath = filePath[0];
                         //logic to determine locale of file and make path relative to project
                         fileInSavePath = filePath.search('\\b'+'saves'+'\\b') !== -1 ? true: false;
                         fileInNamePath = filePath.search('\\b'+curProjectDetails.name+'\\b')!== -1 ? true: false;
-                        console.log(fileInNamePath, fileInSavePath)
+
                         if (fileInSavePath && fileInNamePath) {
                             console.log('local file')
                             if (editorMode === 'html') {
@@ -466,6 +595,9 @@ function speechToCode(data) {
                                 filePath = relPath;
                             } else if (editorMode === 'css') {
                                 //make css relative path here
+                                let splitPath = filePath.split('\\saves\\'+curProjectDetails.name+'\\');
+                                relPath = '../'+splitPath[1];
+                                filePath = relPath;
                             }
                         }
                         document.activeElement.value = filePath;
