@@ -91,14 +91,15 @@ function resetForms(el) {
     console.log('reset forms')
     let forms = document.querySelectorAll('form');
     if (!forms) return;
-    let buttons = document.querySelectorAll('button');
-
+    let buttons = document.querySelectorAll('form button');
+    
     for (let i = 0; i < forms.length; i++) {
         forms[i].reset();
     }
     if (buttons){
         for (let i = 0; i < buttons.length; i++) {
-            removeClass('button', 'active');
+            console.log(buttons[i])
+            removeClass(buttons[i], 'active');
         }
     }
     
@@ -305,64 +306,23 @@ function initMenu(menuEl, btn, subBtns) {
             });
         }
         
-        //Tags Menu
-        let heading1 = document.getElementById('heading1btn');
-        if (heading1) {
-            heading1.addEventListener('click', () => {
-                let cursorPos = editors[currentEditor].getCursor();
-                editors[currentEditor].replaceRange("<h1></h1>",{line: cursorPos.line, ch: cursorPos.ch});
-                toggleDisplay('dropdown__menu--tags');
+        //Tools Menu
+        let colorPicker = document.getElementById('color-picker');
+        if (colorPicker) {
+            colorPicker.addEventListener('click', () => {
+                toggleDisplay("colorpicker__container");
+                toggleDisplay('dropdown__menu--tools');
             });
         }
 
-        let heading2 = document.getElementById('heading2btn');
-        if (heading2) {
-            heading2.addEventListener('click', () => {
-                let cursorPos = editors[currentEditor].getCursor();
-                editors[currentEditor].replaceRange("<h2></h2>",{line: cursorPos.line, ch: cursorPos.ch});
-                toggleDisplay('dropdown__menu--tags');
+        let valuesTool = document.getElementById('values-tool');
+        if (valuesTool) {
+            valuesTool.addEventListener('click', () => {
+                toggleDisplay("valuetool__container");
+                toggleDisplay('dropdown__menu--tools');
             });
         }
-        
 
-        let heading3 = document.getElementById('heading3btn');
-        if (heading3) {
-            heading3.addEventListener('click', () => {
-                let cursorPos = editors[currentEditor].getCursor();
-                editors[currentEditor].replaceRange("<h3></h3>",{line: cursorPos.line, ch: cursorPos.ch});
-                toggleDisplay('dropdown__menu--tags');
-            }); 
-        }
-        
-
-        let heading4 = document.getElementById('heading4btn');
-        if (heading4) {
-            heading4.addEventListener('click', () => {
-                let cursorPos = editors[currentEditor].getCursor();
-                editors[currentEditor].replaceRange("<h4></h4>",{line: cursorPos.line, ch: cursorPos.ch});
-                toggleDisplay('dropdown__menu--tags');
-            });  
-        }
-       
-
-        let heading5 = document.getElementById('heading5btn');
-        if (heading5) {
-            heading5.addEventListener('click', () => {
-                let cursorPos = editors[currentEditor].getCursor();
-                editors[currentEditor].replaceRange("<h5></h5>",{line: cursorPos.line, ch: cursorPos.ch});
-                toggleDisplay('dropdown__menu--tags');
-            }); 
-        }
-        
-
-        let heading6 = document.getElementById('heading6btn');
-        if (heading6) {
-            heading6.addEventListener('click', () => {
-                let cursorPos = editors[currentEditor].getCursor();
-                editors[currentEditor].replaceRange("<h6></h6>",{line: cursorPos.line, ch: cursorPos.ch});
-                toggleDisplay('dropdown__menu--tags');
-            });
-        }
         // Mode menu
         let modebtn = document.getElementById('switchmodebtn');
         if (modebtn) {
