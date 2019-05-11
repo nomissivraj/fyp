@@ -137,37 +137,17 @@
                             </div>
                         </li>
                         <li class="dropdown__item">
-                            <button class="dropdown__btn dropdown__btn--tags">Tags</button>
-                            <div class="dropdown__menu" id="dropdown__menu--tags"  style="display: none">
+                            <button class="dropdown__btn dropdown__btn--tools">Tools</button>
+                            <div class="dropdown__menu" id="dropdown__menu--tools"  style="display: none">
                                 <ul class="submenu">
                                     <li>
-                                        <button id="heading1btn" class="submenu__btn">
-                                            <span class="submenu__item-title">Heading 1</span>
+                                        <button id="color-picker" class="submenu__btn">
+                                            <span class="submenu__item-title">Color Picker</span>
                                         </button>
                                     </li>
                                     <li>
-                                        <button id="heading2btn" class="submenu__btn">
-                                            <span class="submenu__item-title">Heading 2</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button id="heading3btn" class="submenu__btn">
-                                            <span class="submenu__item-title">Heading 3</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button id="heading4btn" class="submenu__btn">
-                                            <span class="submenu__item-title">Heading 4</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button id="heading5btn" class="submenu__btn">
-                                            <span class="submenu__item-title">Heading 5</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button id="heading6btn" class="submenu__btn">
-                                            <span class="submenu__item-title">Heading 6</span>
+                                        <button id="values-tool" class="submenu__btn">
+                                            <span class="submenu__item-title">Values Tool</span>
                                         </button>
                                     </li>
                                 </ul>
@@ -246,7 +226,7 @@
         <div id="valuetool__container" class="dialogue dialogue--tool"  style="display: none;">
             <form id="valuetool__form">
                 <input type="text" id="value-to-insert" placeholder="10px">
-                <div class="valuetool__numbers">
+                <div class="valuetool-section valuetool__numbers">
                     <button class="valuebtn" type="button" value="1">1</button>
                     <button class="valuebtn" type="button" value="2">2</button>
                     <button class="valuebtn" type="button" value="3">3</button>
@@ -258,7 +238,7 @@
                     <button class="valuebtn" type="button" value="9">9</button>
                     <button class="valuebtn" type="button" value="0">0</button>
                 </div>
-                <div class="valuetool__symbols">
+                <div class="valuetool-section valuetool__symbols">
                         <button class="valuebtn" type="button" value="/">/</button>
                         <button class="valuebtn" type="button" value="*">*</button>
                         <button class="valuebtn" type="button" value="-">-</button>
@@ -269,15 +249,27 @@
                         <button class="valuebtn" type="button" value=": ">:</button>
                         <button class="valuebtn" type="button" value=";">;</button>
                         <button class="valuebtn" type="button" value="()">()</button>
+                        <button class="valuebtn" type="button" value="{">{</button>
+                        <button class="valuebtn" type="button" value="}">}</button>
+                        <button class="valuebtn" type="button" value="&gt;">&gt;</button>
+                        <button class="valuebtn" type="button" value="~">~</button>
+                        <button class="valuebtn" type="button" value="#">#</button>
+                        <button class="valuebtn" type="button" value="n">n</button>
+                        <button class="valuebtn" type="button" value="=">=</button>
+                        <button class="valuebtn" type="button" value="$">$</button>
+                        <button class="valuebtn" type="button" value="^">^</button>
+                        <button class="valuebtn" type="button" value='" "'>" "</button>
+
                 </div>
-                
-                <div class="valuetool__entities">
+                <br>
+                <div class="valuetool-section valuetool__entities">
                     <button class="valuebtn" type="button" value="px">px</button>
                     <button class="valuebtn" type="button" value="em">em</button>
                     <button class="valuebtn" type="button" value="rem">rem</button>
                     <button class="valuebtn" type="button" value="rgba()">rgba</button>
                     <button class="valuebtn" type="button" value="url(' ')">url</button>
                     <button class="valuebtn" type="button" value="calc( )">calc</button>
+                    <button class="valuebtn" type="button" value="href">href</button>
                     <button class="valuebtn" type="button" value=" ">space</button>
                 </div>
                 
@@ -288,13 +280,13 @@
                 </div>
                 
             </form>
-            <button type="button" class="close-btn" onclick="resetForms('valuetool__container')"><strong>X</strong></button>
+            <button type="button" class="close-btn" onclick="toggleDisplay('valuetool__container')"><strong>X</strong></button>
         </div>
         <div id="colorpicker__container" class="dialogue dialogue--tool dialogue--colorpicker" style="display: none;">
             <button id="hex-submit">HEX</button>
             <button id="rgb-submit">RBG</button>
             <input class="jscolor" value="ab2567">
-            <button type="button" class="close-btn" onclick="resetForms('colorpicker__container')"><strong>X</strong></button>
+            <button type="button" class="close-btn" onclick="toggleDisplay('colorpicker__container')"><strong>X</strong></button>
         </div>
             
     </body>
@@ -444,7 +436,9 @@
         let cssProps,
             cssPropVals,
             tags,
-            attributes;
+            attributes, 
+            colors,
+            cssPseudos;
           
         // Recieve
         ipcRenderer.on('load:data', (e, data) => {
@@ -474,15 +468,27 @@
             fs.readFile(path.join(appPath,'/scripts/cssprops.json'), (err, data) => {
                 cssProps = JSON.parse(data);
             });
+
             fs.readFile(path.join(appPath,'/scripts/csspropvals.json'), (err, data) => {
                 cssPropVals = JSON.parse(data);
             });
+
             fs.readFile(path.join(appPath,'/scripts/tags.json'), (err, data) => {
                 tags = JSON.parse(data);
             });
+
             fs.readFile(path.join(appPath,'/scripts/attributes.json'), (err, data) => {
                 attributes = JSON.parse(data);
             });
+
+            fs.readFile(path.join(appPath,'/scripts/colors.json'), (err, data) => {
+                colors = JSON.parse(data);
+            });
+
+            fs.readFile(path.join(appPath,'/scripts/pseudos.json'), (err, data) => {
+                cssPseudos = JSON.parse(data);
+            });
+
             initValuesTool();
             initColorPicker();
             dragElement(document.getElementById("valuetool__container"));
