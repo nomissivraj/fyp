@@ -152,7 +152,7 @@ main {
 }
 
 .app-toolbar__title {
-    width: calc(100% - 454px);
+    width: calc(100% - 455px);
     float: left;
     padding: 11px;
     text-align: center;
@@ -892,7 +892,11 @@ main.error {
   .valuetool__symbols button {
     width: calc(10% - 4px);
     padding: 0px;
-}
+  }
+
+  .valuetool-section {
+      text-align: center;
+  }
 
 .valuetool__entities button {
     width: calc(20% - 4px);
