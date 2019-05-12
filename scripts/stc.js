@@ -234,7 +234,7 @@ let couldBeCSSClass = [
 ]
 
 let couldBeCSSPseudo = [
-    {"pseudo":["pseudo","sudo", "to go"]}
+    {"pseudo":["pseudo","sudo", "to go", "super", "sooner", "soon", "you know", "zero", "sudan", "to the", "see the", "sure how", "sue the", "judo"]}
 ]
 
 let couldBeCSSValue = [
