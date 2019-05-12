@@ -217,7 +217,8 @@ let couldBeCSSId = [
         "in the",
         "i'd be",
         "i see",
-        "i need"
+        "i need",
+        "i'm sorry to see it as"
     ]}
 ];
 
@@ -242,10 +243,39 @@ let couldBeCSSValue = [
         "css value",
         "style value",
         "c s s value",
+        "css ballew",
         "stoke value",
         "style and value",
         "spiral value",
-        "value"
+        "value",
+        "star value",
+        "simon by your",
+        "star well you",
+        "style while you",
+        "since the new", 
+        "since as well",
+        "style by a new",
+        "hostile ballew",
+        "css family", 
+        "css well",
+        "css ali", 
+        "css bali",
+        "see it as value",
+        "trial by the",
+        "the new",
+        "are you",
+        "css hunley",
+        "so i",
+        "css belief",
+        "yes as well",
+        "says charlie",
+        "css valley",
+        "seasons value",
+        "sisters are doing this",
+        "stop by the",
+        "see is the least",
+        "css alan", 
+        "style but the",
     ]}
 ]
 
