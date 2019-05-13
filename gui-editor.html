@@ -102,6 +102,24 @@
                     <button type="submit" class="negative">Confirm</button>
                 </form>
             </div>
+            <div id="newtext__container" class="dialogue" style="display:none">
+                <form id="newtext__form">
+                    <textarea id="newtext-input" autofocus>
+
+                    </textarea>
+                    <button type="button" onclick="resetForms('newtext__container')">Cancel</button>
+                    <button type="submit" class="positive">Confirm</button>
+                </form>
+            </div>
+            <div id="updatetext__container" class="dialogue" style="display:none">
+                    <form id="updatetext__form">
+                        <textarea id="updatetext-input" autofocus>
+                            
+                        </textarea>
+                        <button type="button" onclick="resetForms('updatetext__container')">Cancel</button>
+                        <button type="submit" class="positive">Confirm</button>
+                    </form>
+                </div>
             <button type="button" id="dictate-btn"></button>
         </main>
         
@@ -127,7 +145,8 @@
             currentProject,
             currentPage,
             editorMode,
-            curStep;
+            curStep,
+            dictateMode = "default";
         
         // Json files
         let colors,
@@ -142,6 +161,12 @@
         const switchModeForm = document.getElementById('modeswitch__form');
         switchModeForm.addEventListener('submit', switchMode);
 
+        const newTextForm = document.getElementById('newtext__form');
+        newTextForm.addEventListener('submit', newText);
+
+        const updateTextForm = document.getElementById('updatetext__form');
+        updateTextForm.addEventListener('submit', updateText);
+
         function switchMode(e) {
             e.preventDefault();
             let confirmation = confirm('Are you sure?')
@@ -154,6 +179,51 @@
                 toggleDisplay('modeswitch__form');
             }
         };
+
+        function newText(e) {
+            e.preventDefault();
+            console.log('new text')
+            let iframe = document.querySelectorAll('iframe')[0];
+            let iframeDoc = iframe.contentWindow.document;
+            let speechText = document.getElementById("newtext-input").value;
+
+            if (curStep === "step-main") {
+                let container = iframeDoc.getElementById("main-article");
+                // Append new text
+                let text = iframeDoc.createElement('p');
+                let textNode = iframeDoc.createTextNode(speechText);
+                text.appendChild(textNode);
+                container.appendChild(text);
+                toggleDisplay("newtext__container");
+            }
+        }
+
+        
+        function updateText(e) {
+            e.preventDefault();
+            console.log('update text')
+            let iframe = document.querySelectorAll('iframe')[0];
+            let iframeDoc = iframe.contentWindow.document;
+            let speechText = document.getElementById("updatetext-input").value;
+
+            if (curStep === "step-main") {
+                let container = iframeDoc.getElementById("main-article");
+                // Remove existing text
+                let curText = iframeDoc.querySelectorAll("#main-article article p");
+                
+                for (let i = 0; i < curText.length; i++) {
+                    console.log(curText[i]);
+                    curText[i].parentElement.removeChild(curText[i]);
+                }
+
+                // Append new text
+                let text = iframeDoc.createElement('p');
+                let textNode = iframeDoc.createTextNode(speechText);
+                text.appendChild(textNode);
+                container.appendChild(text);
+                toggleDisplay("updatetext__container");
+            }
+        }
 
         //Recieve
         ipcRenderer.on('load:data', (e, data) => {
