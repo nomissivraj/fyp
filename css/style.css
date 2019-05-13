@@ -304,6 +304,78 @@ main {
     margin-bottom: 5px;
 }
 
+.dialogue--help {
+    width: 80%;
+    height:calc(80% - 70px);
+    padding-top: 40px;
+    padding-bottom: 20px;
+    min-height: auto;
+    background: rgba(54, 85, 105, 0.95);
+    overflow: hidden;
+    box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.5);
+    opacity: .95;
+}
+
+.help-tabs.tab-bar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.84);
+}
+
+.help-tab {
+    margin-bottom: -1px;
+}
+
+.help-tab.active {
+    background: rgba(75, 185, 115, 0.8);
+    color: #fff;
+    outline: none;
+    border-bottom: rgba(75, 185, 115, 0.8);
+}
+
+.help-tabs li:first-child button {
+    border-radius: 5px 0 0 0 ;
+}
+
+.help-tabs li:last-child button {
+    border-radius: 0 5px 0 0 ;
+}
+
+
+.dialogue--help h1 {
+    margin-top: -20px;
+}
+
+.help-pages {
+    position: relative;
+    height: 100%;
+    overflow:auto;
+    padding: 20px;
+    background: rgba(75, 185, 115, 0.8);
+    border-radius: 0 0 3px 3px;
+}
+
+.help-page p {
+    color: rgba(255,255,255,0.9);
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.help-page h3 {
+    margin-top: 20px;
+}
+
+.dialogue--help .help-tab {
+    border-radius: 0;
+    padding: 15px 20px;
+}
+
+.help-tabs li {
+    display: inline-block;
+    margin-right: -4px;
+}
+
+
 button {
     padding: 5px 10px;
     border-radius: 3px;
@@ -725,6 +797,7 @@ main.error {
 .tab__item button.changed.active::after {
     background: #ebebeb;
 }
+
 
 .warning {
     background: rgba(161, 58, 58, 0.9);
