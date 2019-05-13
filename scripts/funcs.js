@@ -83,7 +83,7 @@ function hideOthers(elements, dontHide) {
     for (let i = 0; i < els.length; i++) {
         if (els[i] !== dontHide) {
             els[i].style = 'display: none';
-        }
+        } else console.log(els[i], dontHide)
     }
 }
 
@@ -320,6 +320,15 @@ function initMenu(menuEl, btn, subBtns) {
             valuesTool.addEventListener('click', () => {
                 toggleDisplay("valuetool__container");
                 toggleDisplay('dropdown__menu--tools');
+            });
+        }
+
+        let helpTool = document.getElementById('help-tool');
+        if (helpTool) {
+            helpTool.addEventListener('click', () => {
+                toggleDisplay("helptool__container");
+                toggleDisplay('dropdown__menu--tools');
+                heightBasedOnContainer('.help-pages', "#helptool__container", -70);
             });
         }
 
@@ -936,10 +945,9 @@ function initValuesTool() {
     form.addEventListener("mousedown", (e)=>{
         e.preventDefault();
     });
-    console.log(container, form, buttons,inputs,submit)
+    /* console.log(container, form, buttons,inputs,submit) */
 
     for (let i = 0; i < buttons.length; i++) {
-        console.log(buttons[i]);
         buttons[i].addEventListener("mousedown", (e) => {
             e.preventDefault();
             console.log(buttons[i].value);
@@ -1002,17 +1010,17 @@ function initResize() {
     window.addEventListener('resize',(e) => {
         clearTimeout(timeout);
         timeout = setTimeout(() =>{
-            console.log("WINHEIGHT",window.innerHeight)
-            let tools = document.getElementsByClassName('dialogue--tool');
-            console.log(window.innerHeight)
+            /* console.log("WINHEIGHT",window.innerHeight) */
+            let tools = document.getElementsByClassName('dialogue--moveable');
+            
             for (let i = 0; i < tools.length; i++) {
-                console.log(tools[i], tools[i].style.top)
                 
                 tools[i].style.top = window.innerHeight / 2+"px";
                 tools[i].style.left = window.innerWidth / 2+"px";
             }
+            
         },200);
-        
+        heightBasedOnContainer('.help-pages', "#helptool__container", -80)
     });
 }
 
@@ -1088,3 +1096,40 @@ function dragElement(el) {
     document.onmousemove = null;
   }
 }
+
+function heightBasedOnContainer(element, container, offset) {
+    el = document.querySelectorAll(element);
+    cont = document.querySelectorAll(container);
+    if (offset === undefined) offset = 0;
+    console.log(el, cont, offset)
+
+    for (let i = 0; i < cont.length; i++) {
+        let contHeight = cont[i].offsetHeight;
+        let contPadTop = parseInt(window.getComputedStyle(cont[i]).paddingTop);
+        let contPadBottom = parseInt(window.getComputedStyle(cont[i]).paddingBottom);
+        let vertPadding = contPadTop + contPadBottom;
+        console.log(contHeight, contPadTop, contPadBottom)
+
+        for (let j = 0; j < el.length; j++) {
+            console.log('load');
+            el[i].style.height = (contHeight - vertPadding + offset) +'px';
+        }
+    }
+}
+
+function initHelpTabs() {
+    let tabs = document.querySelectorAll('.help-tab');
+    let pages = document.querySelectorAll('.help-page');
+    for (let i = 0; i < tabs.length; i++) {
+        tabs[i].addEventListener('click', (e) => {
+            addClass(tabs[i], 'active');
+            for (let j = 0; j < tabs.length; j++) {
+                if (tabs[i] !== tabs[j]) {
+                    removeClass(tabs[j],'active');
+                }
+            }
+            pages[i].style.display = "block";
+            hideOthers('.help-page',pages[i]);
+        });
+    }
+}; 
