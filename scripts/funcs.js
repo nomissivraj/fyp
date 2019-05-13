@@ -70,7 +70,7 @@ function removeClass(el, className) {
 }
 
 function hideAll(elements) {
-    console.log("hideall")
+    /* console.log("hideall") */
     let els = document.querySelectorAll(elements);
     for (let i = 0; i < els.length; i++) {
         els[i].style = 'display: none';
@@ -78,17 +78,17 @@ function hideAll(elements) {
 }
 
 function hideOthers(elements, dontHide) {
-    console.log('hideothers')
+    /* console.log('hideothers') */
     let els = document.querySelectorAll(elements);
     for (let i = 0; i < els.length; i++) {
         if (els[i] !== dontHide) {
             els[i].style = 'display: none';
-        } else console.log(els[i], dontHide)
+        }
     }
 }
 
 function resetForms(el) {    
-    console.log('reset forms')
+    /* console.log('reset forms') */
     let forms = document.querySelectorAll('form');
     if (!forms) return;
     let buttons = document.querySelectorAll('form button');
@@ -767,7 +767,7 @@ function saveChanges(file) {
     ipcRenderer.send('save:file', data);
 
     //Update page content for change tracking and remove class that indicates changes made
-    pageContent[file] = editors[currentEditor].getValue();
+    pageContent[file] = editors[file].getValue();
 
     let fileDetails = file.split('.');
     let fileExt = fileDetails[1];
@@ -1101,17 +1101,17 @@ function heightBasedOnContainer(element, container, offset) {
     el = document.querySelectorAll(element);
     cont = document.querySelectorAll(container);
     if (offset === undefined) offset = 0;
-    console.log(el, cont, offset)
+    /* console.log(el, cont, offset) */
 
     for (let i = 0; i < cont.length; i++) {
         let contHeight = cont[i].offsetHeight;
         let contPadTop = parseInt(window.getComputedStyle(cont[i]).paddingTop);
         let contPadBottom = parseInt(window.getComputedStyle(cont[i]).paddingBottom);
         let vertPadding = contPadTop + contPadBottom;
-        console.log(contHeight, contPadTop, contPadBottom)
+        /* console.log(contHeight, contPadTop, contPadBottom) */
 
         for (let j = 0; j < el.length; j++) {
-            console.log('load');
+            /* console.log('load'); */
             el[i].style.height = (contHeight - vertPadding + offset) +'px';
         }
     }
