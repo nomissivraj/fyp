@@ -150,6 +150,12 @@
                                             <span class="submenu__item-title">Values Tool</span>
                                         </button>
                                     </li>
+                                    <hr>
+                                    <li>
+                                        <button id="help-tool" class="submenu__btn">
+                                            <span class="submenu__item-title">Help</span>
+                                        </button>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
@@ -223,7 +229,7 @@
             
             <button type="button" id="dictate-btn"></button>
         </main>
-        <div id="valuetool__container" class="dialogue dialogue--tool"  style="display: none;">
+        <div id="valuetool__container" class="dialogue dialogue--tool dialogue--moveable"  style="display: none;">
             <form id="valuetool__form">
                 <input type="text" id="value-to-insert" placeholder="10px">
                 <div class="valuetool-section valuetool__numbers">
@@ -282,13 +288,70 @@
             </form>
             <button type="button" class="close-btn" onclick="toggleDisplay('valuetool__container')"><strong>X</strong></button>
         </div>
-        <div id="colorpicker__container" class="dialogue dialogue--tool dialogue--colorpicker" style="display: none;">
+        <div id="colorpicker__container" class="dialogue dialogue--tool dialogue--moveable dialogue--colorpicker" style="display: none;">
             <button id="hex-submit">HEX</button>
             <button id="rgb-submit">RBG</button>
             <input class="jscolor" value="ab2567">
             <button type="button" class="close-btn" onclick="toggleDisplay('colorpicker__container')"><strong>X</strong></button>
         </div>
+        <div id="helptool__container" class="dialogue dialogue--moveable dialogue--help" style="display: none">
+            <h1>Help</h1>
+            <div class="help-tabs tab-bar">
+                    <ul>
+                        <li>
+                            <button type="button" class="help-tab help-tab--html active" onclick="">HTML</button>
+                        </li>
+                        <li>
+                            <button type="button" class="help-tab help-tab--css" onclick="">CSS</button>
+                        </li>
+                        <li>
+                            <button type="button" class="help-tab help-tab--commands" onclick="">Commands</button>
+                        </li>
+                        <li>
+                            <button type="button" class="help-tab help-tab--mouse" onclick="">Mouse modes</button>
+                        </li>
+                    </ul>
+                </div>
+            <div class="help-pages">
+                <div class="help-page help-page--html">
+                    <h2>HTML Tags & Attributes</h2>
+                    <article class="help-page__content">
+                        <p>These elements utilise the <strong class="underline">LEFT CLICK MOUSE MODE</strong> and will be placed wherever the cursor is placed within the text editor.</p>
+                        <p>Whenever you wish to speak to the application you <strong class="underline">must</strong> click the orange microphone button in the bottom right of the screen, and <strong class="underline">again (with the same mouse button)</strong>after speaking to finish.</p>
+
+                        <h3>Inserting an HTML element:</h3>
+                        <p>Elements can be inserted by saying which element you would like, followed by either "tag" or "container"</p>
+                        <p><strong>e.g. "article tag" or "article container"</strong></p>
+                        <h3>Inserting an HTML attribute:</h3>
+                        <p>Attributes can be inserted by saying which attribute you would like followed by the word "attribute"</p>
+                        <p><strong>e.g. "source attribute" or "placeholder attribute"</strong></p>
+                    </article>
+                </div>
+    
+                <div class="help-page help-page--css" style="display: none">
+                    <h2>CSS </h2>
+                    <article class="help-page__content">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam mauris lorem, tempus vel posuere a, placerat eu purus. Fusce scelerisque fringilla pulvinar. Fusce venenatis justo porttitor, ornare nulla in, pulvinar lorem. Morbi varius, dui elementum auctor mollis, mi risus euismod risus, at feugiat sem arcu at urna. Vestibulum eu libero vitae risus mollis fermentum. Nullam dignissim lorem in tincidunt auctor. Pellentesque volutpat lorem at nisi placerat, in iaculis sapien volutpat.</p>
+                    </article>
+                </div>
+    
+                <div class="help-page help-page--commands" style="display: none">
+                    <h2>Common Commands</h2>
+                    <article class="help-page__content">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam mauris lorem, tempus vel posuere a, placerat eu purus. Fusce scelerisque fringilla pulvinar. Fusce venenatis justo porttitor, ornare nulla in, pulvinar lorem. Morbi varius, dui elementum auctor mollis, mi risus euismod risus, at feugiat sem arcu at urna. Vestibulum eu libero vitae risus mollis fermentum. Nullam dignissim lorem in tincidunt auctor. Pellentesque volutpat lorem at nisi placerat, in iaculis sapien volutpat.</p>
+                    </article>
+                </div>
+    
+                <div class="help-page help-page--mouse" style="display: none">
+                    <h2>Mouse modes</h2>
+                    <article class="help-page__content">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam mauris lorem, tempus vel posuere a, placerat eu purus. Fusce scelerisque fringilla pulvinar. Fusce venenatis justo porttitor, ornare nulla in, pulvinar lorem. Morbi varius, dui elementum auctor mollis, mi risus euismod risus, at feugiat sem arcu at urna. Vestibulum eu libero vitae risus mollis fermentum. Nullam dignissim lorem in tincidunt auctor. Pellentesque volutpat lorem at nisi placerat, in iaculis sapien volutpat.</p>
+                    </article>
+                </div>
+            </div>
             
+            <button type="button" class="close-btn" onclick="toggleDisplay('helptool__container')"><strong>X</strong></button>
+        </div>
     </body>
     <script>
         require('./scripts/renderer.js');
@@ -493,7 +556,10 @@
             initColorPicker();
             dragElement(document.getElementById("valuetool__container"));
             dragElement(document.getElementById("colorpicker__container"));
+            dragElement(document.getElementById("helptool__container"));
             initResize();
+            initHelpTabs();
+            heightBasedOnContainer('.help-pages', "#helptool__container", -70);
         });
 
         ipcRenderer.on('insert:page', (e, data) => {
@@ -533,6 +599,8 @@
         }
         
         
+        
+
         
     </script>
 </html>
