@@ -286,18 +286,20 @@ let commands = [
     {'delete':['delete']},
     {'copy':['copy']},
     {'paste':['paste','post']},
-    {'save':['save']},
     {'exit':['exit','close','closed','except']},
     {'undo':['undo', 'reverse', 'reversed', 'un do', 'one do', 'one two', 'and do', 'on to', 'scratch that', 'on the']},
     {'redo':['redo','radio', 'redial','forward', 're do', 'we do']},
-    {'tab':['tab','tampa','tam','tap']},
+    {'tab':['tab','tampa','tam','tap', "uh", "indent", "pab", "have"]},
     {'enter':['enter','line', 'new line', "new life"]},
     {'preview':['preview', 'previous']},
     {'period':['period']},
     {'hash': ['hash']},
     {'source': ['source', 'file path', 'file perth','file past', 'file location']},
     {"color-picker":["color picker", "coloca", "coaker"]},
+    {"curly-brackets":["curly brackets", "curly markets", "curley bracket", "colin markets", "colin bracket", "colin brackets"]},
     {"value-tool":["value tool","value to", "values tool","value to all", "well you could", "value to your", "value to our", "alioto", "valued who", "value cool", "valuable"]},
+    {"saveall":["save all", "save or"]},
+    {'save':['save']},
     //CHECK THESE
     {"select-all":["select all"]}
 
@@ -355,6 +357,7 @@ function findKeyNameOfValue(array, data) {
                 // For every value in the current key check against data input value
                 if (array[i][key][j] === data) {
                     // If a value matches the data given then return the name of the key as a string
+                    console.log('matched key:', key)
                     return key;
                 }
             }
@@ -372,7 +375,7 @@ function findMatchingValue(array, string) {
             for (let j = 0; j < array[i][key].length; j++) {
                 // If the current key value exists in the data string return key using findKeyNameOfValue?
                 if (string.search('\\b'+array[i][key][j]+'\\b') !== -1) {
-                    console.log('matched value',array[i][key][j]);
+                    console.log('matched value:',array[i][key][j]);
                     return array[i][key][j];                    
                 }
             }
@@ -443,11 +446,9 @@ function speechToCode(data) {
             let cssName = findKeyNameOfValue(tags, findMatchingValue(tags, data));
             if (cssName !== undefined) {
                 stcSuccess = true;
-                editors[currentEditor].replaceRange(cssName,{line: cursorPos.line, ch: cursorPos.ch});
+                editors[currentEditor].replaceRange(cssName+' ',{line: cursorPos.line, ch: cursorPos.ch});
             }
-        }
-        
-        if ('pseudo' === findKeyNameOfValue(couldBeCSSPseudo, findMatchingValue(couldBeCSSPseudo, data))) {
+        } else if ('pseudo' === findKeyNameOfValue(couldBeCSSPseudo, findMatchingValue(couldBeCSSPseudo, data))) {
             let cssPseudo = findKeyNameOfValue(cssPseudos, findMatchingValue(cssPseudos, data));
             if (cssPseudo !== undefined) {
                 stcSuccess = true;
@@ -465,15 +466,13 @@ function speechToCode(data) {
                 property = prop+": ;"
                 editors[currentEditor].replaceRange(property,{line: cursorPos.line, ch: cursorPos.ch});
             }
-        }
-
-        if ('cssvalue' === findKeyNameOfValue(couldBeCSSValue, findMatchingValue(couldBeCSSValue, data))) {
+        } else if ('cssvalue' === findKeyNameOfValue(couldBeCSSValue, findMatchingValue(couldBeCSSValue, data))) {
             let values = cssPropVals.concat(colors);
             let value = findKeyNameOfValue(values, findMatchingValue(values, data));
             
             if (value !== undefined) {
                 stcSuccess = true;
-                // switch case or list checks to see what kind of value it is
+                editors[currentEditor].replaceRange(value,{line: cursorPos.line, ch: cursorPos.ch});
             }
         }
 
@@ -547,6 +546,9 @@ function speechToCode(data) {
             case 'save':
                 saveChanges(currentPage);
                 break;
+            case 'saveall':
+                saveAll();
+                break;
             case 'exit':
                 let window = remote.getCurrentWindow();
                 if (unsavedChanges) {
@@ -596,6 +598,22 @@ function speechToCode(data) {
                 break;
             case 'value-tool':
                 toggleDisplay('valuetool__container');
+                break;
+            case 'curly-brackets':
+                cursorPos = editors[currentEditor].getCursor();
+                if (editorMode === 'css') {
+                    editors[currentEditor].replaceRange('{',{line: cursorPos.line, ch: cursorPos.ch});
+                    CodeMirror.commands.indentAuto(editors[currentEditor]);
+                    CodeMirror.commands.newlineAndIndent(editors[currentEditor]);
+                    CodeMirror.commands.newlineAndIndent(editors[currentEditor]);
+
+                    let cursorPos2 = editors[currentEditor].getCursor();
+
+                    editors[currentEditor].replaceRange('}',{line: cursorPos2.line, ch: cursorPos2.ch});
+                } else {
+                    editors[currentEditor].replaceRange('{ }',{line: cursorPos.line, ch: cursorPos.ch});
+                }
+                
                 break;
             case 'source':
                 let dialogOptionsFiles = {
