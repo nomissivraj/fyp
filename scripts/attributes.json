@@ -5,7 +5,7 @@
     {"width":["width", "with", "which"]},
     {"height":["height", "hate"]},
     {"lang":["lang", "language"]},
-    {"title":["title"]},
+    {"title":["title", "total"]},
     {"required":["required"]},
     {"rel":["rel", "relationship", "well", "relationship", "rail"]},
     {"hreflang":["hyperlink language","hyperlinked language", "hyperlink reference language", "hyperlink refuse language", "in reference language"]},
