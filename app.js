@@ -356,8 +356,11 @@ function updateJson(projectDetails) {
             } else {
                 let json = JSON.parse(data);
                 json.push(projectDetails);
-                fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
-                resolve(projectDetails.name);
+                fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2), err => {
+                    if (err) log.error(err);
+                    resolve(projectDetails.name);
+                });
+                
             }            
         });
     });
@@ -435,14 +438,17 @@ function removePageFromJSON(details, fileName) {
                                 //Check pages/html for file to remove from JSON
                                 let fileIndex = json[i].pages.indexOf(fileName);
                                 json[i].pages.splice(fileIndex, 1);
-                                fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
-                                resolve(fileName);
+                                fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2), err => {
+                                    resolve(fileName);
+                                });
+                                
                                 break;
                             case 'css':
                                 let cssFileIndex = json[i].stylesheets.indexOf(fileName);
                                 json[i].stylesheets.splice(cssFileIndex, 1);
-                                fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
-                                resolve(fileName);
+                                fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2), err => {
+                                    resolve(fileName);
+                                });
                                 break;
                             default:
                                 break;
@@ -576,9 +582,11 @@ function removeFromJSON(savesPath, projectName) {
                 console.log('match');
                 json.splice(i,1);
                 console.log(json);
-                fs.writeFile(path.join(savesPath,'projects.json'), JSON.stringify(json, null, 2));
-                console.log('refresh');
-                mainWindow.webContents.send('fetch:projects');
+                fs.writeFile(path.join(savesPath,'projects.json'), JSON.stringify(json, null, 2), err => {
+                    if (err) log.error(err);
+                    console.log('refresh');
+                    mainWindow.webContents.send('fetch:projects');
+                });
             }
         }    
 
