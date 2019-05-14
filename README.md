@@ -10,4 +10,13 @@ Voice Developer is my final year project for my BSc University Degree.
 
 This application currently only supports Windows and requires that SoX is installed on the machine with the Environment PATH set up and a stable internet connection.
 
+# SoX
+To set up SoX:
+  - Find install location of SoX: usually C:\Program Files (x86)\sox-xx-x-x (current version is sox-14-4-2) copy the location address and have this ready.
+  - Go to My Computer → Properties → Advanced System Settings → Environment Variables → System variables. Or simply search environment variable
+  - Select Path in the top panel of the window
+  - Click 'Edit' then 'New' and paste your install address 
+  - Finally click 'OK' until Environment Variable & System Properties windows are closed.
+If you had the Voice Developer application open during this process, please restart it, or close it before starting.
+
 # Opperation
