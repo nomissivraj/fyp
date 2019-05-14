@@ -14,7 +14,7 @@ This application currently only supports Windows and requires that SoX is instal
 To set up SoX:
   - Download and install from here https://sourceforge.net/projects/sox/
   - Find install location of SoX: usually C:\Program Files (x86)\sox-xx-x-x (current version is sox-14-4-2) copy the location address and have this ready.
-  - Go to My Computer → Properties → Advanced System Settings → Environment Variables → System variables. Or simply search environment variable
+  - Go to My Computer / This PC → Properties → Advanced System Settings → Environment Variables → System variables. Or simply search environment variable
   - Select Path in the top panel of the window
   - Click 'Edit' then 'New' and paste your install address 
   - Finally click 'OK' until Environment Variable & System Properties windows are closed.
