@@ -514,7 +514,8 @@ function loadPageContent(details) {
         fs.readFile(savesPath+details.name+'/'+pages[i],'utf-8', (err, fileData) => {
             if (err) return console.log(err);
   /*           console.log(editors[pages[i]]); */
-            editors[pages[i]].setValue(fileData)
+            editors[pages[i]].setValue(fileData);
+            editors[pages[i]].refresh();
             editors[pages[i]].clearHistory();
             pageContent[pages[i]] = editors[pages[i]].getValue();
         });
@@ -523,7 +524,8 @@ function loadPageContent(details) {
         fs.readFile(savesPath+details.name+'/css/'+stylesheets[i],'utf-8', (err, fileData) => {
             if (err) return console.log(err);
             /* console.log(fileData) */
-            editors[stylesheets[i]].setValue(fileData)
+            editors[stylesheets[i]].setValue(fileData);
+            editors[pages[i]].refresh();
             editors[stylesheets[i]].clearHistory();
             pageContent[stylesheets[i]] = editors[stylesheets[i]].getValue();
         });
