@@ -515,7 +515,6 @@ function loadPageContent(details) {
             if (err) return console.log(err);
   /*           console.log(editors[pages[i]]); */
             editors[pages[i]].setValue(fileData);
-            editors[pages[i]].refresh();
             editors[pages[i]].clearHistory();
             pageContent[pages[i]] = editors[pages[i]].getValue();
         });
@@ -525,7 +524,6 @@ function loadPageContent(details) {
             if (err) return console.log(err);
             /* console.log(fileData) */
             editors[stylesheets[i]].setValue(fileData);
-            editors[pages[i]].refresh();
             editors[stylesheets[i]].clearHistory();
             pageContent[stylesheets[i]] = editors[stylesheets[i]].getValue();
         });
@@ -684,6 +682,7 @@ function initTabListeners(details) {
             let tab = document.getElementById(tabName+'-tab-btn');
             tab.addEventListener('click', (e) => {
                 setTab('.tab-btn', pages[i]);
+                editors[pages[i]].refresh();
             });
         }
     }
@@ -696,6 +695,7 @@ function initTabListeners(details) {
             let cssTab = document.getElementById(tabName+'-css-tab-btn');
             cssTab.addEventListener('click', (e) => {
                 setTab('.tab-btn', stylesheets[i]);
+                editors[stylesheets[i]].refresh();
             });
         }
     }
