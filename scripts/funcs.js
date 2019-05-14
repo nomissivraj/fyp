@@ -98,7 +98,7 @@ function resetForms(el) {
     }
     if (buttons){
         for (let i = 0; i < buttons.length; i++) {
-            console.log(buttons[i])
+            /* console.log(buttons[i]) */
             removeClass(buttons[i], 'active');
         }
     }
