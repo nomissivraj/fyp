@@ -219,7 +219,8 @@
             <div id="deletefileform__container" class="dialogue" style="display:none">
                 <h1>Delete Page</h1>
                 <form id="deletefile__form">
-                    <input type="text" id="file-to-delete" placeholder="Page name" required>
+                        <p>You are trying to delete page: <strong id="delete-file-name"></strong></p>
+                    <input id="file-to-delete" placeholder="Page name" type="hidden" required>
                     <button type="button" onclick="resetForms('deletefileform__container')">Cancel</button>
                     <button type="submit" class="negative">Delete</button>
                 </form>
@@ -469,7 +470,7 @@
                 alert("No existing file with the name '"+fileName+"' please try again.")
                 console.log('Page not found')
             } else {
-                let confirmation = confirm("Please confirm deletion of file",fileName);
+                let confirmation = confirm("Please confirm deletion of file: " +fileName);
                 if (confirmation) {
                     ipcRenderer.send('delete:page', projectDetails);
                     toggleDisplay('deletepageform__container');

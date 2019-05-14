@@ -177,6 +177,8 @@ function initMenu(menuEl, btn, subBtns) {
         if (delFileBtn) {
             delFileBtn.addEventListener('click', () => {
                 hideOthers('.dialogue','#deletefileform__container');
+                let message = document.getElementById('delete-file-name');
+                message.innerHTML = currentPage;
                 let input = document.getElementById('file-to-delete');
                 input.value = currentPage;
                 toggleDisplay('deletefileform__container')

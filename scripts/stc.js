@@ -42,26 +42,34 @@ function initDictate(target) {
     let frame = '.CodeMirror';
     let gutter = '.gutter';
     let main = document.getElementsByTagName('main')[0];
-    
 
     dictate.addEventListener('mousedown', (e) => {
         e.preventDefault();
-        switch(e.which) {
-            case 1:
-                dictateMode = 'markup';
-                /* console.log('left mouse',e.which); */
-                break;
-            case 2:
-                dictateMode = 'command';
-                /* console.log('middle mouse',e.which); */
-                break;
-            case 3:
-                dictateMode = 'plaintext';
-                /* console.log('right mouse',e.which); */
-                break;
-            default: 
-             dictateMode = 'default';
-        } 
+        
+        if (document.activeElement.nodeName === 'INPUT') {
+            console.log(document.activeElement.nodeName);
+            dictateMode = "default";
+            target = "dialogue";
+        } else {
+            target = "texteditor";
+            switch(e.which) {
+                case 1:
+                    dictateMode = 'markup';
+                    /* console.log('left mouse',e.which); */
+                    break;
+                case 2:
+                    dictateMode = 'command';
+                    /* console.log('middle mouse',e.which); */
+                    break;
+                case 3:
+                    dictateMode = 'plaintext';
+                    /* console.log('right mouse',e.which); */
+                    break;
+                default: 
+                 dictateMode = 'default';
+            } 
+        }
+        
         // If not already recording, set to active on mousedown
         if (!active) {
             toggleClass(dictate, 'active');
@@ -88,9 +96,9 @@ function initDictate(target) {
             }
             // Now that recording has finished send data from speechPath file to speech to text promise which will return the text as 'data'
             toText(speechPath).then((data) => {
-                if (target === 'textEditor') {
+                if (target === 'texteditor') {
                     speechToCode(data);
-                } else { // If not textEditor insert as regular text
+                } else { // If not texteditor insert as regular text
                     toggleClass(main, 'working');
                     if (data || data.length > 0) {
                         toggleClass(main, 'finished');
