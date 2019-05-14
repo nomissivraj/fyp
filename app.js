@@ -376,8 +376,11 @@ function addPageToJSON(project, pageName) {
                 for (let i = 0; i < json.length; i++) {
                     if (json[i].name === project.name) {
                         json[i].pages.push(pageName);
-                        fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
-                        resolve(pageName);
+                        fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2), (err) => {
+                            if (err) log.error(err);
+                            resolve(pageName);
+                        });
+                        
                     }
                 }
             }
@@ -398,8 +401,11 @@ function addStylesheetToJSON(project, fileName) {
                 for (let i = 0; i < json.length; i++) {
                     if (json[i].name === project.name) {
                         json[i].stylesheets.push(fileName);
-                        fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2));
-                        resolve(fileName);
+                        fs.writeFile(path.join(savesPath,'/projects.json'), JSON.stringify(json, null, 2), (err) => {
+                            if (err) log.error(err);
+                            resolve(fileName);
+                        });
+                        
                     }
                 }
             }
