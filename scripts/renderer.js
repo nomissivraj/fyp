@@ -47,15 +47,29 @@ const remote = require('electron').remote;
         // Add listener for close button to close window on click
         closeBtn.addEventListener("click", (event) => {
             window = remote.getCurrentWindow();
-            if (editorMode === null) window.close();
+            if (editorMode === null) {
+                ipcRenderer.send("window:size", remote.getCurrentWindow().getSize());
+                ipcRenderer.send("window:pos", remote.getCurrentWindow().getPosition());
+                window.close();
+            } 
             if (editorMode !== "gui") {
                 if (unsavedChanges) {
                     let confirmation = confirm('Warning! You have unsaved changes.');
                     if (confirmation) {
+                        ipcRenderer.send("window:size", remote.getCurrentWindow().getSize());
+                        ipcRenderer.send("window:pos", remote.getCurrentWindow().getPosition());
                         window.close();
                     }
-                } else window.close();
-            } else window.close();
+                } else {
+                    ipcRenderer.send("window:size", remote.getCurrentWindow().getSize());
+                    ipcRenderer.send("window:pos", remote.getCurrentWindow().getPosition());
+                    window.close();
+                }
+            } else {
+                ipcRenderer.send("window:size", remote.getCurrentWindow().getSize());
+                ipcRenderer.send("window:pos", remote.getCurrentWindow().getPosition());
+                window.close();
+            }
                         
         });
 
