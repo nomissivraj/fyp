@@ -19,5 +19,3 @@ To set up SoX:
   - Click 'Edit' then 'New' and paste your install address 
   - Finally click 'OK' until Environment Variable & System Properties windows are closed.
 If you had the Voice Developer application open during this process, please restart it, or close it before starting.
-
-# Opperation
