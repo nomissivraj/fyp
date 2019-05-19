@@ -29,7 +29,8 @@ let mainWindow,
 
 let winX,
     winY,
-    winSize;
+    winSize,
+    winPos;
 
 function createMainWindow() {
     // Set new window object using dimensions and icon
@@ -84,6 +85,8 @@ function createGuiWindow() {
     guiWindow = new BrowserWindow({
         width: winSize[0] ,
         height: winSize[1],
+        x: winPos[0],
+        y: winPos[1],
         'minWidth': 600,
         'minHeight': 500,
         nodeIntegration: true,
@@ -118,6 +121,8 @@ function createTextEditorWindow() {
     textWindow = new BrowserWindow({
         width: winSize[0],
         height: winSize[1],
+        x: winPos[0],
+        y: winPos[1],
         'minWidth': 600,
         'minHeight': 500,
         nodeIntegration: true,
@@ -162,6 +167,7 @@ ipcMain.on('create:project', (e, data) => {
     winX = winPos[0];
     winY = winPos[1];
     winSize = mainWindow.getSize();
+    getBounds = mainWindow.getBounds()
     console.log('project creation requested');
     newProject(data)
 });
@@ -171,6 +177,7 @@ ipcMain.on('load:project', (e, data) => {
     winX = winPos[0];
     winY = winPos[1];
     winSize = mainWindow.getSize();
+    getBounds = mainWindow.getBounds()
     loadProject(data);
 });
 
@@ -192,9 +199,22 @@ ipcMain.on('delete:page', (e, data) => {
 });
 
 ipcMain.on('switch:mode', (e, data) => {
+    console.log('winpos', data);
     switchToTextEditor(data);
-})
+    updateWindowPos();
+});
 
+ipcMain.on('window:size', (e, data) => {
+    console.log('winsize', data);
+    winSize = data;    
+    updateWindowSizes();
+});
+
+ipcMain.on('window:pos', (e, data) => {
+    console.log('winpos', data);
+    winPos = data;    
+    updateWindowPos();
+});
 //send items
 
 /*
@@ -470,6 +490,8 @@ function loadProject(projectId) {
     //Get project details using promise then load based off resolved/returned values
     getProjectDetails(projectId).then((data) => {
         log.info("data:",data)
+        winPos = mainWindow.getPosition();
+        
         if (data.mode === 'gui') {
             createGuiWindow();
             mainWindow.hide();
@@ -772,6 +794,30 @@ function switchToTextEditor(project) {
             }
         }
     });
+}
+
+function updateWindowSizes() {
+    if (mainWindow) {
+        mainWindow.setSize(winSize[0], winSize[1]);
+    }
+    if (textWindow) {
+        textWindow.setSize(winSize[0], winSize[1]);
+    }
+    if (guiWindow) {
+        guiWindow.setSize(winSize[0], winSize[1]);
+    }
+}
+
+function updateWindowPos() {
+    if (mainWindow) {
+        mainWindow.setPosition(winPos[0], winPos[1]);
+    }
+    if (textWindow) {
+        textWindow.setPosition(winPos[0], winPos[1]);
+    }
+    if (guiWindow) {
+        guiWindow.setPosition(winPos[0], winPos[1]);
+    }
 }
 
 // On ready call window function
