@@ -171,6 +171,7 @@
             e.preventDefault();
             let confirmation = confirm('Are you sure?')
             if (confirmation) {
+                ipcRenderer.send("window:pos", remote.getCurrentWindow().getPosition());
                 ipcRenderer.send('switch:mode', curProjectDetails);
                 toggleDisplay('modeswitch__form');
                 let window = remote.getCurrentWindow();
