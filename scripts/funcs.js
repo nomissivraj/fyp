@@ -181,7 +181,7 @@ function initMenu(menuEl, btn, subBtns) {
                 message.innerHTML = currentPage;
                 let input = document.getElementById('file-to-delete');
                 input.value = currentPage;
-                toggleDisplay('deletefileform__container')
+                toggleDisplay('deletefileform__container');
                 toggleDisplay('dropdown__menu--file');
             });
         }
