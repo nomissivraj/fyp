@@ -327,6 +327,7 @@ let couldBeCSSValue = [
 let commands = [
     {'space':['space']},
     {'cut':['cut','scott']},
+    {"delete-file":["delete file", "delete files", "delete far", "delete final"]},
     {'delete':['delete']},
     {'copy':['copy']},
     {'paste':['paste','post']},
@@ -345,8 +346,9 @@ let commands = [
     {"saveall":["save all", "save or"]},
     {'save':['save']},
     //CHECK THESE
-    {"select-all":["select all"]}
-
+    {"select-all":["select all"]},
+    {"new-file":["new file", "new files", "new far", "new final"]},
+    {"help":["help", "hold", "huh"]}
 ]
 
 
@@ -642,6 +644,25 @@ function speechToCode(data) {
                 break;
             case 'value-tool':
                 toggleDisplay('valuetool__container');
+                break;
+            case 'new-file':
+                hideOthers('.dialogue','#newfileform__container');
+                toggleDisplay('newfileform__container');
+                break;
+            case 'delete-file':
+                hideOthers('.dialogue','#deletefileform__container');
+                let message = document.getElementById('delete-file-name');
+                message.innerHTML = currentPage;
+                let input = document.getElementById('file-to-delete');
+                input.value = currentPage;
+                toggleDisplay('deletefileform__container');
+                break;
+            case 'select-all':
+                editors[currentEditor].execCommand('selectAll');
+                break;
+            case 'help':
+                toggleDisplay("helptool__container");
+                heightBasedOnContainer('.help-pages', "#helptool__container", -70);
                 break;
             case 'curly-brackets':
                 cursorPos = editors[currentEditor].getCursor();
