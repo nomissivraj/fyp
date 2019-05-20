@@ -496,7 +496,7 @@ function speechToCode(data) {
 
     let frame = '.CodeMirror';
     let gutter = '.gutter';
-    /* if (editorMode === 'css') { */
+    if (editorMode === 'css') {
                 
         if ('cssclass' === findKeyNameOfValue(couldBeCSSClass, findMatchingValue(couldBeCSSClass, data))) {
             data = data.toLowerCase();
@@ -529,7 +529,7 @@ function speechToCode(data) {
                 editors[currentEditor].replaceRange(cssPseudo,{line: cursorPos.line, ch: cursorPos.ch});
             }
         }
-
+    }
         if ('cssprop' === findKeyNameOfValue(couldBeCSSProp, findMatchingValue(couldBeCSSProp, data))) {
             console.log('is css property');
             // Search cssproperties for a match of other words
@@ -550,7 +550,7 @@ function speechToCode(data) {
             }
         }
 
-    /* } else if (editorMode === "html") { */
+    if (editorMode === "html") {
         if (dictateMode === 'markup') {
             // If word in words contains something equivalent to 'tags' then proceed
             if ('tag' === findKeyNameOfValue(couldBeTag, findMatchingValue(couldBeTag, data))) {
@@ -599,7 +599,7 @@ function speechToCode(data) {
             
         }
 
-    /* } */
+    }
     if (dictateMode === 'plaintext') {
         if (data.length > 0) {
             stcSuccess = true;
