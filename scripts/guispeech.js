@@ -309,7 +309,7 @@ function speechToGui(data) {
                 break;
             case 'step-footer':
                 newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
-                processCommand(newCommand, string, 'footer');
+                processCommand(newCommand, string, '.footer__nav');
                 break;
             default:
                 break;
@@ -368,7 +368,7 @@ function processCommand(command, string, rule) {
             newString = findKeyNameOfValue(colors, findMatchingValue(colors, string));
             // Change in DOM
             
-            applyCSS(rule + ' a', 'color', newString+' !important');
+            applyCSS(rule + ' a', 'color', newString);
             guiSpeechSuccess = true;
         break;
         case 'title color':
@@ -553,17 +553,16 @@ function applyCSS(rule, prop, propVal) {
 
 function cssContains(string, list) {
     // Look through all strings in the given list
+
     for (let i = 0; i < list.length; i++) {
         let getrule = list[i].cssText.split('{');
         let existingRule = getrule[0];
-        //console.log('existingrule',existingRule, 'string',string);
+
         if (existingRule.replace(/\s/g, '') === string.replace(/\s/g, '')) {
             console.log('rule exists')
             return list[i];
         }
-        /* if (list[i].cssText.indexOf(string) !== -1) {
-            return list[i]; // If string input found in a list item's string return that list item
-        } */
+        
     }
 }
 
