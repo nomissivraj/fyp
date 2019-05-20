@@ -258,6 +258,14 @@
                 text.appendChild(textNode);
                 container.appendChild(text);
                 toggleDisplay("newtext__container");
+            } else if (curStep === "step-secondary") {
+                let container = iframeDoc.querySelectorAll("#secondary article")[0];
+                // Append new text
+                let text = iframeDoc.createElement('p');
+                let textNode = iframeDoc.createTextNode(speechText);
+                text.appendChild(textNode);
+                container.appendChild(text);
+                toggleDisplay("newtext__container");
             }
         }
 
@@ -273,6 +281,22 @@
                 let container = iframeDoc.querySelectorAll("#main-article article")[0];
                 // Remove existing text
                 let curText = iframeDoc.querySelectorAll("#main-article article p");
+                
+                for (let i = 0; i < curText.length; i++) {
+                    console.log(curText[i]);
+                    curText[i].parentElement.removeChild(curText[i]);
+                }
+
+                // Append new text
+                let text = iframeDoc.createElement('p');
+                let textNode = iframeDoc.createTextNode(speechText);
+                text.appendChild(textNode);
+                container.appendChild(text);
+                toggleDisplay("updatetext__container");
+            } else if (curStep === "step-secondary") {
+                let container = iframeDoc.querySelectorAll("#secondary article")[0];
+                // Remove existing text
+                let curText = iframeDoc.querySelectorAll("#secondary article p");
                 
                 for (let i = 0; i < curText.length; i++) {
                     console.log(curText[i]);
