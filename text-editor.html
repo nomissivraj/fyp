@@ -311,6 +311,9 @@
                         <li>
                             <button type="button" class="help-tab help-tab--mouse" onclick="">Mouse modes</button>
                         </li>
+                        <li>
+                            <button type="button" class="help-tab help-tab--microphone" onclick="">Microphone</button>
+                        </li>
                     </ul>
                 </div>
             <div class="help-pages">
@@ -403,6 +406,16 @@
                         <p>The middle mouse click or mouse wheel press/click is used to dictate commands to the program such as cut, copy, paste, save, exit etc.</p>
                     </article>
                 </div>
+                <div class="help-page help-page--microphone" style="display: none">
+                    <h2>Having microphone issues?</h2>
+                    <article class="help-page__content">
+                        <p>This appplication requires Sound eXchange (SoX) command line to be installed.</p>
+                        <p>You will need to install this and set up the environment variables. Links to SoX download page and install instructions are below:</p>
+                        <br>
+                        <button onclick="link(this)" value="https://sourceforge.net/projects/sox/">Get SoX</button>
+                        <button onclick="link(this)" value="https://github.com/nomissivraj/fyp">Install instructions</button>
+                    </article>
+                </div>
             </div>
             
             <button type="button" class="close-btn" onclick="toggleDisplay('helptool__container')"><strong>X</strong></button>
@@ -420,6 +433,7 @@
         const shell = require('electron').shell;
         const appPath = __dirname;
         const dialog = remote.dialog;
+        const beautify = require('js-beautify');
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
         ipcRenderer.send('ready:text-window');
@@ -433,6 +447,11 @@
 
         const valueToolForm = document.getElementById('valuetool__form');
         valueToolForm.addEventListener('submit', insertValue);
+
+
+        function link(e) {
+            shell.openExternal(e.value)
+        }
 
         function newFile(e) {
             e.preventDefault();
@@ -609,9 +628,9 @@
 
             initValuesTool();
             initColorPicker();
-            dragElement(document.getElementById("valuetool__container"));
-            dragElement(document.getElementById("colorpicker__container"));
-            dragElement(document.getElementById("helptool__container"));
+            dragElement(document.getElementById("valuetool__container"), '#pages-container', 70);
+            dragElement(document.getElementById("colorpicker__container"), '#pages-container', 70);
+            dragElement(document.getElementById("helptool__container"), '#pages-container',70);
             initResize();
             initHelpTabs();
             heightBasedOnContainer('.help-pages', "#helptool__container", -70);
