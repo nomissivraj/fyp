@@ -11,7 +11,7 @@ const commands = [
     {"save": ["save"]},
     {"preview": ["preview"]},
     {"new text":["new text", "new tax"]},
-    {"update text":["update text", "change text"]}
+    {"update text":["update text", "change text", "updates text"]}
 ];
 
 const sizes = [
