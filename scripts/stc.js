@@ -87,6 +87,7 @@ function initDictate(target) {
             stopRecording();
             toggleClass(dictate, 'active');
             // Handle visual indication of recording stopped
+            
             if (document.getElementsByTagName('body')[0].classList.contains('text-editor')) {
                 toggleClass(frame, 'shadow-positive');
                 toggleClass(frame, 'working');
@@ -99,24 +100,34 @@ function initDictate(target) {
                 if (target === 'texteditor') {
                     speechToCode(data);
                 } else if (target === "dialogue") {
-                    toggleClass(frame, 'working');
+                    let thing;
+                    if (document.getElementsByTagName('body')[0].classList.contains('index')) {
+                        thing = main;
+                    } else thing = frame;
+                    toggleClass(thing, 'working');
+                    
                     if (data || data.length > 0) {
-                        toggleClass(frame, 'finished');
+                        if (document.getElementsByTagName('body')[0].classList.contains('index')) {
+                            thing = main;
+                        } else thing = frame;
+                        console.log('here',data.length);
+                        toggleClass(thing, 'finished');
                         document.activeElement.value = data;
                         setTimeout(()=>{
-                            toggleClass(frame, 'finished');
+                            toggleClass(thing, 'finished');
                         },1000);  
                     } else {
-                        toggleClass(frame, 'error');
+                        toggleClass(thing, 'error');
                         document.activeElement.value = data;
                         setTimeout(()=>{
-                            toggleClass(frame, 'error');
+                            toggleClass(thing, 'error');
                         },1000);      
                     }
                 } else { // If not texteditor insert as regular text
                     console.log(target)
                     toggleClass(main, 'working');
                     if (data || data.length > 0) {
+                        console.log('here2')
                         toggleClass(main, 'finished');
                         document.activeElement.value = data;
                         setTimeout(()=>{
