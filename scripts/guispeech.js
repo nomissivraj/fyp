@@ -198,13 +198,10 @@ function initGuiDictate() {
         // If not already recording, set to active on mousedown
         if (!active) {
             toggleClass(dictate, 'active');
-            if (document.getElementsByTagName('body')[0].classList.contains('text-editor')) {
-                // Handle visual indication
-                toggleClass(frame, 'shadow-positive');
-            } else {
+            console.log('active here')
                 // Handle visual indication
                 toggleClass(main, 'shadow-positive');
-            }
+            
             // Start recording
             startRecording(speechPath);
         } else {
@@ -212,13 +209,10 @@ function initGuiDictate() {
             stopRecording();
             toggleClass(dictate, 'active');
             // Handle visual indication of recording stopped
-            if (document.getElementsByTagName('body')[0].classList.contains('text-editor')) {
-                toggleClass(frame, 'shadow-positive');
-                toggleClass(frame, 'working');
-            } else {
+            console.log('inactive here')
                 toggleClass(main, 'shadow-positive');
                 toggleClass(main, 'working');
-            }
+            
             // Now that recording has finished send data from speechPath file to speech to text promise which will return the text as 'data'
             
                 toText(speechPath).then((data) => {
@@ -360,14 +354,14 @@ function processCommand(command, string, rule) {
             newString = findKeyNameOfValue(colors, findMatchingValue(colors, string));
             // Change in DOM
             applyCSS(rule, 'background-color', newString);
-            
+            guiSpeechSuccess = true;
             break;
         case 'text color':
             // Get command parameters
             newString = findKeyNameOfValue(colors, findMatchingValue(colors, string));
             // Change in DOM
             applyCSS(rule + ' p', 'color', newString);
-            
+            guiSpeechSuccess = true;
             break;
         case 'link color':
             // Get command parameters
@@ -375,6 +369,7 @@ function processCommand(command, string, rule) {
             // Change in DOM
             
             applyCSS(rule + ' a', 'color', newString+' !important');
+            guiSpeechSuccess = true;
         break;
         case 'title color':
             // Get command parameters
@@ -383,11 +378,15 @@ function processCommand(command, string, rule) {
             for (let i = 0; i < headings.length; i++){
                 applyCSS(rule + ' ' + headings[i], 'color', newString);
             }
+            guiSpeechSuccess = true;
         break;
         case 'title size':
             // Get command parameters
             newString = findKeyNameOfValue(sizes, findMatchingValue(sizes, string));
             // Change in DOM
+            if (newString !== undefined) {
+                guiSpeechSuccess = true;
+            }
             switch(newString) {
                 case 'large':
                     let container = iframeDoc.querySelectorAll(rule)[0];
@@ -411,6 +410,9 @@ function processCommand(command, string, rule) {
             // Get command parameters
             newString = findKeyNameOfValue(sizes, findMatchingValue(sizes, string));
             // Change in DOM
+            if (newString !== undefined) {
+                guiSpeechSuccess = true;
+            }
             switch(newString) {
                 case 'large':
                     newString = "1.25em";
@@ -431,6 +433,9 @@ function processCommand(command, string, rule) {
             // Get command parameters
             newString = findKeyNameOfValue(sizes, findMatchingValue(sizes, string));
             // Change in DOM
+            if (newString !== undefined) {
+                guiSpeechSuccess = true;
+            }
             switch(newString) {
                 case 'large':
                     newString = "1.25em";
@@ -499,19 +504,24 @@ function processCommand(command, string, rule) {
             break;
         case "save":
             saveProject();
+            guiSpeechSuccess = true;
             break;
         case "preview":
             saveProject();
             pagePreview();
+            guiSpeechSuccess = true;
             break;
         case "new text":
             toggleDisplay('newtext__container');
+            guiSpeechSuccess = true;
             break;
         case "update text":
             toggleDisplay('updatetext__container');
+            guiSpeechSuccess = true;
             break;
         default:
             successFail('error');
+            guiSpeechSuccess = true;
             break;
     }
 }
@@ -570,7 +580,7 @@ function insertCSS(rule, prop, propVal) {
         // If rule exists in list of rules return that rule as 'index' and update that rule with the given property and values
         let index = cssContains(rule, rules)
         console.log(index);
-        console.log(prop, propVal)
+        console.log(prop, 'val '+propVal)
         index.style[prop] = propVal;
         successFail('finished');
     } else {
@@ -605,7 +615,7 @@ function saveHtml(html) {
     let two = `</html>`
     let content = one.concat(inner, two);
     content = content.replace('style="box-shadow: rgb(85, 252, 133) 0px 0px 10px inset;"', '');
-    console.log(content);
+    /* console.log(content); */
 
 
     fs.writeFile(path.join(savesPath,curProjectDetails.name,'/index.html'), content, (err) => {
