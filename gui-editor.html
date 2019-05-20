@@ -341,6 +341,7 @@
                 iframe.src = savesPath+data.name+'/index.html';         
             
             initHelpTabs();
+            initResize();
             heightBasedOnContainer('.help-pages', "#helptool__container", -70);
             dragElement(document.getElementById("helptool__container"), 'main', 40);
         });
