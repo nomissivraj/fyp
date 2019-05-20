@@ -1,9 +1,0 @@
-This directory is where existing projects will be saved.
-Projects will be saved in the following structure
-
-- ProjectName [directory]
-    - index.html
-    - style.css
-    - otherPage.html
-
-When a project is created the directory, index.html and style.css files are automatically created
