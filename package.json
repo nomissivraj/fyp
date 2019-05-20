@@ -19,6 +19,7 @@
         "electron-log": "^3.0.1",
         "electron-tabs": "^0.9.5",
         "file-system": "^2.2.2",
+        "js-beautify": "^1.10.0",
         "watson-developer-cloud": "^4.0.1"
     },
     "devDependencies": {
