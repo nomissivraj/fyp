@@ -7,7 +7,9 @@ const htmlSpec = {
     theme: 'lucario',
     lineWrapping: true,
     autoCloseTags: true,
-    matchTags: true
+    matchTags: true,
+    indentUnit: 4,
+    tabSize: 4
 }
 
 const cssSpec = {
@@ -16,7 +18,9 @@ const cssSpec = {
     theme: 'lucario',
     lineWrapping: true,
     autoCloseTags: true,
-    matchTags: true
+    matchTags: true,
+    indentUnit: 4,
+    tabSize: 4
 }
 
 function toggleDisplay(el) {
@@ -514,7 +518,7 @@ function loadPageContent(details) {
         fs.readFile(savesPath+details.name+'/'+pages[i],'utf-8', (err, fileData) => {
             if (err) return console.log(err);
   /*           console.log(editors[pages[i]]); */
-            editors[pages[i]].setValue(fileData);
+            editors[pages[i]].setValue(beautify.html(fileData));
             editors[pages[i]].clearHistory();
             pageContent[pages[i]] = editors[pages[i]].getValue();
         });
@@ -523,7 +527,7 @@ function loadPageContent(details) {
         fs.readFile(savesPath+details.name+'/css/'+stylesheets[i],'utf-8', (err, fileData) => {
             if (err) return console.log(err);
             /* console.log(fileData) */
-            editors[stylesheets[i]].setValue(fileData);
+            editors[stylesheets[i]].setValue(beautify.css(fileData));
             editors[stylesheets[i]].clearHistory();
             pageContent[stylesheets[i]] = editors[stylesheets[i]].getValue();
         });
@@ -540,7 +544,7 @@ function loadNewPageContent(details) {
             fs.readFile(savesPath+details.name+'/'+pages[i],'utf-8', (err, fileData) => {
                 if (err) return console.log(err);
                 console.log('new page:',pages[i]);
-                editors[pages[i]].setValue(fileData)
+                editors[pages[i]].setValue(beautify.html(fileData))
                 editors[pages[i]].clearHistory();
                 pageContent[pages[i]] = editors[pages[i]].getValue();
             });
@@ -552,7 +556,7 @@ function loadNewPageContent(details) {
             fs.readFile(savesPath+details.name+'/css/'+stylesheets[i],'utf-8', (err, fileData) => {
                 if (err) return console.log(err);
                 console.log('new stylesheet:',stylesheets[i]);
-                editors[stylesheets[i]].setValue(fileData)
+                editors[stylesheets[i]].setValue(beautify.css(fileData))
                 editors[stylesheets[i]].clearHistory();
                 pageContent[stylesheets[i]] = editors[stylesheets[i]].getValue();
             });
@@ -1028,9 +1032,10 @@ function initResize() {
     });
 }
 
-function dragElement(el) {
+function dragElement(el, container, vertOffset) {
+    if (vertOffset === undefined) vertOffset = 0;
   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  let main = document.getElementById('pages-container');
+  let main = document.querySelectorAll(container)[0];
 
   if (document.getElementById(el.id + "header")) {
     // if present, the header is where you move the DIV from:
@@ -1072,6 +1077,7 @@ function dragElement(el) {
 
   function elementOverlap(e) {
     let box = el.getBoundingClientRect();
+    console.log(box)
     let xOverlap,
         yOverlap;
 
@@ -1083,12 +1089,12 @@ function dragElement(el) {
         xOverlap = box.x;
         el.style.left = (el.offsetLeft - xOverlap) + 'px';
     }
-    if (box.y < 70) {
-        yOverlap = box.y - 70;
+    if (box.y < vertOffset) {
+        yOverlap = box.y - vertOffset;
         el.style.top = (el.offsetTop - yOverlap) + 'px';
     }
-    if (box.y > main.offsetHeight - el.offsetHeight + 70) {
-        yOverlap = box.y + el.offsetHeight - (main.offsetHeight + 70);
+    if (box.y > main.offsetHeight - el.offsetHeight + vertOffset) {
+        yOverlap = box.y + el.offsetHeight - (main.offsetHeight + vertOffset);
         el.style.top = (el.offsetTop - yOverlap) +'px';
     }
   }
