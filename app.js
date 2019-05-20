@@ -7,7 +7,7 @@ const log = require('electron-log');
 const remote = require('electron').remote;
 
 // Set ENV
-process.env.NODE_ENV = 'development'
+process.env.NODE_ENV = 'production'
 const appPath = __dirname;
 const homePath = path.join(app.getPath('documents'),'Voice Developer Projects');
 const savesPath = path.join(homePath,'/saves/');
