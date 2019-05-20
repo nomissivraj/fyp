@@ -201,6 +201,7 @@
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
         ipcRenderer.send('ready:gui-window');
         const cssBeauty = require('cssbeautify');
+        const beautify = require('js-beautify');
 
         let curProjectDetails,
             currentProject,
@@ -250,7 +251,7 @@
             let speechText = document.getElementById("newtext-input").value;
 
             if (curStep === "step-main") {
-                let container = iframeDoc.getElementById("main-article");
+                let container = iframeDoc.querySelectorAll("#main-article article")[0];
                 // Append new text
                 let text = iframeDoc.createElement('p');
                 let textNode = iframeDoc.createTextNode(speechText);
@@ -269,7 +270,7 @@
             let speechText = document.getElementById("updatetext-input").value;
 
             if (curStep === "step-main") {
-                let container = iframeDoc.getElementById("main-article");
+                let container = iframeDoc.querySelectorAll("#main-article article")[0];
                 // Remove existing text
                 let curText = iframeDoc.querySelectorAll("#main-article article p");
                 

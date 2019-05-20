@@ -9,7 +9,9 @@ const commands = [
     {"image size": ["image size"]},
     {"select image": ["select image", "select an image", "select the image"]},
     {"save": ["save"]},
-    {"preview": ["preview"]}
+    {"preview": ["preview"]},
+    {"new text":["new text", "new tax"]},
+    {"update text":["update text", "change text"]}
 ];
 
 const sizes = [
@@ -497,6 +499,12 @@ function processCommand(command, string, rule) {
             saveProject();
             pagePreview();
             break;
+        case "new text":
+            toggleDisplay('newtext__container');
+            break;
+        case "update text":
+            toggleDisplay('updatetext__container');
+            break;
         default:
             successFail('error');
             break;
@@ -583,7 +591,19 @@ function saveProject() {
 }
 
 function saveHtml(html) {
-    fs.writeFile(path.join(savesPath,curProjectDetails.name,'/index.html'), html, (err) => {
+    // get new content and replace it in html string
+    let iframe = document.querySelectorAll('iframe')[0];
+    let iframeDoc = iframe.contentWindow.document;
+    let inner = iframeDoc.documentElement.innerHTML;
+    let one = `<!DOCTYPE html>
+    <html lang="en">`;
+    let two = `</html>`
+    let content = one.concat(inner, two);
+    content = content.replace('style="box-shadow: rgb(85, 252, 133) 0px 0px 10px inset;"', '');
+    console.log(content);
+
+
+    fs.writeFile(path.join(savesPath,curProjectDetails.name,'/index.html'), content, (err) => {
         if (err) console.log(err);
         console.log('html updated');
     });
