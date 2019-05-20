@@ -162,7 +162,8 @@ let couldBeTag = [
         "taco",
         "taylor",
         'tach',
-        'time'
+        'time',
+        'target'
     ]}
 ]
 
