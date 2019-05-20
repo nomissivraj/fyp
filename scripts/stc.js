@@ -98,7 +98,23 @@ function initDictate(target) {
             toText(speechPath).then((data) => {
                 if (target === 'texteditor') {
                     speechToCode(data);
+                } else if (target === "dialogue") {
+                    toggleClass(frame, 'working');
+                    if (data || data.length > 0) {
+                        toggleClass(frame, 'finished');
+                        document.activeElement.value = data;
+                        setTimeout(()=>{
+                            toggleClass(frame, 'finished');
+                        },1000);  
+                    } else {
+                        toggleClass(frame, 'error');
+                        document.activeElement.value = data;
+                        setTimeout(()=>{
+                            toggleClass(frame, 'error');
+                        },1000);      
+                    }
                 } else { // If not texteditor insert as regular text
+                    console.log(target)
                     toggleClass(main, 'working');
                     if (data || data.length > 0) {
                         toggleClass(main, 'finished');
@@ -145,7 +161,8 @@ let couldBeTag = [
         "compiler",
         "taco",
         "taylor",
-        'tach'
+        'tach',
+        'time'
     ]}
 ]
 
@@ -325,9 +342,11 @@ let couldBeCSSValue = [
 
 //might need to make commands to make '<' and '>'
 let commands = [
-    {'space':['space']},
     {'cut':['cut','scott']},
+    {"backspace":["back space", "at the base", "backspace", "that space", "delete previous"]},
+    {'space':['space']},
     {"delete-file":["delete file", "delete files", "delete far", "delete final"]},
+    {"delete-line": ["delete line", "delete life"]},
     {'delete':['delete']},
     {'copy':['copy']},
     {'paste':['paste','post']},
@@ -335,20 +354,29 @@ let commands = [
     {'undo':['undo', 'reverse', 'reversed', 'un do', 'one do', 'one two', 'and do', 'on to', 'scratch that', 'on the']},
     {'redo':['redo','radio', 'redial','forward', 're do', 'we do']},
     {'tab':['tab','tampa','tam','tap', "uh", "indent", "pab", "have"]},
-    {'enter':['enter','line', 'new line', "new life"]},
+    {'enter':['enter','new line', "new life"]},
     {'preview':['preview', 'previous']},
     {'period':['period']},
     {'hash': ['hash']},
     {'source': ['source', 'file path', 'file perth','file past', 'file location']},
     {"color-picker":["color picker", "coloca", "coaker"]},
     {"curly-brackets":["curly brackets", "curly markets", "curley bracket", "colin markets", "colin bracket", "colin brackets"]},
-    {"value-tool":["value tool","value to", "values tool","value to all", "well you could", "value to your", "value to our", "alioto", "valued who", "value cool", "valuable"]},
-    {"saveall":["save all", "save or"]},
+    {"value-tool":["value tool","value to", "values tool","value to all", "well you could", "value to your", "value to our", "alioto", "valued who", "value cool", "valuable", "thank you to all"]},
+    {"saveall":["save all", "save or", "save for"]},
     {'save':['save']},
     //CHECK THESE
-    {"select-all":["select all"]},
+    {"select-all":["select all", "select or", "select for", "select one"]},
     {"new-file":["new file", "new files", "new far", "new final"]},
-    {"help":["help", "hold", "huh"]}
+    {"help":["help", "hold", "huh"]},
+    {"go-top":["go top", "top", "page top"]},
+    {"go-bottom":["go bottom", "go button", "go bolton", "bottom", "bolton", "button","page bottom", "page button", "page bolton"]},
+    {"end":["end", "and"]},
+    {"home":["home", "how"]},
+    {"up":["up", "what", "line up", "lion up", "lion heart", "our"]},
+    {"down":["down", "line down", "lion down", "dial"]},
+    {"left":["left", "last"]},
+    {"right":["right", "alright"]},
+    {"beautify":["beautify", "you to fire", "peter follet"]}
 ]
 
 
@@ -468,7 +496,7 @@ function speechToCode(data) {
 
     let frame = '.CodeMirror';
     let gutter = '.gutter';
-    if (editorMode === 'css') {
+    /* if (editorMode === 'css') { */
                 
         if ('cssclass' === findKeyNameOfValue(couldBeCSSClass, findMatchingValue(couldBeCSSClass, data))) {
             data = data.toLowerCase();
@@ -522,7 +550,7 @@ function speechToCode(data) {
             }
         }
 
-    } else if (editorMode === "html") {
+    /* } else if (editorMode === "html") { */
         if (dictateMode === 'markup') {
             // If word in words contains something equivalent to 'tags' then proceed
             if ('tag' === findKeyNameOfValue(couldBeTag, findMatchingValue(couldBeTag, data))) {
@@ -571,7 +599,7 @@ function speechToCode(data) {
             
         }
 
-    }
+    /* } */
     if (dictateMode === 'plaintext') {
         if (data.length > 0) {
             stcSuccess = true;
@@ -585,6 +613,42 @@ function speechToCode(data) {
         console.log(command)
         if (command !== undefined) stcSuccess = true;
         switch(command) {
+            case 'go-top':
+                editors[currentEditor].execCommand('goDocStart'); 
+                break;
+            case 'beautify':
+                let content = editors[currentEditor].getValue();
+                if (editorMode === 'html') {
+                    editors[currentEditor].setValue(beautify.html(content));
+                } else if (editorMode === 'css') {
+                    editors[currentEditor].setValue(beautify.css(content));
+                }
+                
+                break;
+            case 'go-bottom':
+                editors[currentEditor].execCommand('goDocEnd'); 
+                break;
+            case 'end':
+                editors[currentEditor].execCommand('goLineRight'); 
+                break;
+            case 'home':
+                editors[currentEditor].execCommand('goLineLeft'); 
+                break;
+            case 'up':
+                editors[currentEditor].execCommand('goLineUp'); 
+                break;
+            case 'down':
+                editors[currentEditor].execCommand('goLineDown'); 
+                break;
+            case 'left':
+                editors[currentEditor].execCommand('goWordLeft'); 
+                break;
+            case 'right':
+                editors[currentEditor].execCommand('goWordRight'); 
+                break;
+            case 'backspace':
+                editors[currentEditor].execCommand('delWordBefore'); 
+                break;
             case 'space':
                 cursorPos = editors[currentEditor].getCursor();
                 editors[currentEditor].replaceRange(" ",{line: cursorPos.line, ch: cursorPos.ch});
@@ -656,6 +720,9 @@ function speechToCode(data) {
                 let input = document.getElementById('file-to-delete');
                 input.value = currentPage;
                 toggleDisplay('deletefileform__container');
+                break;
+            case 'delete-line':
+                editors[currentEditor].execCommand('deleteLine');
                 break;
             case 'select-all':
                 editors[currentEditor].execCommand('selectAll');
@@ -741,6 +808,6 @@ function speechToCode(data) {
                 toggleClass(gutter, 'error');
             },1000);    
         }
-          
+
 }
     
