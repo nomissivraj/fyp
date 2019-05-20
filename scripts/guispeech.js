@@ -309,6 +309,10 @@ function speechToGui(data) {
                 newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
                 processCommand(newCommand, string, '#columns');
                 break;
+            case 'step-secondary':
+                newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
+                processCommand(newCommand, string, '#secondary');
+                break;
             case 'step-footer':
                 newCommand = findKeyNameOfValue(commands, findMatchingValue(commands, string));
                 processCommand(newCommand, string, 'footer');
@@ -369,7 +373,8 @@ function processCommand(command, string, rule) {
             // Get command parameters
             newString = findKeyNameOfValue(colors, findMatchingValue(colors, string));
             // Change in DOM
-            applyCSS(rule + ' a', 'color', newString);
+            
+            applyCSS(rule + ' a', 'color', newString+' !important');
         break;
         case 'title color':
             // Get command parameters
