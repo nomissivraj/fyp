@@ -3,6 +3,7 @@ const commands = [
     {"text size": ["text size", "font size"]},
     {"title color": ["title color", "title colour"]},
     {"link color": ["link color", "link colour", "lynn color", "links color"]},
+    {"link size": ["link size", "lynn size", "links size"]},
     {"title size": ["title size", "total size"]},
     {"background color": ["background color", "background colour"]},
     {"image size": ["image size"]},
@@ -417,6 +418,26 @@ function processCommand(command, string, rule) {
                     break;
             }
             applyCSS(rule + ' p', 'font-size', newString);
+            
+        break;
+        case 'link size':
+            // Get command parameters
+            newString = findKeyNameOfValue(sizes, findMatchingValue(sizes, string));
+            // Change in DOM
+            switch(newString) {
+                case 'large':
+                    newString = "1.25em";
+                    break;
+                case 'normal':
+                    newString = "1em";
+                    break;
+                case 'small':
+                    newString = "0.8em";
+                    break;
+                default:
+                    break;
+            }
+            applyCSS(rule + ' a', 'font-size', newString);
             
         break;
         case "select image":
