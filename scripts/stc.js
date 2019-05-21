@@ -33,6 +33,7 @@ function initInputListeners() {
     }
 }
 
+let firstClick = false;
 
 function initDictate(target) {
     const speechPath = path.join(app.getPath('documents'),'Voice Developer Projects','/speech/test.wav');
@@ -42,6 +43,7 @@ function initDictate(target) {
     let frame = '.CodeMirror';
     let gutter = '.gutter';
     let main = document.getElementsByTagName('main')[0];
+    
 
     dictate.addEventListener('mousedown', (e) => {
         e.preventDefault();
@@ -52,26 +54,30 @@ function initDictate(target) {
             target = "dialogue";
         } else {
             target = "texteditor";
-            switch(e.which) {
-                case 1:
-                    dictateMode = 'markup';
-                    /* console.log('left mouse',e.which); */
-                    break;
-                case 2:
-                    dictateMode = 'command';
-                    /* console.log('middle mouse',e.which); */
-                    break;
-                case 3:
-                    dictateMode = 'plaintext';
-                    /* console.log('right mouse',e.which); */
-                    break;
-                default: 
-                 dictateMode = 'default';
-            } 
+            if (firstClick == false) {
+                switch(e.which) {
+                    case 1:
+                        dictateMode = 'markup';
+                        /* console.log('left mouse',e.which); */
+                        break;
+                    case 2:
+                        dictateMode = 'command';
+                        /* console.log('middle mouse',e.which); */
+                        break;
+                    case 3:
+                        dictateMode = 'plaintext';
+                        /* console.log('right mouse',e.which); */
+                        break;
+                    default: 
+                     dictateMode = 'default';
+                } 
+            }
+            
         }
         
         // If not already recording, set to active on mousedown
         if (!active) {
+            firstClick = true;
             toggleClass(dictate, 'active');
             if (document.getElementsByTagName('body')[0].classList.contains('text-editor')) {
                 // Handle visual indication
@@ -83,6 +89,7 @@ function initDictate(target) {
             // Start recording
             startRecording(speechPath);
         } else {
+            firstClick = false;
             // If already recording, stop recording on mousedown and remove active state
             stopRecording();
             toggleClass(dictate, 'active');
