@@ -1,5 +1,6 @@
-// This file is for general purpose functions
+// This file contains most functions that are common to all modes
 //CodeMirror Properties
+// Options for text editor
 const htmlSpec = {
     lineNumbers: true,
     mode: 'xml',
@@ -11,7 +12,7 @@ const htmlSpec = {
     indentUnit: 4,
     tabSize: 4
 }
-
+// Options for text editor
 const cssSpec = {
     lineNumbers: true,
     mode: 'css',
@@ -24,6 +25,7 @@ const cssSpec = {
 }
 
 function toggleDisplay(el) {
+    //Function to toggle display of an element - this relies on an id #
     console.log("toggle display")
     el = document.getElementById(el);
     if (!el) return; 
@@ -36,19 +38,21 @@ function toggleDisplay(el) {
 }
 
 function toggleClass(el, className) {
-    if (!el) return;
+    //Function to toggle a class on an element
+    if (!el) return; 
     if (typeof el === 'object') {
-        el.classList.contains(className) ? el.classList.remove(className) : el.classList.add(className);
+        el.classList.contains(className) ? el.classList.remove(className) : el.classList.add(className); //If object contains given class remove it, otherwise add it
     } else if (typeof el === 'string') {
         el = document.querySelectorAll(el);
         for (let i = 0; i < el.length; i++) {
-            
+            //If element from query contains given class remove it, otherwise add it
             el[i].classList.contains(className) ? el[i].classList.remove(className) : el[i].classList.add(className);
         }
     } else return;
 }
 
 function addClass(el, className) {
+    //Function to add a class to an element
     if (!el) return;
     if (typeof el === 'object') {
         el.classList.contains(className) === false ? el.classList.add(className) : null;
@@ -62,6 +66,7 @@ function addClass(el, className) {
 }
 
 function removeClass(el, className) {
+    //Function to remove a class from an element
     if (!el) return;
     if (typeof el === 'object') {
         el.classList.contains(className) === true ? el.classList.remove(className) : null;
@@ -74,7 +79,7 @@ function removeClass(el, className) {
 }
 
 function hideAll(elements) {
-    /* console.log("hideall") */
+    // Function to hide all elements passed into this function
     let els = document.querySelectorAll(elements);
     for (let i = 0; i < els.length; i++) {
         els[i].style = 'display: none';
@@ -82,7 +87,7 @@ function hideAll(elements) {
 }
 
 function hideOthers(elements, dontHide) {
-    /* console.log('hideothers') */
+    // Function to hide all elements EXCEPT the element passed through in the 'dontHide' parameter
     let els = document.querySelectorAll(elements);
     for (let i = 0; i < els.length; i++) {
         if (els[i] !== dontHide) {
@@ -92,7 +97,7 @@ function hideOthers(elements, dontHide) {
 }
 
 function resetForms(el) {    
-    /* console.log('reset forms') */
+    // Function to reset all forms content/selections on a page
     let forms = document.querySelectorAll('form');
     if (!forms) return;
     let buttons = document.querySelectorAll('form button');
@@ -116,12 +121,10 @@ function targetInEl(parent, child) {
 }
 
 function initMenu(menuEl, btn, subBtns) {
+    // Initiate menu - this adds listeners to menu items so they know which is clicked
     let menu = document.getElementById(menuEl);
     let menuBtn = document.querySelectorAll(btn);
     let subMenuBtns = document.querySelectorAll(subBtns);
-    
-    // On menu clicked anywhere, show whatever button is hovered
-
 
     // Ensure that when an element that isn't the menu is clicked the menu will hide
     document.addEventListener('mousedown', (e) => {
@@ -350,13 +353,11 @@ function initMenu(menuEl, btn, subBtns) {
 }
 
 function pagePreview() {
-    console.log(currentProject);
-    let path = savesPath.replace(/\\/g, "/");
-    let path2 = path.replace(/\s+/g, '%20');
-    console.log(currentPage);
-    let filePath = editorMode === 'css' ? '/index.html' : '/'+currentPage;
-    console.log(path2+currentProject+filePath)
-    shell.openExternal('file:///'+path2+currentProject+filePath);
+    // Function to open file in default browser
+    let path = savesPath.replace(/\\/g, "/"); //regex to replace \ with / as windows filesystem uses \ while browser uses /
+    let path2 = path.replace(/\s+/g, '%20'); //Regex to replace spaces in path with %20 spaces are unsafe and browsers use the ascii %20 in place
+    let filePath = editorMode === 'css' ? '/index.html' : '/'+currentPage; // If the file is css load index file (if index exists) instead
+    shell.openExternal('file:///'+path2+currentProject+filePath);// open file with default browser
 
     let previewMenu = document.getElementById('dropdown__menu--preview');
     if (previewMenu.style.display === 'block') {
@@ -458,7 +459,7 @@ function initCMInstances(details) {
     let pages = details.pages;
     let stylesheets = details.stylesheets;
     
-    //instance for each page
+    //instance for each html page
     for (let i = 0; i < pages.length; i++) {
         let newPageDetails = pages[i].split('.');
         let newPageName = newPageDetails[0];
@@ -486,7 +487,7 @@ function initCMInstances(details) {
 function newCmInstance(data) {
     let pages = data.pages;
     let stylesheets = data.stylesheets;
-
+    //instance for new html page
     for (let i = 0; i < pages.length; i++) {
         if (curProjectDetails.pages.indexOf(pages[i]) === -1) { 
             let newPageDetails = pages[i].split('.');
@@ -498,7 +499,7 @@ function newCmInstance(data) {
             editors[pages[i]] = editor;
         }
     }
-
+    //instance for new css page
     for (let i = 0; i < stylesheets.length; i++) {
         if (curProjectDetails.stylesheets.indexOf(stylesheets[i]) === -1) { 
             let newCssDetails = stylesheets[i].split('.');
@@ -514,19 +515,19 @@ function newCmInstance(data) {
 function loadPageContent(details) {
     let pages = details.pages;
     let stylesheets = details.stylesheets;
+    // Load in all html pages
     for (let i = 0; i < pages.length; i++) {
         fs.readFile(savesPath+details.name+'/'+pages[i],'utf-8', (err, fileData) => {
             if (err) return console.log(err);
-  /*           console.log(editors[pages[i]]); */
             editors[pages[i]].setValue(beautify.html(fileData));
             editors[pages[i]].clearHistory();
             pageContent[pages[i]] = editors[pages[i]].getValue();
         });
     }
+    // Load in all css files
     for (let i = 0; i < stylesheets.length; i++) {
         fs.readFile(savesPath+details.name+'/css/'+stylesheets[i],'utf-8', (err, fileData) => {
             if (err) return console.log(err);
-            /* console.log(fileData) */
             editors[stylesheets[i]].setValue(beautify.css(fileData));
             editors[stylesheets[i]].clearHistory();
             pageContent[stylesheets[i]] = editors[stylesheets[i]].getValue();
@@ -539,6 +540,7 @@ function loadNewPageContent(details) {
     console.log(curProjectDetails);
     let pages = details.pages;
     let stylesheets = details.stylesheets;
+    // Load in new html files
     for (let i = 0; i < pages.length; i++) {
         if (curProjectDetails.pages.indexOf(pages[i]) === -1) {
             fs.readFile(savesPath+details.name+'/'+pages[i],'utf-8', (err, fileData) => {
@@ -550,7 +552,7 @@ function loadNewPageContent(details) {
             });
         }
     }
-
+    // Load in new css files
     for (let i = 0; i < stylesheets.length; i++) {
         if (curProjectDetails.stylesheets.indexOf(stylesheets[i]) === -1) {
             fs.readFile(savesPath+details.name+'/css/'+stylesheets[i],'utf-8', (err, fileData) => {
@@ -565,17 +567,19 @@ function loadNewPageContent(details) {
     trackChanges();
 }
 
-function setTab(tabEls, pageId/* tabEls, currentTabId, pageId, curPage */) {
+function setTab(tabEls, pageId) {
+    // Function to set tab on click
     let tabs = document.querySelectorAll(tabEls);
     if (tabs.length === 0) return;
-
     let pageDetails = pageId.split('.');
     let pageName = pageDetails[0];
     let pageExt = pageDetails[1];
     
+    // If file is an html file get the tab corresponding to the current page name as an html id  | otherwise get thge tab using page name as css id format 
     let curTab = pageExt === 'html' ? document.querySelectorAll('#'+pageName+'-tab-btn')[0] : document.querySelectorAll('#'+pageName+'-css-tab-btn')[0];
+    // Get page that matches tab pageName
     let page = pageExt === 'html' ? document.querySelectorAll('#page-container-'+pageName)[0] : document.querySelectorAll('#page-container-css-'+pageName)[0];
-
+    // Set current tab class to active and show page linked to tab
     if (!curTab.classList.contains('active')) {
         curTab.classList.add('active');
         page.style = 'display: block';
@@ -592,6 +596,7 @@ function setTab(tabEls, pageId/* tabEls, currentTabId, pageId, curPage */) {
 }
 
 function htmlTab(pageTitle, parent) {
+    //Function to build tabs for all html files
     let li = document.createElement('li');
     li.setAttribute('class', 'tab__item');
     li.setAttribute('id', pageTitle+'-tab__item');
@@ -610,7 +615,7 @@ function htmlTab(pageTitle, parent) {
 }
 
 function cssTab(pageTitle, parent) {
-    // Make CSS tab
+    //Function to build tabs for all css files
     let cssLi = document.createElement('li');
     cssLi.setAttribute('class', 'tab__item');
     cssLi.setAttribute('id', pageTitle+'-css-tab__item');
@@ -631,7 +636,7 @@ function cssTab(pageTitle, parent) {
 }
 
 function initTabs(details) {
-    //Dynamically create tabs based of pages
+    // Dynamically create tabs based off page names
     let tabsList = document.getElementsByClassName('tabs')[0];
     let pages = details.pages;
     let stylesheets = details.stylesheets;
@@ -649,6 +654,7 @@ function initTabs(details) {
 }
 
 function addNewTab(details) {
+    // Function to add a new tab if a new file is created
     console.log('DETAILS',details)
     let tabsList = document.getElementsByClassName('tabs')[0];
     let pages = details.pages;
@@ -712,6 +718,7 @@ function initTabListeners(details) {
 }
 
 function initNewTabListener(details) {
+    // Add new listener for new tab created when new file is created
     let pages = details.pages;
     let stylesheets = details.stylesheets;
     for (let i = 0; i < pages.length; i++) {
@@ -739,6 +746,7 @@ function initNewTabListener(details) {
 }
 
 function updateCurProjectDetails(data) {
+    // Function to update projects/json file with new file details
     let pages = data.pages;
     let stylesheets = data.stylesheets;
     for (let i = 0; i < pages.length; i++) {
@@ -754,6 +762,7 @@ function updateCurProjectDetails(data) {
 }
 
 function saveAll() {
+    // Function to save all files
     let pages = curProjectDetails.pages;
     let stylesheets = curProjectDetails.stylesheets;
     for (let i = 0; i < pages.length; i++ ) {
@@ -765,6 +774,7 @@ function saveAll() {
 }
 
 function saveChanges(file) {
+    // Function to save a given file
     console.log('saving')
     let changes = editors[file].getValue();
     let data = {
@@ -785,12 +795,14 @@ function saveChanges(file) {
 }
 
 function trackChanges() {
+    // Function to track changes
     Object.entries(editors).forEach(([key, value]) => {
+        
             let curDetails = key.split('.');
             let curExt = curDetails[1];
             let elName = curExt === 'css' ? '#'+curDetails[0]+'-css-tab-btn' : '#'+curDetails[0]+'-tab-btn';
             let newContent;
-            
+            // For all editors on change check if content matches old content - If it does, no meaningful changes have happened, otherwise changes have been made
             setTimeout(()=> {
                 value.on("change", () => {
                     newContent = value.getValue();
@@ -830,7 +842,7 @@ function checkUnsaved() {
 
 
 function rendererDestroyPage(data) {
-    // Remove page from renderer/window and all links to it (tabs, variables etc.)
+    // Remove page from renderer/window and all links to it (tabs, variables etc.) - for when a file is deleted through the app
 
     // Parse file details
     let delFileDetails = data.split('.');
@@ -890,7 +902,7 @@ function noPages() {
 }
 
 function copyImage(filePath, newFilePath) {
-    
+    // Function to copy a file from one location to another
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, (err, data) => {
             if (err) throw err;
@@ -903,6 +915,7 @@ function copyImage(filePath, newFilePath) {
 }
 
 function initIframeStyles() {
+    // Function to forcefully inject styles into iframe - for scrollbar styling
     setTimeout(() => {
         const iframe = document.getElementsByTagName('iframe')[0];
         const iframeDoc = iframe.contentWindow.document;
@@ -942,6 +955,7 @@ function initIframeStyles() {
 }
 
 function initValuesTool() {
+    //Funciton to initiate listeners to handle value tool behaviour
     let container = document.getElementById("valuetool__container");
     let form = document.getElementById("valuetool__form");
     let buttons = document.querySelectorAll("#valuetool__form button");
@@ -990,6 +1004,7 @@ function initValuesTool() {
 
 
 function initColorPicker() {
+    //Funciton to initiate listeners to handle color picker behaviour
     let pickerSubmit = document.getElementById('hex-submit');
     let rgbPickerSubmit = document.getElementById('rgb-submit');
     let pickerInput = document.getElementsByClassName('jscolor')[0];
@@ -1018,7 +1033,7 @@ function initResize() {
     window.addEventListener('resize',(e) => {
         clearTimeout(timeout);
         timeout = setTimeout(() =>{
-            /* console.log("WINHEIGHT",window.innerHeight) */
+            // Once window has finished resizing place all tools into center of window - to avoid being lost off screen
             let tools = document.getElementsByClassName('dialogue--moveable');
             
             for (let i = 0; i < tools.length; i++) {
@@ -1033,81 +1048,84 @@ function initResize() {
 }
 
 function dragElement(el, container, vertOffset) {
+    // Function to handle dragging of tools/elements with draggable class
     if (vertOffset === undefined) vertOffset = 0;
-  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  let main = document.querySelectorAll(container)[0];
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    let main = document.querySelectorAll(container)[0];
 
-  if (document.getElementById(el.id + "header")) {
-    // if present, the header is where you move the DIV from:
-    document.getElementById(el.id + "header").onmousedown = dragMouseDown;
-  } else {
-    // otherwise, move the DIV from anywhere inside the DIV: 
-    el.onmousedown = dragMouseDown;
-  }
-
-
-  function dragMouseDown(e) {
-    e.preventDefault();
-    
-    // get initial cursor position:
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    document.onmouseup = closeDragElement;
-    
-    document.onmousemove = (e) => {
-        elementDrag(e);
-        elementOverlap(e);
+    if (document.getElementById(el.id + "header")) {
+        // if present, the header is where you move the DIV from:
+        document.getElementById(el.id + "header").onmousedown = dragMouseDown;
+    } else {
+        // otherwise, move the DIV from anywhere inside the DIV: 
+        el.onmousedown = dragMouseDown;
     }
-    
-  }
 
-  function elementDrag(e) {
-    e.preventDefault();
-    
-    // Get new cursor position:
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;  
 
-    // Set element's new position:
-    el.style.top = (el.offsetTop - pos2) + "px";
-    el.style.left = (el.offsetLeft - pos1) + "px";
-  }
+    function dragMouseDown(e) {
+        e.preventDefault();
+        
+        // get initial cursor position:
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        
+        document.onmousemove = (e) => {
+            elementDrag(e);
+            elementOverlap(e);
+        }
+        
+    }
 
-  function elementOverlap(e) {
-    let box = el.getBoundingClientRect();
-    console.log(box)
-    let xOverlap,
-        yOverlap;
+    function elementDrag(e) {
+        e.preventDefault();
+        
+        // Get new cursor position:
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;  
 
-    if (box.x > main.offsetWidth - el.offsetWidth) {
-        xOverlap = box.x + el.offsetWidth - main.offsetWidth;// Get distance overlapped
-        el.style.left = (el.offsetLeft - xOverlap) +'px';// Correct position based on overlap. 
+        // Set element's new position:
+        el.style.top = (el.offsetTop - pos2) + "px";
+        el.style.left = (el.offsetLeft - pos1) + "px";
     }
-    if (box.x < 0) {
-        xOverlap = box.x;
-        el.style.left = (el.offsetLeft - xOverlap) + 'px';
+
+    function elementOverlap(e) {
+        // Checks if elements are about to exceed the boundaries of their container and stops from doing so
+        let box = el.getBoundingClientRect();
+        console.log(box)
+        let xOverlap,
+            yOverlap;
+
+        if (box.x > main.offsetWidth - el.offsetWidth) {
+            xOverlap = box.x + el.offsetWidth - main.offsetWidth;// Get distance overlapped
+            el.style.left = (el.offsetLeft - xOverlap) +'px';// Correct position based on overlap. 
+        }
+        if (box.x < 0) {
+            xOverlap = box.x;
+            el.style.left = (el.offsetLeft - xOverlap) + 'px';
+        }
+        if (box.y < vertOffset) {
+            yOverlap = box.y - vertOffset;
+            el.style.top = (el.offsetTop - yOverlap) + 'px';
+        }
+        if (box.y > main.offsetHeight - el.offsetHeight + vertOffset) {
+            yOverlap = box.y + el.offsetHeight - (main.offsetHeight + vertOffset);
+            el.style.top = (el.offsetTop - yOverlap) +'px';
+        }
     }
-    if (box.y < vertOffset) {
-        yOverlap = box.y - vertOffset;
-        el.style.top = (el.offsetTop - yOverlap) + 'px';
-    }
-    if (box.y > main.offsetHeight - el.offsetHeight + vertOffset) {
-        yOverlap = box.y + el.offsetHeight - (main.offsetHeight + vertOffset);
-        el.style.top = (el.offsetTop - yOverlap) +'px';
-    }
-  }
    
 
-  function closeDragElement() {
-    // stop moving when mouse button is released:
-    document.onmouseup = null;
-    document.onmousemove = null;
-  }
+    function closeDragElement() {
+        // stop moving when mouse button is released:
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
 }
 
 function heightBasedOnContainer(element, container, offset) {
+    // Funciton to set an elements height relative to it's container even if container is absolute positioned
     el = document.querySelectorAll(element);
     cont = document.querySelectorAll(container);
     if (offset === undefined) offset = 0;
@@ -1128,6 +1146,7 @@ function heightBasedOnContainer(element, container, offset) {
 }
 
 function initHelpTabs() {
+    // Funciton to add listeners for help tool tabs
     let tabs = document.querySelectorAll('.help-tab');
     let pages = document.querySelectorAll('.help-page');
     for (let i = 0; i < tabs.length; i++) {

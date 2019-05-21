@@ -23,6 +23,7 @@ const sizes = [
 let html;
 
 function highlighter(step) {
+    // Funciton to visually highlight section selections in gui mode
     const iframe = document.querySelectorAll('iframe')[0];
     const iframeDoc = iframe.contentWindow.document;
     const shadow = 'box-shadow: inset 0 0 10px #55fc85';
@@ -114,6 +115,7 @@ function highlighter(step) {
 }
 
 function removeShadow(keep) {
+    // function to remove shadows on all elements except the passed element 'keep'
     const iframe = document.querySelectorAll('iframe')[0];
     const iframeDoc = iframe.contentWindow.document;
 
@@ -132,6 +134,7 @@ function loadHtmlText() {
 }
 
 function initSteps() {
+    // Funciton to add listeners to gui step/section selection buttons
     let steps = document.querySelectorAll('.gui-step');
     for (let i = 0; i < steps.length; i++) {
         steps[i].addEventListener('click', (e) => {
@@ -150,16 +153,15 @@ function initSteps() {
 }
 
 function initStepInputListener() {
+    // Function to listen to if a section step is selected, if it is show dictate button
     let inputs = document.querySelectorAll('.gui-step');
     for (let i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener('focus', () => {
-            /* toggleDisplay('dictate-btn'); */
             console.log('input clicked')
             addClass('#dictate-btn', 'ready');
         });
 
         inputs[i].addEventListener('blur', () => {
-            /* toggleDisplay('dictate-btn'); */
             removeClass('#dictate-btn', 'ready');
             stopRecording();
         });
@@ -527,14 +529,17 @@ function processCommand(command, string, rule) {
 }
 
 function fileNameFromPath(path, type) {
+    // Get filename from path (recieved from file-system explorer)
     console.log(path, type);
+    // if type is src split on / otherwise split on \ 
     let dataArray = type === "src" ? path.split('/') : path.split("\\");
     console.log(dataArray);
-    let file = dataArray[dataArray.length - 1];
+    let file = dataArray[dataArray.length - 1]; // return last array item (should be file name)
     return file;
 }
 
 function applyCSS(rule, prop, propVal) {
+    // File to insert css into CSS rules list
     console.log(rule);
     if (propVal === undefined) {
         let main = document.getElementsByTagName('main')[0];
@@ -624,6 +629,7 @@ function saveHtml(html) {
 }
 
 function saveComputedCSS() {
+    // Function to save computed/temporary CSS to local stylesheet
     let iframe = document.querySelectorAll('iframe')[0];
     let iframeDoc = iframe.contentWindow.document;
     let styleRules = iframeDoc.styleSheets[0].cssRules;
@@ -634,9 +640,9 @@ function saveComputedCSS() {
 
     for (let i = 0; i < styleRules.length; i++) {
         cssCont = cssCont.concat(styleRules[i].cssText+'\n\n');
-
+        // concatinate rules from computed css with double spacing (new lines)
     }
-    
+    // Save concatinated css into stylesheet using cssBeauty to correct formatting/indentations etc.
     fs.writeFile(path.join(savesPath+currentProject+'/css/'+curProjectDetails.mode+'-'+curProjectDetails.layout+'.css'), cssBeauty(cssCont), (err) => {
         if (err) console.log(err);
     });
