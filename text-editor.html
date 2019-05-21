@@ -458,7 +458,7 @@
             let pages = curProjectDetails.pages;
             let stylesheets = curProjectDetails.stylesheets;
             let fileName = document.querySelectorAll('#file-to-create')[0].value;
-            fileName = fileName.replace(' ', '-');
+            fileName = fileName.replace(/\s/g, '-');
             let supportedExts = ['css', 'html'];
             let radio = document.querySelectorAll('input[name=ext-radio]:checked')[0].value;
             
